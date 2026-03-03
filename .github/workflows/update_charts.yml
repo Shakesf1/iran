@@ -2,7 +2,7 @@ name: Update Strike Charts
 
 on:
   schedule:
-    - cron: '0 */2 * * *' # Runs every 2 hours
+    - cron: '0 */1 * * *' # Runs every 2 hours
   workflow_dispatch:      # Allows you to run it manually with a button click
 
 jobs:
