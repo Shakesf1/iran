@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iran Strategic Monitor</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-12 border-b border-slate-200 pb-6">
+            <h1 class="text-4xl font-extrabold tracking-tight text-slate-800">Iran Strike Monitor</h1>
+            <p class="text-slate-500 mt-2">OSINT-driven analysis of regional escalations.</p>
+        </header>
+
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold mb-2">Daily Escalation Trend</h2>
+            <p class="text-slate-600 mb-6">This chart tracks the total volume of kinetic events originating from Iran. 
+               The <strong>Extrapolation</strong> segment predicts the remaining volume for today based on the 3-day moving average.</p>
+            <div id="dailyChart" class="w-full h-[500px]"></div>
+        </section>
+
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold mb-2">Hourly Intensity</h2>
+            <p class="text-slate-600 mb-6">Detailed breakdown of strikes by target location. Use the legend to toggle specific regions on/off.</p>
+            <div id="hourlyChart" class="w-full h-[500px]"></div>
+        </section>
+    </div>
+
+    <script>
+        async function loadCharts() {
+            const dailyData = await fetch('daily_data.json').then(r => r.json());
+            const hourlyData = await fetch('hourly_data.json').then(r => r.json());
+
+            function createTrace(data, xField, stackGroup) {
+                const keys = Object.keys(data[0]).filter(k => k !== xField);
+                return keys.map(key => ({
+                    x: data.map(d => d[xField]),
+                    y: data.map(d => d[key]),
+                    name: key,
+                    type: 'bar',
+                    marker: { color: key === 'Extrapolation' ? '#cbd5e1' : null },
+                    opacity: key === 'Extrapolation' ? 0.6 : 1
+                }));
+            }
+
+            const layout = { barmode: 'stack', margin: { t: 20, r: 20, b: 40, l: 40 }, font: { family: 'Inter' } };
+
+            Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout);
+            Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'hour'), layout);
+        }
+        loadCharts();
+    </script>
+</body>
+</html>

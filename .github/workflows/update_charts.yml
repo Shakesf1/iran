@@ -1,0 +1,32 @@
+name: Update Strike Charts
+
+on:
+  schedule:
+    - cron: '0 */2 * * *' # Runs every 2 hours
+  workflow_dispatch:      # Allows you to run it manually with a button click
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install pandas matplotlib curl_cffi numpy
+
+      - name: Run script
+        run: python iran.py # Make sure this matches your filename
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add strikes_daily_projected.png strikes_hourly.png iran_strikes_full_list.csv
+          git commit -m "Auto-update charts: $(date)" || echo "No changes to commit"
+          git push
