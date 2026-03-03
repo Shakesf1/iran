@@ -1,20 +1,25 @@
-name: Update Iran Strike Data
+name: Deploy Dashboard
 
 on:
   schedule:
-    - cron: '0 */1 * * *'  # Runs every 60 minutes
-  workflow_dispatch:       # Allows manual trigger
+    - cron: '0 * * * *' # Runs every hour
+  push:
+    branches: ["main"]
+  workflow_dispatch:     # Manual run button
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  update:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -22,13 +27,14 @@ jobs:
       - name: Install Dependencies
         run: pip install pandas curl_cffi
 
-      - name: Run Data Collector
+      - name: Generate Data
         run: python iran.py
 
-      - name: Commit and Push JSON
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add daily_data.json hourly_data.json
-          git commit -m "Automated data refresh: $(date)" || echo "No changes"
-          git push
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # Uploads everything in the root (index.html, daily_data.json, etc.)
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
