@@ -45,10 +45,29 @@
                 }));
             }
 
-            const layout = { barmode: 'stack', margin: { t: 20, r: 20, b: 40, l: 40 }, font: { family: 'Inter' } };
+            const layout = { 
+                barmode: 'stack', 
+                margin: { t: 50, r: 20, b: 80, l: 40 }, 
+                hovermode: 'x unified', // Makes hovering over one bar show all data for that day
+                legend: {
+                    orientation: "h",   // Horizontal legend
+                    yanchor: "bottom",
+                    y: -0.3,            // Positions it below the X-axis
+                    xanchor: "center",
+                    x: 0.5
+                },
+                dragmode: 'zoom',
+                displayModeBar: true
+            };
 
-            Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout);
-            Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'hour'), layout);
+            const config = {
+                displaylogo: false,
+                modeBarButtonsToRemove: ['select2d', 'lasso2d'], // Removes less useful tools
+                responsive: true
+            };
+
+            Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, config);
+            Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'hour'), layout, config);
         }
         loadCharts();
     </script>
