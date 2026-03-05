@@ -64,11 +64,12 @@ jobs:
           
 
           
-          # 1. Add both the database AND the dashboard JSON
-          git add shipping_data.db 
 
-          # 2. Pull latest changes from server to avoid conflicts
-          git pull --rebase origin main      
+
+          # 1. Pull latest changes from server to avoid conflicts
+          git pull --rebase --autostash origin main 
+          # 2. Add both the database AND the dashboard JSON
+          git add shipping_data.db 
 
           # 3. Commit only if there are changes
           if git diff --staged --quiet; then
