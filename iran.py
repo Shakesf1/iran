@@ -35,10 +35,13 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
             # --- HOURLY DATA ---
             # 1. Group and unstack
             hourly = df_irn.groupby([df_irn['timestamp'].dt.floor('h'), 'location']).size().unstack(fill_value=0)
-            # 2. Format the index as a string
-            hourly.index = hourly.index.strftime('%Y-%m-%d %H:%M')
-            # 3. Reset index creates a column named 'timestamp'
+            
+            # 2. Reset index first so 'timestamp' becomes a column
             hourly_df = hourly.reset_index() 
+            
+            # 3. CONVERT TIMESTAMP TO STRING (This fixes the blank graph)
+            hourly_df['timestamp'] = hourly_df['timestamp'].dt.strftime('%Y-%m-%d %H:%M')
+            
             # 4. Use 'timestamp' as the unique key for persistence
             update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp'])
 
