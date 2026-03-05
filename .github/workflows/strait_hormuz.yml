@@ -1,0 +1,54 @@
+name: Strait of Hormuz Monitor
+
+on:
+  schedule:
+    # Runs at :05 and :35 of every hour
+    - cron: '5,35 * * * *'
+  workflow_dispatch: # Allows manual trigger for testing
+
+jobs:
+  track_vessels:
+    runs-on: ubuntu-latest
+    # Permissions needed to commit the DB back to the repo
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libxi6 libgconf-2-4 google-chrome-stable
+
+      - name: Install Python Packages
+        run: |
+          pip install DrissionPage
+
+      - name: Random Delay (Jitter)
+        run: |
+          # Sleep for a random duration between 1 and 480 seconds (8 minutes)
+          DELAY=$((1 + RANDOM % 480))
+          echo "Waiting for $DELAY seconds to appear human..."
+          sleep $DELAY
+
+      - name: Run Shipping Monitor
+        env:
+          DISPLAY: :99
+        run: |
+          Xvfb :99 -screen 0 1920x1080x24 &
+          python -u shipping.py
+
+      - name: Commit and Push Database
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add shipping_data.db
+          # Only commit if the database actually changed
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update vessel history [skip ci]" && git push)
