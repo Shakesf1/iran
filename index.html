@@ -24,10 +24,10 @@
                 </div>
                 <div class="bg-white border border-slate-200 rounded-lg px-4 py-2 shadow-sm text-sm">
                     <div class="flex items-center gap-2 mb-1">
-                        <span class="h-2 w-2 rounded-full bg-emerald-500 pulse"></span>
-                        <span class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live</span>
+                        <span id="status-dot" class="h-2 w-2 rounded-full bg-emerald-500 pulse"></span>
+                        <span id="status-text" class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live</span>
                     </div>
-                    <p class="text-slate-500  text-[11px]">Last Hourly Data Update: <span id="last-update" class="font-medium text-slate-800">Loading...</span></p>
+                    <p class="text-slate-500 text-[11px]">Last Hourly Data Update: <span id="last-update" class="font-medium text-slate-800">Loading...</span></p>
                     <p class="text-slate-500 text-[11px]">Last Strike Data: <span id="api-timestamp" class="font-medium text-slate-800">Syncing...</span></p>
                 </div>
             </div>
@@ -35,15 +35,15 @@
             <div class="mt-8 max-w-3xl text-slate-600 leading-relaxed">
                 <p class="mb-4">
                     Regional defenses mostly hold against Iranian drone and missile swarms. However, the strategic risk lies in <strong>economic attrition & resource depletion</strong>. 
-                    Low-cost drones (approx. $20k) force the use of high-cost interceptors ($1M+), threatening to deplete defensive inventories if attack rates are high, remain high and definitely when increasing. 
-                    This simple page shows the data of strikes from Iran on regional targets. You can (de)select countries from the legend, e.g. to see if attacks on countries other than Israel are increasing or not. 
                 </p>
             </div>
         </header>
 
+        <div id="summary-section" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            </div>
+
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-2 text-slate-800">Daily Escalation Trend</h2>
-            <p class="text-slate-600 mb-6 text-sm">Tracks total attacks from Iran. The gray segment represents the 3-day projected remaining volume for today.</p>
             <div id="dailyChart" class="w-full h-[500px]"></div>
         </section>
 
