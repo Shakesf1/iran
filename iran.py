@@ -46,22 +46,34 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
             update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp'])
 
             # --- DAILY DATA ---
+
+            # 1. Group actual strikes by day
             daily = df_irn.groupby([df_irn['timestamp'].dt.floor('D'), 'location']).size().unstack(fill_value=0).sort_index()
-            avg_pace = daily.sum(axis=1).tail(3).mean()
-            last_day_dt = daily.index[-1]
-            
-            now = datetime.now(timezone.utc)
-            extra = 0
-            if last_day_dt.date() == now.date():
-                hours_passed = now.hour + (now.minute / 60)
-                extra = avg_pace * ((24 - hours_passed) / 24) if hours_passed < 24 else 0
-            
-            daily['Extrapolation'] = float(extra)
             daily.index = daily.index.strftime('%Y-%m-%d')
             
-            # Ensure the column name matches the key used in update_persistent_json
+            # 2. Update persistent record of ACTUAL strikes (no extrapolation here)
             daily_df = daily.reset_index().rename(columns={'timestamp': 'day'})
             update_persistent_json(daily_df, 'daily_data.json', ['day'])
+
+            # 3. Handle Extrapolation (Only for the LIVE view)
+            # Reload the now-updated file to apply extrapolation to the current day only
+            current_daily = pd.read_json('daily_data.json')
+            
+            avg_pace = daily.sum(axis=1).tail(3).mean()
+            now = datetime.now(timezone.utc)
+            today_str = now.strftime('%Y-%m-%d')
+
+            # Calculate extra strikes for the remaining hours of today
+            hours_passed = now.hour + (now.minute / 60)
+            extra = avg_pace * ((24 - hours_passed) / 24) if hours_passed < 24 else 0
+
+            # Apply extrapolation column: 0 for history, 'extra' value for today
+            current_daily['Extrapolation'] = 0.0
+            current_daily.loc[current_daily['day'] == today_str, 'Extrapolation'] = float(extra)
+
+            # 4. Overwrite daily_data.json with the temporary extrapolation included
+            # This will be cleaned/reset the next time the script runs (Step 2)
+            current_daily.to_json('daily_data.json', orient='records', indent=4, date_format='iso')
 
 
     # --- PART B: PROCESS SUMMARY (BLOC TABLES) ---
