@@ -60,7 +60,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-800">Maritime Economic Risk (BDTI)</h2>
-                    <p class="text-slate-500 text-sm italic">Tracking the daily cost of crude oil shipping via the Baltic Dirty Tanker Index.</p>
+                    <p class="text-slate-500 text-sm italic">Tracking the daily cost of crude oil shipping via the Baltic Dirty Tanker Index. This primarily tracks Very Large Crude Carriers (VLCCs) which carry heavy crude oil. Therefore good proxy. Also reflects hidden costs such as insurance, fuel and security premia.</p>
                 </div>
                 <div class="flex bg-slate-100 p-1 rounded-lg self-start">
                     <button onclick="filterBDTI('1M')" id="btn-1M" class="px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all">1M</button>
@@ -98,6 +98,9 @@ function filterBDTI(range) {
     if (range === '1M') {
         const monthAgo = new Date().setMonth(now.getMonth() - 1);
         filtered = fullBDTI.filter(d => new Date(d.date) >= monthAgo);
+    } else if (range === '3M') {
+        const threemonthAgo = new Date().setMonth(now.getMonth() - 3);
+        filtered = fullBDTI.filter(d => new Date(d.date) >= threemonthAgo);
     } else if (range === '1Y') {
         const yearAgo = new Date().setFullYear(now.getFullYear() - 1);
         filtered = fullBDTI.filter(d => new Date(d.date) >= yearAgo);
