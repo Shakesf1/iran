@@ -65,3 +65,7 @@ if summary_res.status_code == 200:
         update_persistent_json(summary_df, 'summary_history.json', ['asOf', 'entity'])
         update_persistent_json(summary_df, 'daily_summary_history.json', ['date', 'entity'], keep_strategy='last')
         print(f"Successfully synced data for {day_str}")
+        # Add this line to see it in your terminal
+        print(f"--- SYNC SUCCESSFUL ---")
+        print(f"Latest Data Timestamp: {as_of}")
+        print(f"Processed {len(countries)} countries.")

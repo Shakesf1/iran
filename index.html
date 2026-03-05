@@ -8,10 +8,19 @@
 </head>
 <body class="bg-slate-50 text-slate-900 p-4 md:p-8">
     <div class="max-w-6xl mx-auto">
-        <header class="mb-8 flex justify-between items-center border-b pb-6">
-            <h1 class="text-3xl font-bold">Strategic Bloc Monitor</h1>
-            <div id="update-tag" class="text-xs font-mono bg-white border p-2 rounded shadow-sm">Syncing...</div>
-        </header>
+    <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-6 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800">Strategic Bloc Monitor</h1>
+            <p class="text-slate-500 text-sm italic">Real-time cost and casualty tracking</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div id="status-dot" class="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
+            <div class="bg-white border p-3 rounded-lg shadow-sm">
+                <div class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Latest API Update</div>
+                <div id="update-tag" class="text-sm font-mono font-bold text-slate-700">Syncing...</div>
+            </div>
+        </div>
+    </header>
 
         <div id="bloc-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             </div>
