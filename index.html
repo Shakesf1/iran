@@ -64,6 +64,7 @@
                 </div>
                 <div class="flex bg-slate-100 p-1 rounded-lg self-start">
                     <button onclick="filterBDTI('1M')" id="btn-1M" class="px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all">1M</button>
+                    <button onclick="filterBDTI('3M')" id="btn-3M" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">3M</button>
                     <button onclick="filterBDTI('1Y')" id="btn-1Y" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1Y</button>
                     <button onclick="filterBDTI('ALL')" id="btn-ALL" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">ALL</button>
                 </div>
@@ -89,7 +90,7 @@ async function renderBDTI() {
         fullBDTI = descramble(encrypted.payload); 
 
         fullBDTI.sort((a, b) => new Date(a.date) - new Date(b.date));
-        filterBDTI('1M');
+        filterBDTI('3M');
     } catch (err) {
         console.error("BDTI Load Error:", err);
     }
@@ -102,6 +103,9 @@ function filterBDTI(range) {
     if (range === '1M') {
         const monthAgo = new Date().setMonth(now.getMonth() - 1);
         filtered = fullBDTI.filter(d => new Date(d.date) >= monthAgo);
+    } else if (range === '3M') {
+        const threeMonthsAgo = new Date().setMonth(now.getMonth() - 3);
+        filtered = fullBDTI.filter(d => new Date(d.date) >= threeMonthsAgo);
     } else if (range === '1Y') {
         const yearAgo = new Date().setFullYear(now.getFullYear() - 1);
         filtered = fullBDTI.filter(d => new Date(d.date) >= yearAgo);
