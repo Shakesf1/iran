@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Important for rebasing
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -25,7 +27,18 @@ jobs:
       - name: Install System Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb libxi6 libgconf-2-4 google-chrome-stable
+          # Removed libgconf-2-4, added modern dependencies for Ubuntu 24.04
+          sudo apt-get install -y \
+            xvfb \
+            libxi6 \
+            libxrender1 \
+            libxtst6 \
+            libnss3 \
+            libatk-bridge2.0-0 \
+            libgtk-3-0 \
+            libxss1 \
+            libasound2t64 \
+            google-chrome-stable
 
       - name: Install Python Packages
         run: |
@@ -33,9 +46,8 @@ jobs:
 
       - name: Random Delay (Jitter)
         run: |
-          # Sleep for a random duration between 1 and 480 seconds (8 minutes)
           DELAY=$((1 + RANDOM % 480))
-          echo "Waiting for $DELAY seconds to appear human..."
+          echo "Waiting for $DELAY seconds..."
           sleep $DELAY
 
       - name: Run Shipping Monitor
@@ -45,10 +57,21 @@ jobs:
           Xvfb :99 -screen 0 1920x1080x24 &
           python -u shipping.py
 
-      - name: Commit and Push Database
+      - name: Commit and Push Data
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
-          git add shipping_data.db
-          # Only commit if the database actually changed
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update vessel history [skip ci]" && git push)
+          
+          # 1. Pull latest changes from server to avoid conflicts
+          git pull --rebase origin main
+          
+          # 2. Add both the database AND the dashboard JSON
+          git add shipping_data.db dashboard_stats.json
+          
+          # 3. Commit only if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update shipping data and dashboard [skip ci]"
+            git push origin main
+          fi
