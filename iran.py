@@ -87,11 +87,28 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
         bloc_totals[bloc]["civ_cas"] += cas.get('civilian', 0)
 
     # Export a clean, latest snapshot
+    current_date = pd.to_datetime(inner_data.get('asOf')).strftime('%Y-%m-%d')
+    
+    # Flatten the bloc_totals for a dataframe format
+    history_rows = []
+    for bloc_name, stats in bloc_totals.items():
+        row = {"date": current_date, "bloc": bloc_name}
+        row.update(stats)
+        history_rows.append(row)
+    
+    # 2. Update the Historical File (summary_history.json)
+    # This appends new days and overwrites the current day if it already exists
+    history_df = pd.DataFrame(history_rows)
+    update_persistent_json(history_df, 'summary_history.json', ['date', 'bloc'])
+
+    # 3. Export the "Latest" snapshot as before (summary_latest.json)
     with open('summary_latest.json', 'w') as f:
         json.dump({
             "asOf": inner_data.get('asOf'),
             "summary": bloc_totals
         }, f, indent=4)
+    
+    print(f"Successfully synced summary and history for: {inner_data.get('asOf')}")
     
     print(f"Successfully synced: {inner_data.get('asOf')}")
 
