@@ -17,7 +17,7 @@ def update_persistent_json(new_df, filename, keys):
             # Remove duplicates so you don't double-count the same hour/day
             new_df = combined.drop_duplicates(subset=keys, keep='last')
         except Exception: pass
-    new_df.to_json(filename, orient='records', indent=4)
+    new_df.to_json(filename, orient='records', indent=4, date_format='iso')
 
 # 1. Fetch Data
 session = requests.Session()
