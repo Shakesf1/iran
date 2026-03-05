@@ -27,7 +27,8 @@
                         <span class="h-2 w-2 rounded-full bg-emerald-500 pulse"></span>
                         <span class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live</span>
                     </div>
-                    <p class="text-slate-500">Last Data Update: <span id="last-update" class="font-medium text-slate-800">Loading...</span></p>
+                    <p class="text-slate-500  text-[11px]">Last Hourly Data Update: <span id="last-update" class="font-medium text-slate-800">Loading...</span></p>
+                    <p class="text-slate-500 text-[11px]">Last Strike Data: <span id="api-timestamp" class="font-medium text-slate-800">Syncing...</span></p>
                 </div>
             </div>
 
@@ -56,55 +57,103 @@
     </div>
 
     <script>
-        async function loadCharts() {
-            // Fetch the data
-            const dailyRes = await fetch('./daily_data.json');
-            const hourlyRes = await fetch('./hourly_data.json');
-            
-            // Extract the "Last-Modified" header from the server
-            const lastModified = dailyRes.headers.get('Last-Modified');
-            if (lastModified) {
-                // Convert UTC string to User's Local Time
-                const localDate = new Date(lastModified);
-                document.getElementById('last-update').innerText = localDate.toLocaleString([], { 
-                    dateStyle: 'medium', 
-                    timeStyle: 'short' 
-                }) + " (Local Time)";
+async function loadCharts() {
+    try {
+        const [dailyRes, hourlyRes, summaryRes] = await Promise.all([
+            fetch('./daily_data.json'),
+            fetch('./hourly_data.json'),
+            fetch('./summary_latest.json')
+        ]);
+
+        // 1. Double-Check Data Freshness
+        const lastModified = dailyRes.headers.get('Last-Modified');
+        if (lastModified) {
+            const fileDate = new Date(lastModified);
+            const now = new Date();
+            const hoursOld = (now - fileDate) / (1000 * 60 * 60);
+
+            document.getElementById('last-update').innerText = fileDate.toLocaleString([], { 
+                dateStyle: 'medium', timeStyle: 'short' 
+            });
+
+            // If file is older than 24 hours, change status color
+            if (hoursOld > 24) {
+                document.getElementById('status-dot').className = "h-2 w-2 rounded-full bg-amber-500";
+                document.getElementById('status-text').innerText = "Data Stale";
             }
-
-            const dailyData = await dailyRes.json();
-            const hourlyData = await hourlyRes.json();
-
-            function createTrace(data, xField) {
-                const keys = Object.keys(data[0]).filter(k => k !== xField);
-                return keys.map(key => ({
-                    x: data.map(d => d[xField]),
-                    y: data.map(d => d[key]),
-                    name: key,
-                    type: 'bar',
-                    marker: { color: key === 'Extrapolation' ? '#cbd5e1' : null },
-                    opacity: key === 'Extrapolation' ? 0.6 : 1
-                }));
-            }
-
-            const layout = { 
-                barmode: 'stack', 
-                margin: { t: 20, r: 20, b: 80, l: 40 }, 
-                hovermode: 'x unified',
-                font: { family: 'Inter, sans-serif' },
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                legend: { orientation: "h", yanchor: "bottom", y: -0.4, xanchor: "center", x: 0.5 },
-                xaxis: { gridcolor: '#f1f5f9' },
-                yaxis: { gridcolor: '#f1f5f9' }
-            };
-
-            const config = { displaylogo: false, responsive: true };
-
-            Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, config);
-            Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'hour'), layout, config);
         }
-        loadCharts();
+
+        // 2. Load and Render Summary Tables
+        const summaryData = await summaryRes.json();
+        document.getElementById('api-timestamp').innerText = new Date(summaryData.asOf).toLocaleString([], {
+            dateStyle: 'medium', timeStyle: 'short'
+        });
+
+        const summaryHtml = Object.entries(summaryData.summary).map(([name, data]) => {
+            const isUS = name.includes('US');
+            const interceptRate = data.launched > 0 ? ((data.intercepted / data.launched) * 100).toFixed(1) : 0;
+            
+            return `
+                <div class="bg-white p-6 rounded-xl border-l-4 ${isUS ? 'border-blue-500' : 'border-red-500'} shadow-sm">
+                    <h3 class="text-xl font-bold mb-4 text-slate-800">${name}</h3>
+                    <div class="grid grid-cols-2 gap-y-3 text-sm">
+                        <div class="text-slate-500">Launched</div>
+                        <div class="font-bold text-right">${data.launched.toLocaleString()}</div>
+                        <div class="text-slate-500">Intercepted</div>
+                        <div class="font-bold text-right">${data.intercepted.toLocaleString()}</div>
+                        <div class="text-slate-500">Hits Taken</div>
+                        <div class="font-bold text-right text-orange-600">${data.hits.toLocaleString()}</div>
+                        <div class="text-emerald-600 font-medium">Intercept Rate</div>
+                        <div class="font-bold text-right text-emerald-600">${interceptRate}%</div>
+                        <div class="text-slate-500 pt-2 border-t">Military Cas.</div>
+                        <div class="font-bold text-right pt-2 border-t">${data.mil_cas.toLocaleString()}</div>
+                        <div class="text-slate-500">Civilian Cas.</div>
+                        <div class="font-bold text-right">${data.civ_cas.toLocaleString()}</div>
+                    </div>
+                </div>`;
+        }).join('');
+        document.getElementById('summary-section').innerHTML = summaryHtml;
+
+        // 3. Render Existing Charts
+        const dailyData = await dailyRes.json();
+        const hourlyData = await hourlyRes.json();
+
+        function createTrace(data, xField) {
+            if (!data || data.length === 0) return [];
+            const keys = Object.keys(data[0]).filter(k => k !== xField);
+            return keys.map(key => ({
+                x: data.map(d => d[xField]),
+                y: data.map(d => d[key]),
+                name: key,
+                type: 'bar',
+                marker: { color: key === 'Extrapolation' ? '#cbd5e1' : null },
+                opacity: key === 'Extrapolation' ? 0.6 : 1
+            }));
+        }
+
+        const layout = { 
+            barmode: 'stack', 
+            margin: { t: 20, r: 20, b: 80, l: 40 }, 
+            hovermode: 'x unified',
+            font: { family: 'Inter, sans-serif' },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            legend: { orientation: "h", yanchor: "bottom", y: -0.4, xanchor: "center", x: 0.5 },
+            xaxis: { gridcolor: '#f1f5f9' },
+            yaxis: { gridcolor: '#f1f5f9' }
+        };
+
+        const config = { displaylogo: false, responsive: true };
+        Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, config);
+        Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'hour'), layout, config);
+
+    } catch (err) {
+        console.error("Error loading data:", err);
+        document.getElementById('status-text').innerText = "Sync Error";
+        document.getElementById('status-dot').className = "h-2 w-2 rounded-full bg-red-600";
+    }
+}
+loadCharts();
     </script>
 
     <script data-goatcounter="https://shakes.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
