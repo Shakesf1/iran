@@ -74,18 +74,7 @@
     </div>
 <script src="monitor_core.js"></script>
     <script>
-const SECRET_KEY = "pay_homage_to_stan_4ever";
 
-function descramble(encryptedPayload) {
-    // 1. Base64 Decode
-    const scrambled = atob(encryptedPayload);
-    // 2. XOR Decrypt
-    let decrypted = "";
-    for (let i = 0; i < scrambled.length; i++) {
-        decrypted += String.fromCharCode(scrambled.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length));
-    }
-    return JSON.parse(decrypted);
-}
 
 
 let fullBDTI = []; // Global store for filtering
@@ -93,13 +82,13 @@ let fullBDTI = []; // Global store for filtering
 async function renderBDTI() {
     try {
         const res = await fetch('./shipping_data.json');
-        const fullBDTIEncrypted = await res.json();
-        const fullBDTI = descramble(fullBDTIEncrypted.payload);
-
-        // Sort by date to ensure line renders correctly
-        fullBDTI.sort((a, b) => new Date(a.date) - new Date(b.date));
+        if (!res.ok) throw new Error("BDTI file not found");
         
-        // Default to 1M on load
+        const encrypted = await res.json();
+        // Use the global descramble function from monitor_core.js
+        fullBDTI = descramble(encrypted.payload); 
+
+        fullBDTI.sort((a, b) => new Date(a.date) - new Date(b.date));
         filterBDTI('1M');
     } catch (err) {
         console.error("BDTI Load Error:", err);
@@ -113,9 +102,6 @@ function filterBDTI(range) {
     if (range === '1M') {
         const monthAgo = new Date().setMonth(now.getMonth() - 1);
         filtered = fullBDTI.filter(d => new Date(d.date) >= monthAgo);
-    } else if (range === '3M') {
-        const threemonthAgo = new Date().setMonth(now.getMonth() - 3);
-        filtered = fullBDTI.filter(d => new Date(d.date) >= threemonthAgo);
     } else if (range === '1Y') {
         const yearAgo = new Date().setFullYear(now.getFullYear() - 1);
         filtered = fullBDTI.filter(d => new Date(d.date) >= yearAgo);
@@ -123,10 +109,10 @@ function filterBDTI(range) {
         filtered = fullBDTI;
     }
 
-    // Update Button Styles
+    // Update Button UI
     ['1M', '1Y', 'ALL'].forEach(r => {
         const btn = document.getElementById(`btn-${r}`);
-        btn.className = (r === range) 
+        if (btn) btn.className = (r === range) 
             ? "px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all" 
             : "px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all";
     });
@@ -134,11 +120,9 @@ function filterBDTI(range) {
     const trace = {
         x: filtered.map(d => d.date),
         y: filtered.map(d => d.bdti_price),
-        type: 'scatter',
-        mode: 'lines',
+        type: 'scatter', mode: 'lines',
         line: { color: '#0ea5e9', width: 3, shape: 'spline' },
-        fill: 'tozeroy',
-        fillcolor: 'rgba(14, 165, 233, 0.05)',
+        fill: 'tozeroy', fillcolor: 'rgba(14, 165, 233, 0.05)',
         name: 'BDTI Value'
     };
 
@@ -157,100 +141,72 @@ function filterBDTI(range) {
 
 
 async function loadCharts() {
-
     try {
         await renderBDTI();
 
-        const [dailyResEC, hourlyResEC, summaryResEC] = await Promise.all([
+        const [dailyRes, hourlyRes, summaryRes] = await Promise.all([
             fetch('./daily_data.json'),
             fetch('./hourly_data.json'),
             fetch('./summary_latest.json')
         ]);
 
-        const dailyRes = descramble(dailyResEC.payload);
-        const hourlyRes = descramble(hourlyResEC.payload);
-        const summaryRes = descramble(summaryResEC.payload);
+        // Decrypt all data first
+        const dailyData = descramble((await dailyRes.json()).payload);
+        const hourlyData = descramble((await hourlyRes.json()).payload);
+        const summaryData = descramble((await summaryRes.json()).payload);
 
-        // 1. Double-Check Data Freshness
+        // 1. Data Freshness Check
         const lastModified = dailyRes.headers.get('Last-Modified');
         if (lastModified) {
             const fileDate = new Date(lastModified);
-            const now = new Date();
-            const hoursOld = (now - fileDate) / (1000 * 60 * 60);
-
             document.getElementById('last-update').innerText = fileDate.toLocaleString([], { 
                 dateStyle: 'medium', timeStyle: 'short' 
             });
-
-            // If file is older than 24 hours, change status color
-            if (hoursOld > 24) {
-                document.getElementById('status-dot').className = "h-2 w-2 rounded-full bg-amber-500";
-                document.getElementById('status-text').innerText = "Data Stale";
-            }
         }
 
-        // 2. Load and Render Summary Tables
-        const summaryData = await summaryRes.json();
+        // 2. Render Summary
         document.getElementById('api-timestamp').innerText = new Date(summaryData.asOf).toLocaleString([], {
             dateStyle: 'medium', timeStyle: 'short'
         });
 
         const summaryHtml = Object.entries(summaryData.summary).map(([name, data]) => {
             const isUS = name.includes('US');
-            
-            
             return `
                 <div class="bg-white p-6 rounded-xl border-l-4 ${isUS ? 'border-blue-500' : 'border-red-500'} shadow-sm">
                     <h3 class="text-xl font-bold mb-4 text-slate-800">${name}</h3>
                     <div class="grid grid-cols-2 gap-y-3 text-sm">
-                        <div class="text-slate-500">Launched</div>
-                        <div class="font-bold text-right">${data.launched.toLocaleString()}</div>
-                        <div class="text-slate-500">Intercepted</div>
-                        <div class="font-bold text-right">${data.intercepted.toLocaleString()}</div>
-                        <div class="text-slate-500">Hits Taken</div>
-                        <div class="font-bold text-right text-orange-600">${data.hits.toLocaleString()}</div>
-
-                        <div class="text-slate-500 pt-2 border-t">Military Casualties</div>
-                        <div class="font-bold text-right pt-2 border-t">${data.mil_cas.toLocaleString()}</div>
-                        <div class="text-slate-500">Civilian Casualties</div>
-                        <div class="font-bold text-right">${data.civ_cas.toLocaleString()}</div>
+                        <div class="text-slate-500">Launched</div><div class="font-bold text-right">${data.launched.toLocaleString()}</div>
+                        <div class="text-slate-500">Intercepted</div><div class="font-bold text-right">${data.intercepted.toLocaleString()}</div>
+                        <div class="text-slate-500">Hits Taken</div><div class="font-bold text-right text-orange-600">${data.hits.toLocaleString()}</div>
+                        <div class="text-slate-500 pt-2 border-t">Military Casualties</div><div class="font-bold text-right pt-2 border-t">${data.mil_cas.toLocaleString()}</div>
+                        <div class="text-slate-500">Civilian Casualties</div><div class="font-bold text-right">${data.civ_cas.toLocaleString()}</div>
                     </div>
                 </div>`;
         }).join('');
         document.getElementById('summary-section').innerHTML = summaryHtml;
 
-        // 3. Render Existing Charts
-        const dailyData = await dailyRes.json();
-        const hourlyData = await hourlyRes.json();
-
+        // 3. Render Charts
         function createTrace(data, xField) {
             if (!data || data.length === 0) return [];
             const keys = Object.keys(data[0]).filter(k => k !== xField);
             return keys.map(key => ({
                 x: data.map(d => d[xField]),
                 y: data.map(d => d[key]),
-                name: key,
-                type: 'bar',
+                name: key, type: 'bar',
                 marker: { color: key === 'Extrapolation' ? '#cbd5e1' : null },
                 opacity: key === 'Extrapolation' ? 0.6 : 1
             }));
         }
 
         const layout = { 
-            barmode: 'stack', 
-            margin: { t: 20, r: 20, b: 80, l: 40 }, 
-            hovermode: 'x unified',
-            font: { family: 'Inter, sans-serif' },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(0,0,0,0)',
-            legend: { orientation: "h", yanchor: "bottom", y: -0.4, xanchor: "center", x: 0.5 },
-            xaxis: { gridcolor: '#f1f5f9' },
-            yaxis: { gridcolor: '#f1f5f9' }
+            barmode: 'stack', margin: { t: 20, r: 20, b: 80, l: 40 }, 
+            hovermode: 'x unified', font: { family: 'Inter, sans-serif' },
+            paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+            legend: { orientation: "h", yanchor: "bottom", y: -0.4, xanchor: "center", x: 0.5 }
         };
 
-        const config = { displaylogo: false, responsive: true };
-        Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, config);
-        Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'timestamp'), layout, config);
+        Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, { displaylogo: false, responsive: true });
+        Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'timestamp'), layout, { displaylogo: false, responsive: true });
 
     } catch (err) {
         console.error("Error loading data:", err);

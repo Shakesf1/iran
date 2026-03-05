@@ -160,7 +160,9 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
 
             # 4. Overwrite daily_data.json with the temporary extrapolation included
             # This will be cleaned/reset the next time the script runs (Step 2)
-            current_daily.to_json('daily_data.json', orient='records', indent=4, date_format='iso')
+            raw_json_str = current_daily.to_json(orient='records', date_format='iso')
+            with open('daily_data.json', 'w') as f:
+                json.dump({"payload": encrypt_data(raw_json_str)}, f)
 
 
     # --- PART B: PROCESS SUMMARY (BLOC TABLES) ---
