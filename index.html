@@ -47,25 +47,20 @@
     <script>
     async function init() {
         const histRes = await fetch('./daily_summary_history.json');
-        const dailyRes = await fetch('./daily_data.json');
         const histData = await histRes.json();
-        const dailyData = await dailyRes.json();
-
         if (!histData.length) return;
 
-        // --- THE FIX IS HERE ---
-        // 1. Identify the most recent timestamp in the file
+        // 1. Identify ONLY the latest update time in the file
         const latestTs = histData[histData.length - 1].asOf;
         
-        // 2. Filter data so we ONLY look at that specific point in time
+        // 2. Filter data to only include records from that exact timestamp
+        // This prevents the "Launched: 13,590" error caused by summing history
         const currentSnapshot = histData.filter(d => d.asOf === latestTs);
         
-        // Display the timestamp
         document.getElementById('update-tag').innerText = new Date(latestTs).toLocaleString();
 
         const blocs = ["US/Israel Bloc", "Iran-Led Bloc"];
         const blocHtml = blocs.map(b => {
-            // 3. Sum only the members of the CURRENT snapshot
             const members = currentSnapshot.filter(m => m.bloc === b);
             
             const totals = members.reduce((acc, c) => ({
@@ -76,6 +71,7 @@
                 c: acc.c + (c.civ_cas || 0)
             }), {l:0, i:0, h:0, m:0, c:0});
             
+            // Intercept Rate Calculation
             const rate = totals.l > 0 ? ((totals.i / totals.l) * 100).toFixed(1) : 0;
 
             return `
@@ -95,6 +91,7 @@
         }).join('');
         
         document.getElementById('bloc-container').innerHTML = blocHtml;
+
 
             // 3. CHART DATA PREP (Sorting dates ensures lines don't zig-zag)
             const dates = [...new Set(histData.map(d => d.date))].sort();

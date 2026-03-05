@@ -36,7 +36,7 @@ if summary_res.status_code == 200:
     countries = inner_data.get('countries', [])
     
     # Define Blocs
-    iran_allies = ['IRN', 'YEM', 'LBN', 'IRQ', 'SYR', 'PSE']
+    iran_allies = ['IRN', 'YEM', 'LBN', 'SYR', 'PSE']
     summary_list = []
     
     for c in countries:
