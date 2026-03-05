@@ -45,52 +45,53 @@
     </div>
 
     <script>
-    async function init() {
-        const histRes = await fetch('./daily_summary_history.json');
-        const histData = await histRes.json();
-        if (!histData.length) return;
+async function init() {
+    const histRes = await fetch('./summary_history.json');
+    const histData = await histRes.json();
+    if (!histData || histData.length === 0) return;
 
-        // 1. Identify ONLY the latest update time in the file
-        const latestTs = histData[histData.length - 1].asOf;
+    // 1. Identify the most recent timestamp in the file
+    const latestTs = histData[histData.length - 1].asOf;
+    
+    // 2. Filter the data to ONLY include this latest snapshot
+    // This stops the "Duplicate Summing" issue immediately.
+    const currentSnapshot = histData.filter(d => d.asOf === latestTs);
+    
+    // Update the visual timestamp tag
+    document.getElementById('update-tag').innerText = new Date(latestTs).toLocaleString();
+
+    const blocs = ["US/Israel Bloc", "Iran-Led Bloc"];
+    const blocHtml = blocs.map(b => {
+        // 3. Aggregate only the members belonging to the current snapshot
+        const members = currentSnapshot.filter(m => m.bloc === b);
         
-        // 2. Filter data to only include records from that exact timestamp
-        // This prevents the "Launched: 13,590" error caused by summing history
-        const currentSnapshot = histData.filter(d => d.asOf === latestTs);
+        const totals = members.reduce((acc, c) => ({
+            l: acc.l + (c.launched || 0), 
+            i: acc.i + (c.intercepted || 0), 
+            h: acc.h + (c.hits || 0),
+            m: acc.m + (c.mil_cas || 0), 
+            c: acc.c + (c.civ_cas || 0)
+        }), {l:0, i:0, h:0, m:0, c:0});
         
-        document.getElementById('update-tag').innerText = new Date(latestTs).toLocaleString();
+        const rate = totals.l > 0 ? ((totals.i / totals.l) * 100).toFixed(1) : 0;
 
-        const blocs = ["US/Israel Bloc", "Iran-Led Bloc"];
-        const blocHtml = blocs.map(b => {
-            const members = currentSnapshot.filter(m => m.bloc === b);
-            
-            const totals = members.reduce((acc, c) => ({
-                l: acc.l + (c.launched || 0), 
-                i: acc.i + (c.intercepted || 0), 
-                h: acc.h + (c.hits || 0),
-                m: acc.m + (c.mil_cas || 0), 
-                c: acc.c + (c.civ_cas || 0)
-            }), {l:0, i:0, h:0, m:0, c:0});
-            
-            // Intercept Rate Calculation
-            const rate = totals.l > 0 ? ((totals.i / totals.l) * 100).toFixed(1) : 0;
-
-            return `
-                <div class="bg-white p-6 rounded-xl border-l-4 ${b.includes('US') ? 'border-blue-500' : 'border-red-500'} shadow-sm">
-                    <h2 class="text-xl font-bold mb-4">${b}</h2>
-                    <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div>Launched: <span class="font-bold">${totals.l.toLocaleString()}</span></div>
-                        <div>Intercepted: <span class="font-bold">${totals.i.toLocaleString()}</span></div>
-                        <div class="text-orange-600">Hits Taken: <span class="font-bold">${totals.h.toLocaleString()}</span></div>
-                        <div class="text-green-600">Intercept Rate: <span class="font-bold">${rate}%</span></div>
-                        <div class="border-t pt-2 mt-2 col-span-2 flex justify-between">
-                            <span>Military Cas: <b>${totals.m.toLocaleString()}</b></span>
-                            <span>Civilian Cas: <b>${totals.c.toLocaleString()}</b></span>
-                        </div>
+        return `
+            <div class="bg-white p-6 rounded-xl border-l-4 ${b.includes('US') ? 'border-blue-500' : 'border-red-500'} shadow-sm">
+                <h2 class="text-xl font-bold mb-4">${b}</h2>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>Launched: <span class="font-bold">${totals.l.toLocaleString()}</span></div>
+                    <div>Intercepted: <span class="font-bold">${totals.i.toLocaleString()}</span></div>
+                    <div class="text-orange-600">Hits Taken: <span class="font-bold">${totals.h.toLocaleString()}</span></div>
+                    <div class="text-green-600">Intercept Rate: <span class="font-bold">${rate}%</span></div>
+                    <div class="border-t pt-2 mt-2 col-span-2 flex justify-between">
+                        <span>Military Cas: <b>${totals.m.toLocaleString()}</b></span>
+                        <span>Civilian Cas: <b>${totals.c.toLocaleString()}</b></span>
                     </div>
-                </div>`;
-        }).join('');
-        
-        document.getElementById('bloc-container').innerHTML = blocHtml;
+                </div>
+            </div>`;
+    }).join('');
+    
+    document.getElementById('bloc-container').innerHTML = blocHtml;
 
 
             // 3. CHART DATA PREP (Sorting dates ensures lines don't zig-zag)
