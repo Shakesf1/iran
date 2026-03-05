@@ -62,30 +62,43 @@ def sync_bdti_5y(session):
         else:
             print("Regex failed to find the data5Y block. Check if the variable name changed in the JS file.")
 
-
+def read_encrypted_df(filename):
+    SECRET_KEY = "pay_homage_to_stan_4ever"
+    with open(filename, 'r') as f:
+        encrypted_blob = json.load(f)
+        scrambled = base64.b64decode(encrypted_blob['payload']).decode('utf-8')
+        decrypted_str = "".join(chr(ord(c) ^ ord(SECRET_KEY[i % len(SECRET_KEY)])) for i, c in enumerate(scrambled))
+        from io import StringIO
+        return pd.read_json(StringIO(decrypted_str))
 
 def update_persistent_json(new_df, filename, keys):
-    # 1. Handle persistence/merging as before
+    SECRET_KEY = "pay_homage_to_stan_4ever"
+    
     if os.path.exists(filename):
         try:
-            # We must decrypt the existing file to read it into a DataFrame
             with open(filename, 'r') as f:
                 encrypted_blob = json.load(f)
-                # Reverse the process: Base64 decode -> XOR again with same key
-                raw_b64 = base64.b64decode(encrypted_blob['payload']).decode('utf-8')
-                decrypted = "".join(chr(ord(c) ^ ord(SECRET_KEY[i % len(SECRET_KEY)])) for i, c in enumerate(raw_b64))
-                existing_df = pd.read_json(decrypted)
+                # FIX: Access the 'payload' string correctly
+                raw_payload = encrypted_blob['payload']
+                
+                # Base64 decode
+                scrambled = base64.b64decode(raw_payload).decode('utf-8')
+                
+                # XOR Decrypt
+                decrypted_str = "".join(chr(ord(c) ^ ord(SECRET_KEY[i % len(SECRET_KEY)])) for i, c in enumerate(scrambled))
+                
+                # Load decrypted string into pandas
+                from io import StringIO
+                existing_df = pd.read_json(StringIO(decrypted_str))
             
             combined = pd.concat([existing_df, new_df], ignore_index=True)
             new_df = combined.drop_duplicates(subset=keys, keep='last')
         except Exception as e: 
             print(f"Merge error for {filename}: {e}")
 
-    # 2. Convert to JSON string and Encrypt
+    # Encrypt and save
     raw_json_str = new_df.to_json(orient='records', date_format='iso')
     encrypted_payload = encrypt_data(raw_json_str)
-
-    # 3. Save as an encrypted object
     with open(filename, 'w') as f:
         json.dump({"payload": encrypted_payload}, f)
 
@@ -131,7 +144,7 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
 
             # 3. Handle Extrapolation (Only for the LIVE view)
             # Reload the now-updated file to apply extrapolation to the current day only
-            current_daily = pd.read_json('daily_data.json')
+            current_daily = read_encrypted_df('daily_data.json')
             
             avg_pace = daily.sum(axis=1).tail(3).mean()
             now = datetime.now(timezone.utc)
