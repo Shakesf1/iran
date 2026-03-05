@@ -37,24 +37,38 @@
 
     <script>
         async function init() {
-            const histRes = await fetch('./daily_summary_history.json');
-            const dailyRes = await fetch('./daily_data.json');
+            // 1. Fetch with error handling
+            const [histRes, dailyRes] = await Promise.all([
+                fetch('./daily_summary_history.json'),
+                fetch('./daily_data.json')
+            ]);
             
             const histData = await histRes.json();
             const dailyData = await dailyRes.json();
 
-            // 1. TOP TABLES LOGIC
+            if (!histData.length || !dailyData.length) {
+                document.getElementById('update-tag').innerText = "Waiting for data...";
+                return;
+            }
+
+            // 2. TOP TABLES LOGIC
+            // Get the very last entry to find the most recent sync time
             const latestTs = histData[histData.length - 1].asOf;
             document.getElementById('update-tag').innerText = "AS OF: " + new Date(latestTs).toLocaleString();
+            
             const current = histData.filter(d => d.asOf === latestTs);
             const blocs = ["US/Israel Bloc", "Iran-Led Bloc"];
             
             const blocHtml = blocs.map(b => {
                 const members = current.filter(m => m.bloc === b);
                 const totals = members.reduce((acc, c) => ({
-                    l: acc.l + c.launched, i: acc.i + c.intercepted, h: acc.h + c.hits,
-                    m: acc.m + c.mil_cas, c: acc.c + c.civ_cas
+                    l: acc.l + (c.launched || 0), 
+                    i: acc.i + (c.intercepted || 0), 
+                    h: acc.h + (c.hits || 0),
+                    m: acc.m + (c.mil_cas || 0), 
+                    c: acc.c + (c.civ_cas || 0)
                 }), {l:0, i:0, h:0, m:0, c:0});
+                
                 const rate = totals.l > 0 ? ((totals.i / totals.l) * 100).toFixed(1) : 0;
 
                 return `
@@ -74,32 +88,39 @@
             }).join('');
             document.getElementById('bloc-container').innerHTML = blocHtml;
 
-            // 2. CASUALTY TREND CHART
-            const dates = [...new Set(histData.map(d => d.date))];
+            // 3. CHART DATA PREP (Sorting dates ensures lines don't zig-zag)
+            const dates = [...new Set(histData.map(d => d.date))].sort();
+
+            // Casualty Trend
             const casualtyTraces = blocs.map(b => ({
                 x: dates,
-                y: dates.map(d => histData.filter(x => x.date === d && x.bloc === b).reduce((a,c) => a + c.mil_cas + c.civ_cas, 0)),
-                name: b, type: 'scatter', fill: 'tozeroy'
+                y: dates.map(d => histData.filter(x => x.date === d && x.bloc === b).reduce((a,c) => a + (c.mil_cas || 0) + (c.civ_cas || 0), 0)),
+                name: b, type: 'scatter', fill: 'tozeroy', line: { shape: 'spline' }
             }));
             Plotly.newPlot('casualtyChart', casualtyTraces, { margin: {t:10, b:40, l:40, r:10}, legend: {orientation:'h'} });
 
-            // 3. DEFENSE PERFORMANCE CHART
+            // Defense Performance
             const perfTrace = {
                 x: dates,
                 y: dates.map(d => {
                     const day = histData.filter(x => x.date === d && x.bloc === "US/Israel Bloc");
-                    const l = day.reduce((a,c) => a + c.launched, 0);
-                    const i = day.reduce((a,c) => a + c.intercepted, 0);
+                    const l = day.reduce((a,c) => a + (c.launched || 0), 0);
+                    const i = day.reduce((a,c) => a + (c.intercepted || 0), 0);
                     return l > 0 ? (i/l)*100 : 0;
                 }),
-                name: 'Intercept %', type: 'scatter', line: {color: '#10b981', shape: 'spline'}
+                name: 'Intercept %', type: 'scatter', line: {color: '#10b981', width: 3, shape: 'spline'}
             };
-            Plotly.newPlot('performanceChart', [perfTrace], { margin: {t:10, b:40, l:40, r:10}, yaxis: {suffix: '%'} });
+            Plotly.newPlot('performanceChart', [perfTrace], { margin: {t:10, b:40, l:40, r:10}, yaxis: {suffix: '%', range: [0, 105]} });
 
-            // 4. ORIGINAL BAR CHART
-            const keys = Object.keys(dailyData[0]).filter(k => k !== 'day');
-            const dailyTraces = keys.map(k => ({ x: dailyData.map(d => d.day), y: dailyData.map(d => d[k]), name: k, type: 'bar' }));
-            Plotly.newPlot('dailyChart', dailyTraces, { barmode: 'stack', margin: {t:10, b:40, l:40, r:10} });
+            // Bar Chart
+            const barKeys = Object.keys(dailyData[0]).filter(k => !['day', 'Extrapolation'].includes(k));
+            const dailyTraces = barKeys.map(k => ({ 
+                x: dailyData.map(d => d.day), 
+                y: dailyData.map(d => d[k]), 
+                name: k, 
+                type: 'bar' 
+            }));
+            Plotly.newPlot('dailyChart', dailyTraces, { barmode: 'stack', margin: {t:10, b:40, l:40, r:10}, legend: {orientation: 'h'} });
         }
         init();
     </script>
