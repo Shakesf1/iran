@@ -66,7 +66,7 @@ jobs:
           git pull --rebase origin main
           
           # 2. Add both the database AND the dashboard JSON
-          git add shipping_data.db dashboard_stats.json
+          git add shipping_data.db 
           
           # 3. Commit only if there are changes
           if git diff --staged --quiet; then
