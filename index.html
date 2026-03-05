@@ -91,7 +91,7 @@ async function loadCharts() {
 
         const summaryHtml = Object.entries(summaryData.summary).map(([name, data]) => {
             const isUS = name.includes('US');
-            const interceptRate = data.launched > 0 ? ((data.intercepted / data.launched) * 100).toFixed(1) : 0;
+            
             
             return `
                 <div class="bg-white p-6 rounded-xl border-l-4 ${isUS ? 'border-blue-500' : 'border-red-500'} shadow-sm">
@@ -103,11 +103,10 @@ async function loadCharts() {
                         <div class="font-bold text-right">${data.intercepted.toLocaleString()}</div>
                         <div class="text-slate-500">Hits Taken</div>
                         <div class="font-bold text-right text-orange-600">${data.hits.toLocaleString()}</div>
-                        <div class="text-emerald-600 font-medium">Intercept Rate</div>
-                        <div class="font-bold text-right text-emerald-600">${interceptRate}%</div>
-                        <div class="text-slate-500 pt-2 border-t">Military Cas.</div>
+
+                        <div class="text-slate-500 pt-2 border-t">Military Casualties</div>
                         <div class="font-bold text-right pt-2 border-t">${data.mil_cas.toLocaleString()}</div>
-                        <div class="text-slate-500">Civilian Cas.</div>
+                        <div class="text-slate-500">Civilian Casualties</div>
                         <div class="font-bold text-right">${data.civ_cas.toLocaleString()}</div>
                     </div>
                 </div>`;
@@ -145,7 +144,7 @@ async function loadCharts() {
 
         const config = { displaylogo: false, responsive: true };
         Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, config);
-        Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'hour'), layout, config);
+        Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'timestamp'), layout, config);
 
     } catch (err) {
         console.error("Error loading data:", err);

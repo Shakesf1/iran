@@ -1,11 +1,23 @@
 from curl_cffi import requests
 import pandas as pd
 import json
+import os
 from datetime import datetime, timezone
 
 # API Endpoints
 EVENTS_URL = "https://iranstrike.com/api/events"
 SUMMARY_URL = "https://iranstrike.com/api/summary"
+
+
+def update_persistent_json(new_df, filename, keys):
+    if os.path.exists(filename):
+        try:
+            existing_df = pd.read_json(filename)
+            combined = pd.concat([existing_df, new_df], ignore_index=True)
+            # Remove duplicates so you don't double-count the same hour/day
+            new_df = combined.drop_duplicates(subset=keys, keep='last')
+        except Exception: pass
+    new_df.to_json(filename, orient='records', indent=4)
 
 # 1. Fetch Data
 session = requests.Session()
@@ -20,25 +32,34 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     df_irn = df[df['origin'] == 'IRN'].copy()
     
     if not df_irn.empty:
-        # Hourly Data
-        hourly = df_irn.groupby([df_irn['timestamp'].dt.floor('h'), 'location']).size().unstack(fill_value=0)
-        hourly.index = hourly.index.strftime('%Y-%m-%d %H:%M')
-        hourly.reset_index().to_json('hourly_data.json', orient='records')
+            # --- HOURLY DATA ---
+            # 1. Group and unstack
+            hourly = df_irn.groupby([df_irn['timestamp'].dt.floor('h'), 'location']).size().unstack(fill_value=0)
+            # 2. Format the index as a string
+            hourly.index = hourly.index.strftime('%Y-%m-%d %H:%M')
+            # 3. Reset index creates a column named 'timestamp'
+            hourly_df = hourly.reset_index() 
+            # 4. Use 'timestamp' as the unique key for persistence
+            update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp'])
 
-        # Daily Data with Extrapolation
-        daily = df_irn.groupby([df_irn['timestamp'].dt.floor('D'), 'location']).size().unstack(fill_value=0).sort_index()
-        avg_pace = daily.sum(axis=1).tail(3).mean()
-        last_day_dt = daily.index[-1]
-        
-        now = datetime.now(timezone.utc)
-        extra = 0
-        if last_day_dt.date() == now.date():
-            hours_passed = now.hour + (now.minute / 60)
-            extra = avg_pace * ((24 - hours_passed) / 24) if hours_passed < 24 else 0
-        
-        daily['Extrapolation'] = float(extra)
-        daily.index = daily.index.strftime('%Y-%m-%d')
-        daily.reset_index().rename(columns={'timestamp': 'day'}).to_json('daily_data.json', orient='records')
+            # --- DAILY DATA ---
+            daily = df_irn.groupby([df_irn['timestamp'].dt.floor('D'), 'location']).size().unstack(fill_value=0).sort_index()
+            avg_pace = daily.sum(axis=1).tail(3).mean()
+            last_day_dt = daily.index[-1]
+            
+            now = datetime.now(timezone.utc)
+            extra = 0
+            if last_day_dt.date() == now.date():
+                hours_passed = now.hour + (now.minute / 60)
+                extra = avg_pace * ((24 - hours_passed) / 24) if hours_passed < 24 else 0
+            
+            daily['Extrapolation'] = float(extra)
+            daily.index = daily.index.strftime('%Y-%m-%d')
+            
+            # Ensure the column name matches the key used in update_persistent_json
+            daily_df = daily.reset_index().rename(columns={'timestamp': 'day'})
+            update_persistent_json(daily_df, 'daily_data.json', ['day'])
+
 
     # --- PART B: PROCESS SUMMARY (BLOC TABLES) ---
     raw_summary = summary_res.json()
