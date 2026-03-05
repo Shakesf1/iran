@@ -2,111 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iran Strategic Monitor</title>
+    <title>Iran Strategic Monitor - Bloc Analysis</title>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    </style>
 </head>
 <body class="bg-slate-50 text-slate-900 p-4 md:p-8">
     <div class="max-w-6xl mx-auto">
-        <header class="mb-12 border-b border-slate-200 pb-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-4xl font-extrabold tracking-tight text-slate-800">Iran Strike Monitor</h1>
-                    <p class="text-slate-500 mt-2 italic">Monitoring the cost-asymmetry of regional defense.</p>
-                </div>
-                <div class="bg-white border border-slate-200 rounded-lg px-4 py-2 shadow-sm text-sm">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="h-2 w-2 rounded-full bg-emerald-500 pulse"></span>
-                        <span class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live</span>
-                    </div>
-                    <p class="text-slate-500">Last Data Update: <span id="last-update" class="font-medium text-slate-800">Loading...</span></p>
-                </div>
-            </div>
-
-            <div class="mt-8 max-w-3xl text-slate-600 leading-relaxed">
-                <p class="mb-4">
-                    Regional defenses mostly hold against Iranian drone and missile swarms. However, the strategic risk lies in <strong>economic attrition & resource depletion</strong>. 
-                    Low-cost drones (approx. $20k) force the use of high-cost interceptors ($1M+), threatening to deplete defensive inventories if attack rates are high, remain high and definitely when increasing. 
-                    This simple page shows the data of strikes from Iran on regional targets. You can (de)select countries from the legend, e.g. to see if attacks on countries other than Israel are increasing or not. 
-                </p>
-            </div>
+        <header class="mb-8 flex justify-between items-center border-b pb-6">
+            <h1 class="text-3xl font-bold">Strategic Bloc Monitor</h1>
+            <div id="update-tag" class="text-xs font-mono bg-white border p-2 rounded shadow-sm">Syncing...</div>
         </header>
 
-        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <h2 class="text-2xl font-bold mb-2 text-slate-800">Daily Escalation Trend</h2>
-            <p class="text-slate-600 mb-6 text-sm">Tracks total attacks from Iran. The gray segment represents the 3-day projected remaining volume for today.</p>
-            <div id="dailyChart" class="w-full h-[500px]"></div>
-        </section>
+        <div id="bloc-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            </div>
 
-        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <h2 class="text-2xl font-bold mb-2 text-slate-800">Hourly Intensity</h2>
-            <p class="text-slate-600 mb-6 text-sm">Detailed breakdown by target location. Click legend items to filter regions.</p>
-            <div id="hourlyChart" class="w-full h-[500px]"></div>
-        </section>
+        <div class="grid grid-cols-1 gap-8 mb-12">
+            <section class="bg-white p-6 rounded-xl border shadow-sm">
+                <h3 class="font-bold mb-4">Daily Iran Launch Volume</h3>
+                <div id="dailyChart" class="h-80"></div>
+            </section>
+        </div>
 
-
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <section class="bg-white p-6 rounded-xl border shadow-sm">
+                <h3 class="font-bold mb-4">Cumulative Casualties (Both Blocs)</h3>
+                <div id="casualtyChart" class="h-80"></div>
+            </section>
+            <section class="bg-white p-6 rounded-xl border shadow-sm">
+                <h3 class="font-bold mb-4">Defense Performance (% Intercepted)</h3>
+                <div id="performanceChart" class="h-80"></div>
+            </section>
+        </div>
     </div>
 
     <script>
-        async function loadCharts() {
-            // Fetch the data
+        async function init() {
+            const histRes = await fetch('./daily_summary_history.json');
             const dailyRes = await fetch('./daily_data.json');
-            const hourlyRes = await fetch('./hourly_data.json');
             
-            // Extract the "Last-Modified" header from the server
-            const lastModified = dailyRes.headers.get('Last-Modified');
-            if (lastModified) {
-                // Convert UTC string to User's Local Time
-                const localDate = new Date(lastModified);
-                document.getElementById('last-update').innerText = localDate.toLocaleString([], { 
-                    dateStyle: 'medium', 
-                    timeStyle: 'short' 
-                }) + " (Local Time)";
-            }
-
+            const histData = await histRes.json();
             const dailyData = await dailyRes.json();
-            const hourlyData = await hourlyRes.json();
 
-            function createTrace(data, xField) {
-                const keys = Object.keys(data[0]).filter(k => k !== xField);
-                return keys.map(key => ({
-                    x: data.map(d => d[xField]),
-                    y: data.map(d => d[key]),
-                    name: key,
-                    type: 'bar',
-                    marker: { color: key === 'Extrapolation' ? '#cbd5e1' : null },
-                    opacity: key === 'Extrapolation' ? 0.6 : 1
-                }));
-            }
+            // 1. TOP TABLES LOGIC
+            const latestTs = histData[histData.length - 1].asOf;
+            document.getElementById('update-tag').innerText = "AS OF: " + new Date(latestTs).toLocaleString();
+            const current = histData.filter(d => d.asOf === latestTs);
+            const blocs = ["US/Israel Bloc", "Iran-Led Bloc"];
+            
+            const blocHtml = blocs.map(b => {
+                const members = current.filter(m => m.bloc === b);
+                const totals = members.reduce((acc, c) => ({
+                    l: acc.l + c.launched, i: acc.i + c.intercepted, h: acc.h + c.hits,
+                    m: acc.m + c.mil_cas, c: acc.c + c.civ_cas
+                }), {l:0, i:0, h:0, m:0, c:0});
+                const rate = totals.l > 0 ? ((totals.i / totals.l) * 100).toFixed(1) : 0;
 
-            const layout = { 
-                barmode: 'stack', 
-                margin: { t: 20, r: 20, b: 80, l: 40 }, 
-                hovermode: 'x unified',
-                font: { family: 'Inter, sans-serif' },
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                legend: { orientation: "h", yanchor: "bottom", y: -0.4, xanchor: "center", x: 0.5 },
-                xaxis: { gridcolor: '#f1f5f9' },
-                yaxis: { gridcolor: '#f1f5f9' }
+                return `
+                    <div class="bg-white p-6 rounded-xl border-l-4 ${b.includes('US') ? 'border-blue-500' : 'border-red-500'} shadow-sm">
+                        <h2 class="text-xl font-bold mb-4">${b}</h2>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>Launched: <span class="font-bold">${totals.l.toLocaleString()}</span></div>
+                            <div>Intercepted: <span class="font-bold">${totals.i.toLocaleString()}</span></div>
+                            <div class="text-orange-600">Hits Taken: <span class="font-bold">${totals.h}</span></div>
+                            <div class="text-green-600">Intercept Rate: <span class="font-bold">${rate}%</span></div>
+                            <div class="border-t pt-2 mt-2 col-span-2 flex justify-between">
+                                <span>Military Cas: <b>${totals.m}</b></span>
+                                <span>Civilian Cas: <b>${totals.c}</b></span>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+            document.getElementById('bloc-container').innerHTML = blocHtml;
+
+            // 2. CASUALTY TREND CHART
+            const dates = [...new Set(histData.map(d => d.date))];
+            const casualtyTraces = blocs.map(b => ({
+                x: dates,
+                y: dates.map(d => histData.filter(x => x.date === d && x.bloc === b).reduce((a,c) => a + c.mil_cas + c.civ_cas, 0)),
+                name: b, type: 'scatter', fill: 'tozeroy'
+            }));
+            Plotly.newPlot('casualtyChart', casualtyTraces, { margin: {t:10, b:40, l:40, r:10}, legend: {orientation:'h'} });
+
+            // 3. DEFENSE PERFORMANCE CHART
+            const perfTrace = {
+                x: dates,
+                y: dates.map(d => {
+                    const day = histData.filter(x => x.date === d && x.bloc === "US/Israel Bloc");
+                    const l = day.reduce((a,c) => a + c.launched, 0);
+                    const i = day.reduce((a,c) => a + c.intercepted, 0);
+                    return l > 0 ? (i/l)*100 : 0;
+                }),
+                name: 'Intercept %', type: 'scatter', line: {color: '#10b981', shape: 'spline'}
             };
+            Plotly.newPlot('performanceChart', [perfTrace], { margin: {t:10, b:40, l:40, r:10}, yaxis: {suffix: '%'} });
 
-            const config = { displaylogo: false, responsive: true };
-
-            Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, config);
-            Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'hour'), layout, config);
+            // 4. ORIGINAL BAR CHART
+            const keys = Object.keys(dailyData[0]).filter(k => k !== 'day');
+            const dailyTraces = keys.map(k => ({ x: dailyData.map(d => d.day), y: dailyData.map(d => d[k]), name: k, type: 'bar' }));
+            Plotly.newPlot('dailyChart', dailyTraces, { barmode: 'stack', margin: {t:10, b:40, l:40, r:10} });
         }
-        loadCharts();
+        init();
     </script>
-
-    <script data-goatcounter="https://shakes.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
