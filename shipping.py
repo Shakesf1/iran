@@ -13,20 +13,24 @@ HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
 def init_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    # Table for latest state of each ship
+    
+    # Updated Vessel History Table
     cursor.execute('''CREATE TABLE IF NOT EXISTS vessel_history (
                         mmsi TEXT PRIMARY KEY, 
                         name TEXT, 
                         last_lon REAL, 
                         last_lat REAL, 
                         ship_type INT,
-                        last_seen TIMESTAMP)''')
-    # Table for actual detected passings
+                        update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- YOUR system time
+                    )''')
+    
+    # Updated Transit Log Table
     cursor.execute('''CREATE TABLE IF NOT EXISTS transit_logs (
                         mmsi TEXT, 
                         name TEXT, 
                         direction TEXT, 
-                        timestamp TIMESTAMP)''')
+                        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )''')
     conn.commit()
     return conn
 
@@ -104,6 +108,7 @@ def process_and_save(strait_data):
                            (mmsi, name, curr_lon, curr_lat, ship_type, datetime.now()))
 
         except Exception as e:
+            print(f"Error processing ship {ship.get('SHIPNAME', 'Unknown')}: {e}")
             continue
 
     conn.commit()
