@@ -8,6 +8,47 @@ from datetime import datetime, timezone
 EVENTS_URL = "https://iranstrike.com/api/events"
 SUMMARY_URL = "https://iranstrike.com/api/summary"
 
+import re
+
+def sync_bdti_5y(session):
+    js_url = "https://en.stockq.org/index/js/BDTI_dev.js"
+    res = session.get(js_url, impersonate="chrome110")
+    
+    if res.status_code == 200:
+        content = res.text
+        
+        # This regex looks for: var data5Y = ... arrayToDataTable([ (CAPTURE EVERYTHING) ]);
+        # It handles the nested parenthesis and the trailing semicolon correctly.
+        data_match = re.search(r"var\s+data5Y\s*=\s*google\.visualization\.arrayToDataTable\(\s*\[(.*?)\]\s*\)\s*;", content, re.DOTALL)
+        
+        if data_match:
+            raw_data = data_match.group(1)
+            
+            # Now extract the date and price pairs
+            # Pattern: [new Date('Oct 18, 2021'), 727.00,
+            pattern = r"\[new Date\('([^']+)'\),\s*([\d\.]+),"
+            matches = re.findall(pattern, raw_data)
+            
+            new_rows = []
+            for date_str, price in matches:
+                try:
+                    # Convert 'Oct 18, 2021' -> '2021-10-18'
+                    dt = datetime.strptime(date_str, '%b %d, %Y')
+                    new_rows.append({
+                        "date": dt.strftime('%Y-%m-%d'),
+                        "bdti_price": float(price)
+                    })
+                except: continue
+            
+            if new_rows:
+                df_new = pd.DataFrame(new_rows)
+                # This uses your existing function from iran.py
+                update_persistent_json(df_new, 'shipping_data.json', ['date'])
+                print(f"Sync complete. BDTI Latest: {new_rows[-1]['bdti_price']} on {new_rows[-1]['date']}")
+        else:
+            print("Regex failed to find the data5Y block. Check if the variable name changed in the JS file.")
+
+
 
 def update_persistent_json(new_df, filename, keys):
     if os.path.exists(filename):
@@ -25,6 +66,10 @@ events_res = session.get(EVENTS_URL, impersonate="firefox144")
 summary_res = session.get(SUMMARY_URL, impersonate="firefox144")
 
 if events_res.status_code == 200 and summary_res.status_code == 200:
+    #Sync shipping data
+    print("Syncing BDTI 5-year historical data...")
+    sync_bdti_5y(session)
+
     # --- PART A: PROCESS EVENTS (HOURLY/DAILY CHARTS) ---
     events_data = events_res.json().get('events', [])
     df = pd.DataFrame(events_data)

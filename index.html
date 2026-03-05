@@ -56,12 +56,93 @@
             <div id="hourlyChart" class="w-full h-[500px]"></div>
         </section>
 
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Maritime Economic Risk (BDTI)</h2>
+                    <p class="text-slate-500 text-sm italic">Tracking the daily cost of crude oil shipping via the Baltic Dirty Tanker Index.</p>
+                </div>
+                <div class="flex bg-slate-100 p-1 rounded-lg self-start">
+                    <button onclick="filterBDTI('1M')" id="btn-1M" class="px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all">1M</button>
+                    <button onclick="filterBDTI('1Y')" id="btn-1Y" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1Y</button>
+                    <button onclick="filterBDTI('ALL')" id="btn-ALL" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">ALL</button>
+                </div>
+            </div>
+            <div id="bdtiChart" class="w-full h-[400px]"></div>
+        </section>
 
     </div>
 
     <script>
-async function loadCharts() {
+let fullBDTI = []; // Global store for filtering
+
+async function renderBDTI() {
     try {
+        const res = await fetch('./shipping_data.json');
+        fullBDTI = await res.json();
+        
+        // Sort by date to ensure line renders correctly
+        fullBDTI.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        // Default to 1M on load
+        filterBDTI('1M');
+    } catch (err) {
+        console.error("BDTI Load Error:", err);
+    }
+}
+
+function filterBDTI(range) {
+    const now = new Date();
+    let filtered = [];
+
+    if (range === '1M') {
+        const monthAgo = new Date().setMonth(now.getMonth() - 1);
+        filtered = fullBDTI.filter(d => new Date(d.date) >= monthAgo);
+    } else if (range === '1Y') {
+        const yearAgo = new Date().setFullYear(now.getFullYear() - 1);
+        filtered = fullBDTI.filter(d => new Date(d.date) >= yearAgo);
+    } else {
+        filtered = fullBDTI;
+    }
+
+    // Update Button Styles
+    ['1M', '1Y', 'ALL'].forEach(r => {
+        const btn = document.getElementById(`btn-${r}`);
+        btn.className = (r === range) 
+            ? "px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all" 
+            : "px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all";
+    });
+
+    const trace = {
+        x: filtered.map(d => d.date),
+        y: filtered.map(d => d.bdti_price),
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: '#0ea5e9', width: 3, shape: 'spline' },
+        fill: 'tozeroy',
+        fillcolor: 'rgba(14, 165, 233, 0.05)',
+        name: 'BDTI Value'
+    };
+
+    const layout = {
+        margin: { t: 10, r: 10, b: 40, l: 50 },
+        hovermode: 'x unified',
+        font: { family: 'Inter, sans-serif' },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        xaxis: { gridcolor: '#f1f5f9', zeroline: false },
+        yaxis: { gridcolor: '#f1f5f9', title: "Index Points" }
+    };
+
+    Plotly.newPlot('bdtiChart', [trace], layout, { displaylogo: false, responsive: true });
+}
+
+
+async function loadCharts() {
+
+    try {
+        await renderBDTI();
+
         const [dailyRes, hourlyRes, summaryRes] = await Promise.all([
             fetch('./daily_data.json'),
             fetch('./hourly_data.json'),
