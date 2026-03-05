@@ -72,15 +72,30 @@
         </section>
 
     </div>
-
+<script src="monitor-core.js"></script>
     <script>
+const SECRET_KEY = "pay_homage_to_stan_4ever";
+
+function descramble(encryptedPayload) {
+    // 1. Base64 Decode
+    const scrambled = atob(encryptedPayload);
+    // 2. XOR Decrypt
+    let decrypted = "";
+    for (let i = 0; i < scrambled.length; i++) {
+        decrypted += String.fromCharCode(scrambled.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length));
+    }
+    return JSON.parse(decrypted);
+}
+
+
 let fullBDTI = []; // Global store for filtering
 
 async function renderBDTI() {
     try {
         const res = await fetch('./shipping_data.json');
-        fullBDTI = await res.json();
-        
+        const fullBDTIEncrypted = await res.json();
+        const fullBDTI = descramble(fullBDTIEncrypted.payload);
+
         // Sort by date to ensure line renders correctly
         fullBDTI.sort((a, b) => new Date(a.date) - new Date(b.date));
         
@@ -146,11 +161,15 @@ async function loadCharts() {
     try {
         await renderBDTI();
 
-        const [dailyRes, hourlyRes, summaryRes] = await Promise.all([
+        const [dailyResEC, hourlyResEC, summaryResEC] = await Promise.all([
             fetch('./daily_data.json'),
             fetch('./hourly_data.json'),
             fetch('./summary_latest.json')
         ]);
+
+        const dailyRes = descramble(dailyResEC.payload);
+        const hourlyRes = descramble(hourlyResEC.payload);
+        const summaryRes = descramble(summaryResEC.payload);
 
         // 1. Double-Check Data Freshness
         const lastModified = dailyRes.headers.get('Last-Modified');

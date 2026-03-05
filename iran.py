@@ -4,11 +4,25 @@ import json
 import os
 from datetime import datetime, timezone
 
+
 # API Endpoints
 EVENTS_URL = "https://iranstrike.com/api/events"
 SUMMARY_URL = "https://iranstrike.com/api/summary"
 
 import re
+import base64
+
+SECRET_KEY = "pay_homage_to_stan_4ever"
+
+def encrypt_data(data_string, key=SECRET_KEY):
+# 1. Apply XOR Cipher using the key
+    # This cycles through the key and XORs each character of the data
+    xor_data = "".join(chr(ord(c) ^ ord(key[i % len(key)])) for i, c in enumerate(data_string))
+    
+    # 2. Base64 encode the XOR'd result so it can be saved in JSON
+    encoded = base64.b64encode(xor_data.encode('utf-8')).decode('utf-8')
+    return encoded
+
 
 def sync_bdti_5y(session):
     js_url = "https://en.stockq.org/index/js/BDTI_dev.js"
@@ -51,14 +65,29 @@ def sync_bdti_5y(session):
 
 
 def update_persistent_json(new_df, filename, keys):
+    # 1. Handle persistence/merging as before
     if os.path.exists(filename):
         try:
-            existing_df = pd.read_json(filename)
+            # We must decrypt the existing file to read it into a DataFrame
+            with open(filename, 'r') as f:
+                encrypted_blob = json.load(f)
+                # Reverse the process: Base64 decode -> XOR again with same key
+                raw_b64 = base64.b64decode(encrypted_blob['payload']).decode('utf-8')
+                decrypted = "".join(chr(ord(c) ^ ord(SECRET_KEY[i % len(SECRET_KEY)])) for i, c in enumerate(raw_b64))
+                existing_df = pd.read_json(decrypted)
+            
             combined = pd.concat([existing_df, new_df], ignore_index=True)
-            # Remove duplicates so you don't double-count the same hour/day
             new_df = combined.drop_duplicates(subset=keys, keep='last')
-        except Exception: pass
-    new_df.to_json(filename, orient='records', indent=4, date_format='iso')
+        except Exception as e: 
+            print(f"Merge error for {filename}: {e}")
+
+    # 2. Convert to JSON string and Encrypt
+    raw_json_str = new_df.to_json(orient='records', date_format='iso')
+    encrypted_payload = encrypt_data(raw_json_str)
+
+    # 3. Save as an encrypted object
+    with open(filename, 'w') as f:
+        json.dump({"payload": encrypted_payload}, f)
 
 # 1. Fetch Data
 session = requests.Session()
@@ -162,11 +191,9 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     update_persistent_json(history_df, 'summary_history.json', ['date', 'bloc'])
 
     # 3. Export the "Latest" snapshot as before (summary_latest.json)
+    summary_str = json.dumps({"asOf": inner_data.get('asOf'), "summary": bloc_totals})
     with open('summary_latest.json', 'w') as f:
-        json.dump({
-            "asOf": inner_data.get('asOf'),
-            "summary": bloc_totals
-        }, f, indent=4)
+        json.dump({"payload": encrypt_data(summary_str)}, f)
     
     print(f"Successfully synced summary and history for: {inner_data.get('asOf')}")
     
