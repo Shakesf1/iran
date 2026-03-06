@@ -3,7 +3,7 @@ import pandas as pd
 import json
 import os
 from datetime import datetime, timezone
-
+from io import StringIO
 
 # API Endpoints
 EVENTS_URL = "https://iranstrike.com/api/events"
@@ -89,8 +89,11 @@ def update_persistent_json(new_df, filename, keys):
                 decrypted_str = "".join(chr(ord(c) ^ ord(SECRET_KEY[i % len(SECRET_KEY)])) for i, c in enumerate(scrambled))
                 
                 # Load decrypted string into pandas
-                from io import StringIO
-                existing_df = pd.read_json(StringIO(decrypted_str))
+                existing_df = pd.read_json(StringIO(decrypted_str), orient='records')
+                if 'date' in existing_df.columns:
+                    existing_df['date'] = existing_df['date'].astype(str)
+                if 'date' in new_df.columns:
+                    new_df['date'] = new_df['date'].astype(str)
             
             combined = pd.concat([existing_df, new_df], ignore_index=True)
             new_df = combined.drop_duplicates(subset=keys, keep='last')
