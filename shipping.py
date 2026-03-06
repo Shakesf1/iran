@@ -57,6 +57,8 @@ def get_ships_with_stealth():
     co = ChromiumOptions()
     co.set_argument('--no-sandbox')
     co.set_argument('--headless=new')
+    co.set_argument('--disable-dev-shm-usage') # Uses /tmp instead of memory (Slower but stable)
+    co.set_argument('--remote-debugging-pipe') # More stable than port 9222 on Linux
     
     ua_list = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",

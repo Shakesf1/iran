@@ -54,7 +54,21 @@ jobs:
         env:
           DISPLAY: :99
         run: |
+          #          1. Force kill any existing chrome or xvfb processes
+          pkill -9 chrome || true
+          pkill -9 chromium || true
+          pkill -9 Xvfb || true
+          
+          # 2. Clear out temp user profiles to prevent "Profile in Use" errors
+          rm -rf /tmp/.com.google.Chrome.* || true
+          rm -rf /tmp/.org.chromium.Chromium.* || true
+          
+          # 3. Start the virtual display
           Xvfb :99 -screen 0 1920x1080x24 &
+          
+          # 4. Wait a moment for Xvfb to initialize
+          sleep 2
+
           python -u shipping.py
 
       - name: Commit and Push Data
