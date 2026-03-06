@@ -30,14 +30,15 @@ def sync_bdti_5y(session):
     
     if res.status_code == 200:
         content = res.text
-        
+        print(f"✅ Downloaded {len(content)} bytes")
         # This regex looks for: var data5Y = ... arrayToDataTable([ (CAPTURE EVERYTHING) ]);
         # It handles the nested parenthesis and the trailing semicolon correctly.
         data_match = re.search(r"var\s+data5Y\s*=\s*google\.visualization\.arrayToDataTable\(\s*\[(.*?)\]\s*\)\s*;", content, re.DOTALL)
         
         if data_match:
+            print("✅ Successfully extracted the data5Y block from the JS file.")
             raw_data = data_match.group(1)
-            
+            print(raw_data[-10:]) # Print the last 500 characters to verify we got the right block
             # Now extract the date and price pairs
             # Pattern: [new Date('Oct 18, 2021'), 727.00,
             pattern = r"\[new Date\('([^']+)'\),\s*([\d\.]+),"
