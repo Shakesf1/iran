@@ -137,11 +137,11 @@ function filterBDTI(range) {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         xaxis: { gridcolor: '#f1f5f9', zeroline: false },
-        yaxis: { gridcolor: '#f1f5f9', title: "Index Points" },
-        displayModeBar: false
+        yaxis: { gridcolor: '#f1f5f9', title: "Index Points" }
+        
     };
 
-    Plotly.newPlot('bdtiChart', [trace], layout, { displaylogo: false, responsive: true });
+    Plotly.newPlot('bdtiChart', [trace], layout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
 
 
@@ -207,11 +207,11 @@ async function loadCharts() {
             barmode: 'stack', margin: { t: 20, r: 20, b: 80, l: 40 }, 
             hovermode: 'x unified', font: { family: 'Inter, sans-serif' },
             paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-            legend: { orientation: "h", yanchor: "bottom", y: -0.4, xanchor: "center", x: 0.5 },
-            displayModeBar: false
+            legend: { orientation: "h", yanchor: "bottom", y: -0.4, xanchor: "center", x: 0.5 }
+            
         };
 
-        Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, { displaylogo: false, responsive: true });
+        Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, { displaylogo: false, responsive: true, displayModeBar: false });
         Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'timestamp'), layout, { displaylogo: false, responsive: true });
 
     } catch (err) {
