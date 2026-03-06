@@ -193,14 +193,49 @@ async function loadCharts() {
         // 3. Render Charts
         function createTrace(data, xField) {
             if (!data || data.length === 0) return [];
-            const keys = Object.keys(data[0]).filter(k => k !== xField);
-            return keys.map(key => ({
+            
+            // Get location keys (e.g., ISR, IRQ) and filter out xField and Extrapolation
+            const keys = Object.keys(data[0]).filter(k => k !== xField && k !== 'Extrapolation');
+            
+            // Create standard traces for each country
+            const traces = keys.map(key => ({
                 x: data.map(d => d[xField]),
                 y: data.map(d => d[key]),
-                name: key, type: 'bar',
-                marker: { color: key === 'Extrapolation' ? '#cbd5e1' : null },
-                opacity: key === 'Extrapolation' ? 0.6 : 1
+                name: key, 
+                type: 'bar',
+                hovertemplate: '%{y}<extra></extra>' // Simplifies hover text
             }));
+
+            // Add Extrapolation if it exists
+            if (data[0].hasOwnProperty('Extrapolation')) {
+                traces.push({
+                    x: data.map(d => d[xField]),
+                    y: data.map(d => d['Extrapolation']),
+                    name: 'Extrapolation',
+                    type: 'bar',
+                    marker: { color: '#cbd5e1' },
+                    opacity: 0.6,
+                    hovertemplate: '%{y}<extra></extra>'
+                });
+            }
+
+            // --- NEW: Add the Total Trace ---
+            const totalY = data.map(d => {
+                return keys.reduce((sum, key) => sum + (Number(d[key]) || 0), 0) + (Number(d.Extrapolation) || 0);
+            });
+
+            traces.push({
+                x: data.map(d => d[xField]),
+                y: totalY,
+                name: 'TOTAL',
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: 'transparent', width: 0 }, // Invisible on the chart
+                hoverinfo: 'y',
+                hovertemplate: '<b>Total: %{y}</b><extra></extra>'
+            });
+
+            return traces;
         }
 
         const layout = { 
