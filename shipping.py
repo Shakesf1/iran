@@ -47,6 +47,9 @@ def init_db():
                         direction TEXT, 
                         timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )''')
+    # Add this inside your init_db() function
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_mmsi_time ON vessel_history (mmsi, update_time)")
+
     conn.commit()
     return conn
 
