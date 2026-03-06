@@ -145,35 +145,57 @@ def export_stats():
     # between any two updates for that ship.
     cursor.execute(f'''
         SELECT 
-            strftime('%Y-%m-%d %H:00', h1.update_time) as hr,
-            SUM(CASE WHEN h2.last_lon <= {WEST_LIMIT} AND h1.last_lon >= {EAST_LIMIT} THEN 1 ELSE 0 END) as east,
-            SUM(CASE WHEN h2.last_lon >= {EAST_LIMIT} AND h1.last_lon <= {WEST_LIMIT} THEN 1 ELSE 0 END) as west
+            strftime('%Y-%m-%d %H:%M', h1.update_time) as transit_time,
+            h1.mmsi, 
+            h1.name,
+            CASE 
+                WHEN h2.last_lon >= {EAST_LIMIT} AND h1.last_lon <= {WEST_LIMIT} THEN 'WESTBOUND'
+                WHEN h2.last_lon <= {WEST_LIMIT} AND h1.last_lon >= {EAST_LIMIT} THEN 'EASTBOUND'
+            END as direction
         FROM vessel_history h1
         JOIN vessel_history h2 ON h1.mmsi = h2.mmsi
-        WHERE h1.update_time > h2.update_time
-          AND h1.update_time >= datetime('now', '-24 hours')
-          -- Ensure h2 is the record immediately preceding h1 to avoid double counting
-          AND h2.update_time = (
-              SELECT MAX(update_time) 
-              FROM vessel_history 
-              WHERE mmsi = h1.mmsi AND update_time < h1.update_time
-          )
-        GROUP BY hr 
-        ORDER BY hr ASC
+        WHERE h1.update_time >= datetime('now', '-24 hours')
+        -- This subquery ensures h2 is the very last known position before h1
+        AND h2.update_time = (
+            SELECT MAX(update_time) 
+            FROM vessel_history 
+            WHERE mmsi = h1.mmsi AND update_time < h1.update_time
+        )
+        -- Filter to ONLY include rows where a crossing actually happened
+        AND (
+            (h2.last_lon >= {EAST_LIMIT} AND h1.last_lon <= {WEST_LIMIT}) OR
+            (h2.last_lon <= {WEST_LIMIT} AND h1.last_lon >= {EAST_LIMIT})
+        )
+        ORDER BY h1.update_time DESC;
     ''')
     
     crossings = [{"time": r[0], "East": r[1], "West": r[2]} for r in cursor.fetchall()]
     
     # 2. DORMANT SHIPS: Same as before, checking for no movement over 2 hours
     cursor.execute('''
-        SELECT COUNT(DISTINCT h1.mmsi) 
+        SELECT 
+            strftime('%Y-%m-%d %H:%M', h1.update_time) as scrape_minute,
+            COUNT(DISTINCT h1.mmsi) as dormant_count
         FROM vessel_history h1
-        JOIN vessel_history h2 ON h1.mmsi = h2.mmsi
-        WHERE h1.last_lon = h2.last_lon 
-          AND h1.last_lat = h2.last_lat
-          AND h1.update_time >= datetime('now', '-45 minutes')
-          AND h2.update_time <= datetime('now', '-2 hours')
-          AND h2.update_time >= datetime('now', '-3 hours')
+        WHERE h1.update_time >= datetime('now', '-24 hours')
+        AND h1.last_lon = (
+            SELECT h2.last_lon 
+            FROM vessel_history h2 
+            WHERE h2.mmsi = h1.mmsi 
+                AND h2.update_time <= datetime(h1.update_time, '-2 hours')
+            ORDER BY h2.update_time DESC 
+            LIMIT 1
+        )
+        AND h1.last_lat = (
+            SELECT h2.last_lat 
+            FROM vessel_history h2 
+            WHERE h2.mmsi = h1.mmsi 
+                AND h2.update_time <= datetime(h1.update_time, '-2 hours')
+            ORDER BY h2.update_time DESC 
+            LIMIT 1
+        )
+        GROUP BY scrape_minute
+        ORDER BY scrape_minute ASC;
     ''')
     
     dormant = cursor.fetchone()[0]
