@@ -28,8 +28,8 @@
                         <span id="status-dot" class="h-2 w-2 rounded-full bg-emerald-500 pulse"></span>
                         <span id="status-text" class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live</span>
                     </div>
-                    <p class="text-slate-500 text-[11px]">Server Sync: <span id="last-update" class="font-medium text-slate-800">Loading...</span></p>
-                    <p class="text-slate-500 text-[11px]">API Official Totals: <span id="api-timestamp" class="font-medium text-slate-800">Syncing...</span></p>
+                        <p class="text-slate-500 text-[11px]">Server Sync: <span id="last-update" class="font-medium text-slate-800">Loading...</span></p>
+                        <p class="text-slate-500 text-[11px]">Latest BDTI Data: <span id="bdti-last-date" class="font-medium text-slate-800">Syncing...</span></p>
                 </div>
             </div>
 
@@ -42,8 +42,9 @@
             </div>
         </header>
 
-        <div id="summary-section" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        <div id="summary-section" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
             </div>
+        <p id="api-footer" class="text-[10px] text-slate-400 italic mb-12 ml-1"></p>
 
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-2 text-slate-800">Daily Escalation Trend</h2>
@@ -90,6 +91,14 @@ async function renderBDTI() {
         fullBDTI = descramble(encrypted.payload); 
 
         fullBDTI.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        // Update the top header with the latest BDTI date
+        if (fullBDTI.length > 0) {
+            const latestDate = fullBDTI[fullBDTI.length - 1].date;
+            document.getElementById('bdti-last-date').innerText = latestDate;
+        }
+
+
         filterBDTI('3M');
     } catch (err) {
         console.error("BDTI Load Error:", err);
@@ -160,6 +169,12 @@ async function loadCharts() {
         const hourlyData = descramble((await hourlyRes.json()).payload);
         const summaryData = descramble((await summaryRes.json()).payload);
 
+        // Move the timestamp to the footer instead of the header
+        const apiTime = new Date(summaryData.asOf).toLocaleString([], {
+            dateStyle: 'medium', timeStyle: 'short'
+        });
+        document.getElementById('api-footer').innerText = `API Official Summary Timestamp: ${apiTime}`;
+
         // 1. Data Freshness Check
         const lastModified = dailyRes.headers.get('Last-Modified');
         if (lastModified) {
@@ -169,10 +184,6 @@ async function loadCharts() {
             });
         }
 
-        // 2. Render Summary
-        document.getElementById('api-timestamp').innerText = new Date(summaryData.asOf).toLocaleString([], {
-            dateStyle: 'medium', timeStyle: 'short'
-        });
 
         const summaryHtml = Object.entries(summaryData.summary).map(([name, data]) => {
             const isUS = name.includes('US');
