@@ -101,7 +101,7 @@ def process_and_save(strait_data):
                 continue
 
             # Check previous known longitude for this ship
-            cursor.execute("SELECT last_lon FROM vessel_history WHERE mmsi=?", (mmsi,))
+            cursor.execute("SELECT last_lon FROM vessel_history WHERE mmsi=? ORDER BY update_time DESC LIMIT 1", (mmsi,))
             row = cursor.fetchone()
 
             if row:
