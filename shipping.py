@@ -2,13 +2,29 @@ import sqlite3
 import time
 import random
 import json
+import base64
 from datetime import datetime
 from DrissionPage import ChromiumPage, ChromiumOptions
 
 # --- CONFIGURATION ---
 MAP_URL = "https://www.marinetraffic.com/en/ais/home/centerx:56.3/centery:26.4/zoom:9"
 DB_NAME = "shipping_data.db"
-HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
+#HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
+
+WEST_LIMIT = 56.1  # Deep in the Gulf
+EAST_LIMIT = 56.5  # Well out into the Gulf of Oman
+
+
+SECRET_KEY = "pay_homage_to_stan_4ever"
+
+def encrypt_data(data_string, key=SECRET_KEY):
+# 1. Apply XOR Cipher using the key
+    # This cycles through the key and XORs each character of the data
+    xor_data = "".join(chr(ord(c) ^ ord(key[i % len(key)])) for i, c in enumerate(data_string))
+    
+    # 2. Base64 encode the XOR'd result so it can be saved in JSON
+    encoded = base64.b64encode(xor_data.encode('utf-8')).decode('utf-8')
+    return encoded
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -92,12 +108,12 @@ def process_and_save(strait_data):
                 prev_lon = row[0]
                 # Logic: Crossing the 56.3 longitude line
                 # Westbound: From East to West
-                if prev_lon > HORMUZ_GATE_LON and curr_lon <= HORMUZ_GATE_LON:
+                if prev_lon > EAST_LIMIT and curr_lon < WEST_LIMIT:
                     cursor.execute("INSERT INTO transit_logs VALUES (?, ?, ?, ?)",
                                    (mmsi, name, 'WESTBOUND', datetime.now()))
                     transits_this_run += 1
                 # Eastbound: From West to East
-                elif prev_lon < HORMUZ_GATE_LON and curr_lon >= HORMUZ_GATE_LON:
+                elif prev_lon < WEST_LIMIT and curr_lon >= EAST_LIMIT:
                     cursor.execute("INSERT INTO transit_logs VALUES (?, ?, ?, ?)",
                                    (mmsi, name, 'EASTBOUND', datetime.now()))
                     transits_this_run += 1
@@ -115,8 +131,70 @@ def process_and_save(strait_data):
     conn.close()
     print(f"Processed {len(rows)} ships. New transits detected: {transits_this_run}")
 
+
+def export_stats():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    
+    # 1. DYNAMIC CROSSINGS: Calculate from vessel_history per hour
+    # This finds ships that moved from one side of the buffer to the other
+    # between any two updates for that ship.
+    cursor.execute(f'''
+        SELECT 
+            strftime('%Y-%m-%d %H:00', h1.update_time) as hr,
+            SUM(CASE WHEN h2.last_lon <= {WEST_LIMIT} AND h1.last_lon >= {EAST_LIMIT} THEN 1 ELSE 0 END) as east,
+            SUM(CASE WHEN h2.last_lon >= {EAST_LIMIT} AND h1.last_lon <= {WEST_LIMIT} THEN 1 ELSE 0 END) as west
+        FROM vessel_history h1
+        JOIN vessel_history h2 ON h1.mmsi = h2.mmsi
+        WHERE h1.update_time > h2.update_time
+          AND h1.update_time >= datetime('now', '-24 hours')
+          -- Ensure h2 is the record immediately preceding h1 to avoid double counting
+          AND h2.update_time = (
+              SELECT MAX(update_time) 
+              FROM vessel_history 
+              WHERE mmsi = h1.mmsi AND update_time < h1.update_time
+          )
+        GROUP BY hr 
+        ORDER BY hr ASC
+    ''')
+    
+    crossings = [{"time": r[0], "East": r[1], "West": r[2]} for r in cursor.fetchall()]
+    
+    # 2. DORMANT SHIPS: Same as before, checking for no movement over 2 hours
+    cursor.execute('''
+        SELECT COUNT(DISTINCT h1.mmsi) 
+        FROM vessel_history h1
+        JOIN vessel_history h2 ON h1.mmsi = h2.mmsi
+        WHERE h1.last_lon = h2.last_lon 
+          AND h1.last_lat = h2.last_lat
+          AND h1.update_time >= datetime('now', '-45 minutes')
+          AND h2.update_time <= datetime('now', '-2 hours')
+          AND h2.update_time >= datetime('now', '-3 hours')
+    ''')
+    
+    dormant = cursor.fetchone()[0]
+    
+    raw_data = {
+            "dormant": dormant, 
+            "crossings": crossings,
+            "calculated_at": datetime.now().isoformat()
+        }
+    json_string = json.dumps(raw_data)
+
+    encrypted_payload = encrypt_data(json_string)
+
+    with open('dashboard_stats.json', 'w') as f:
+            json.dump({
+                "payload": encrypted_payload
+            }, f)   
+
+    conn.close()
+
+
 if __name__ == "__main__":
     print(f"--- Monitoring Strait of Hormuz: {datetime.now()} ---")
     data = get_ships_with_stealth()
     if data:
         process_and_save(data)
+
+    export_stats()
