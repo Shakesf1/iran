@@ -58,17 +58,20 @@ def get_ships_with_stealth():
     co.set_argument('--no-sandbox')
     co.set_argument('--headless=new')
     co.set_argument('--disable-dev-shm-usage') # Uses /tmp instead of memory (Slower but stable)
-    co.set_argument('--remote-debugging-pipe') # More stable than port 9222 on Linux
-    
+    co.set_argument('--disable-gpu')
+
     ua_list = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
     ]
     co.set_user_agent(random.choice(ua_list))
-    page = ChromiumPage(co)
+    
 
+
+    page = None
     try:
         time.sleep(random.uniform(2, 4))
+        page = ChromiumPage(co)
         page.listen.start('get_data_json')
         page.get(MAP_URL)
         page.wait.ele_displayed('css:.leaflet-container', timeout=20)
@@ -171,7 +174,7 @@ def export_stats():
         ORDER BY h1.update_time DESC;
     ''')
     
-    crossings = [{"time": r[0], "East": r[1], "West": r[2]} for r in cursor.fetchall()]
+    crossings = [{"time": r[0], "mmsi": r[1], "name": r[2], "dir": r[3]} for r in cursor.fetchall()]
     
     # 2. DORMANT SHIPS: Same as before, checking for no movement over 2 hours
     cursor.execute('''

@@ -67,7 +67,7 @@ jobs:
           Xvfb :99 -screen 0 1920x1080x24 &
           
           # 4. Wait a moment for Xvfb to initialize
-          sleep 2
+          sleep 4
 
           python -u shipping.py
 
