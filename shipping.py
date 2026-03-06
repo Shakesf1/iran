@@ -203,7 +203,7 @@ def export_stats():
         ORDER BY scrape_minute ASC;
     ''')
     
-    dormant = cursor.fetchone()[0]
+    dormant = [{"time": r[0], "count": r[1]} for r in cursor.fetchall()]
     
     raw_data = {
             "dormant": dormant, 
