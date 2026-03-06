@@ -79,28 +79,36 @@ def update_persistent_json(new_df, filename, keys):
         try:
             with open(filename, 'r') as f:
                 encrypted_blob = json.load(f)
-                # FIX: Access the 'payload' string correctly
                 raw_payload = encrypted_blob['payload']
                 
-                # Base64 decode
+                # Decode and XOR
                 scrambled = base64.b64decode(raw_payload).decode('utf-8')
-                
-                # XOR Decrypt
                 decrypted_str = "".join(chr(ord(c) ^ ord(SECRET_KEY[i % len(SECRET_KEY)])) for i, c in enumerate(scrambled))
                 
-                # Load decrypted string into pandas
-                existing_df = pd.read_json(StringIO(decrypted_str), orient='records')
-                if 'date' in existing_df.columns:
-                    existing_df['date'] = existing_df['date'].astype(str)
-                if 'date' in new_df.columns:
-                    new_df['date'] = new_df['date'].astype(str)
+                # Explicitly load as DataFrame and handle the 'records' orientation
+                from io import StringIO
+                existing_df = pd.read_json(StringIO(decrypted_str))
+                
+                # If it loaded as a Series or List, convert it back to a DataFrame
+                if not isinstance(existing_df, pd.DataFrame):
+                    existing_df = pd.DataFrame(existing_df)
+
+                # --- NORMALIZE DATE COLUMNS ---
+                # This prevents the "list indices" error during concat/drop_duplicates
+                for col in keys:
+                    if col in existing_df.columns:
+                        existing_df[col] = existing_df[col].astype(str)
+                    if col in new_df.columns:
+                        new_df[col] = new_df[col].astype(str)
             
             combined = pd.concat([existing_df, new_df], ignore_index=True)
             new_df = combined.drop_duplicates(subset=keys, keep='last')
         except Exception as e: 
             print(f"Merge error for {filename}: {e}")
+            # If merge fails, we fall back to just using the new_df to avoid data loss
+            pass
 
-    # Encrypt and save
+    # Encrypt and save using 'records' orientation
     raw_json_str = new_df.to_json(orient='records', date_format='iso')
     encrypted_payload = encrypt_data(raw_json_str)
     with open(filename, 'w') as f:
