@@ -212,7 +212,7 @@ async function loadCharts() {
         };
 
         Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, { displaylogo: false, responsive: true, displayModeBar: false });
-        Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'timestamp'), layout, { displaylogo: false, responsive: true });
+        Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'timestamp'), layout, { displaylogo: false, responsive: true, displayModeBar: false  });
 
     } catch (err) {
         console.error("Error loading data:", err);
