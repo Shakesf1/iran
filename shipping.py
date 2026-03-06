@@ -32,7 +32,7 @@ def init_db():
     
     # Updated Vessel History Table
     cursor.execute('''CREATE TABLE IF NOT EXISTS vessel_history (
-                        mmsi TEXT PRIMARY KEY, 
+                        mmsi TEXT, 
                         name TEXT, 
                         last_lon REAL, 
                         last_lat REAL, 
@@ -119,9 +119,10 @@ def process_and_save(strait_data):
                     transits_this_run += 1
 
             # Update history with latest position
-            cursor.execute('''INSERT OR REPLACE INTO vessel_history 
-                              VALUES (?, ?, ?, ?, ?, ?)''', 
-                           (mmsi, name, curr_lon, curr_lat, ship_type, datetime.now()))
+            cursor.execute('''INSERT INTO vessel_history 
+                  (mmsi, name, last_lon, last_lat, ship_type, update_time)
+                  VALUES (?, ?, ?, ?, ?, ?)''', 
+               (mmsi, name, curr_lon, curr_lat, ship_type, datetime.now()))
 
         except Exception as e:
             print(f"Error processing ship {ship.get('SHIPNAME', 'Unknown')}: {e}")
