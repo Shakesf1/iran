@@ -79,16 +79,21 @@ def update_persistent_json(new_df, filename, keys):
         try:
             with open(filename, 'r') as f:
                 blob = json.load(f)
-                raw_payload = blob['payload']
-                
-                scrambled = base64.b64decode(raw_payload).decode('utf-8')
-                decrypted_str = "".join(chr(ord(c) ^ ord(SECRET_KEY[i % len(SECRET_KEY)])) for i, c in enumerate(scrambled))
-                
-                # --- DEBUG BLOCK ---
-                print(f"DEBUG [{filename}]: First 100 chars of decrypted string: {decrypted_str[:100]}")
-                
-                from io import StringIO
-                existing_df = pd.read_json(StringIO(decrypted_str))
+
+                if isinstance(blob, list):
+                    print(f"⚠️ {filename} is a raw list. Resetting to correct format.")
+                    existing_df = pd.DataFrame(blob)
+                else:
+                    raw_payload = blob['payload']
+                    
+                    scrambled = base64.b64decode(raw_payload).decode('utf-8')
+                    decrypted_str = "".join(chr(ord(c) ^ ord(SECRET_KEY[i % len(SECRET_KEY)])) for i, c in enumerate(scrambled))
+                    
+                    # --- DEBUG BLOCK ---
+                    print(f"DEBUG [{filename}]: First 100 chars of decrypted string: {decrypted_str[:100]}")
+                    
+                    
+                    existing_df = pd.read_json(StringIO(decrypted_str))
 
                 print(f"DEBUG [{filename}]: Loaded Type: {type(existing_df)}")
                 if isinstance(existing_df, pd.DataFrame):
@@ -178,13 +183,11 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
 
             # Apply extrapolation column: 0 for history, 'extra' value for today
             current_daily['Extrapolation'] = 0.0
-            current_daily.loc[current_daily['day'] == today_str, 'Extrapolation'] = float(extra)
+            current_daily['day'] = current_daily['day'].astype(str)
+            mask = current_daily['day'] == today_str
+            current_daily.loc[mask, 'Extrapolation'] = float(extra)
+            update_persistent_json(current_daily, 'daily_data.json', ['day'])
 
-            # 4. Overwrite daily_data.json with the temporary extrapolation included
-            # This will be cleaned/reset the next time the script runs (Step 2)
-            raw_json_str = current_daily.to_json(orient='records', date_format='iso')
-            with open('daily_data.json', 'w') as f:
-                json.dump({"payload": encrypt_data(raw_json_str)}, f)
 
 
     # --- PART B: PROCESS SUMMARY (BLOC TABLES) ---
