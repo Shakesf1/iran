@@ -233,7 +233,25 @@ async function renderEscalationCharts() {
     const x = signals.map(s => s.timestamp);
     const scores = signals.map(s => s.escalation_score);
 
-    // ... (Keep Chart 1 and Chart 2 as they are) ...
+    const tempoTrace = {
+        x: x,
+        y: signals.map(s => s.attacks),
+        type: 'bar',
+        marker: { color: signals.map(s => s.bar_color) },
+        name: 'Attacks'
+    };
+    Plotly.newPlot('tempoChart', [tempoTrace], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
+
+    // --- CHART 2: THEATER SPREAD ---
+    const spreadTrace = {
+        x: x,
+        y: signals.map(s => s.countries_hit),
+        type: 'scatter',
+        fill: 'tozeroy',
+        line: { color: '#8b5cf6' },
+        name: 'Countries'
+    };
+    Plotly.newPlot('spreadChart', [spreadTrace], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
     // Chart 3: Escalation Score with Conditional Coloring
     const threshold = 2.0;
