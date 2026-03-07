@@ -133,7 +133,7 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     events_data = events_res.json().get('events', [])
     df = pd.DataFrame(events_data)
 
-    df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+    df['timestamp'] = pd.to_datetime(df['timestamp'], format='ISO8601', utc=True)
 
     likely_targets = ['ISR','USA','JOR','SAU']
     df['origin'] = df['origin'].fillna('UNK')
@@ -186,7 +186,33 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
             current_daily.loc[mask, 'Extrapolation'] = float(extra)
             update_persistent_json(current_daily, 'daily_data.json', ['day'])
 
+        # 1. Base Tempo (Attacks per hour)
+            tempo = df_irn.groupby('hour').size().rename('attacks').reset_index()
+            tempo = tempo.sort_values('hour')
+            
+            # 2. Rolling Averages for Acceleration Detection
+            tempo['rolling_6h'] = tempo['attacks'].rolling(6, min_periods=1).mean()
+            tempo['rolling_24h'] = tempo['attacks'].rolling(24, min_periods=1).mean()
+            tempo['tempo_change'] = (tempo['rolling_6h'] / tempo['rolling_24h']).fillna(1.0)
 
+            # 3. Geographic & Proxy Spread
+            spread = df_irn.groupby('hour').agg({
+                'location': 'nunique',
+                'origin': 'nunique'
+            }).rename(columns={'location': 'countries_hit', 'origin': 'origins_active'}).reset_index()
+
+            # 4. Final Escalation Score
+            signals = tempo.merge(spread, on='hour')
+            signals['escalation_score'] = (
+                (signals['tempo_change'] * 0.6) + 
+                (signals['countries_hit'] * 0.25) + 
+                (signals['origins_active'] * 0.15)
+            ).round(2)
+
+            # 5. Persistence
+            signals['timestamp'] = signals['hour'].dt.strftime('%Y-%m-%d %H:%M')
+            # Export to a new specialized file
+            update_persistent_json(signals, 'escalation_signals.json', ['timestamp'])
 
     # --- PART B: PROCESS SUMMARY (BLOC TABLES) ---
     raw_summary = summary_res.json()
