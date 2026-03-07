@@ -230,32 +230,32 @@ async function renderEscalationCharts() {
     const res = await fetch('./escalation_signals.json');
     const signals = descramble((await res.json()).payload);
     
-    const x = signals.map(s => s.timestamp);
-    const scores = signals.map(s => s.escalation_score);
-    const threshold = 2.0;
+ const x = signals.map(s => s.timestamp);
 
-    // --- CHART 1: LAUNCH TEMPO ---
-    const tempoTrace = {
-        x: x,
-        y: signals.map(s => s.attacks),
-        type: 'bar',
-        marker: { color: signals.map(s => s.bar_color) },
-        name: 'Attacks'
-    };
-    Plotly.newPlot('tempoChart', [tempoTrace], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
+    // Chart 1: Tempo with 24h Avg & Conditional Coloring
+    Plotly.newPlot('tempoChart', [
+        { 
+            x: x, y: signals.map(s => s.attacks), 
+            name: 'Raw Attacks', type: 'bar', 
+            marker: { color: signals.map(s => s.bar_color) } 
+        },
+        { 
+            x: x, y: signals.map(s => s.rolling_6h), 
+            name: '6h Trend', type: 'scatter', line: { color: 'black', width: 2 } 
+        },
+        { 
+            x: x, y: signals.map(s => s.rolling_24h), 
+            name: '24h Baseline', type: 'scatter', line: { color: '#3b82f6', dash: 'dot', width: 2 } 
+        }
+    ], layoutBase);
 
-    // --- CHART 2: THEATER SPREAD ---
-    const spreadTrace = {
-        x: x,
-        y: signals.map(s => s.countries_hit),
-        type: 'scatter',
-        fill: 'tozeroy',
-        fillcolor: 'rgba(139, 92, 246, 0.2)', // Purple tint
-        line: { color: '#8b5cf6', width: 2 },
-        name: 'Countries Targeted'
-    };
-    Plotly.newPlot('spreadChart', [spreadTrace], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
+    // Chart 2: Theater Spread (Simplified)
+    Plotly.newPlot('spreadChart', [{
+        x: x, y: signals.map(s => s.countries_hit),
+        type: 'bar', marker: { color: '#8b5cf6' }
+    }], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
+    threshold = 2.0; // Define the escalation threshold
     // --- CHART 3: STRATEGIC ESCALATION SCORE (Dynamic Fill) ---
     const scoreTraces = [
         // Grey Layer (Base)
