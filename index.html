@@ -37,7 +37,9 @@
                 <p class="mb-4">
                     Regional defenses mostly hold against Iranian drone and missile swarms. However, the strategic risk lies in <strong>economic attrition & resource depletion</strong>.
                     This page monitors the amount of missiles and drones launched by Iran, how many are intercepted, and how many get through to their targets. The goal is to track the evolving cost asymmetry of this conflict in near real-time.
-                    We also monitor casualties and are building a history of data, when that is build up we add more relevant information to be able to see trends.  
+                    We also monitor casualties and are building a history of data, when that is build up we add more relevant information to be able to see trends.  <br />
+                    <br />
+                    <a href="mailto:stan@warescalation.com" class="text-blue-600 hover:underline">Contact us</a> if you have suggestions or want to contribute data or analysis.
                 </p>
             </div>
         </header>
@@ -202,7 +204,8 @@ function filterBDTI(range) {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         xaxis: { gridcolor: '#f1f5f9', zeroline: false },
-        yaxis: { gridcolor: '#f1f5f9', title: "Index Points" }
+        yaxis: { gridcolor: '#f1f5f9', title: "Index Points" },
+        annotations: layoutBase.annotations,
         
     };
 
@@ -427,7 +430,8 @@ async function loadCharts() {
             barmode: 'stack', margin: { t: 20, r: 20, b: 80, l: 40 }, 
             hovermode: 'x unified', font: { family: 'Inter, sans-serif' },
             paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-            legend: { orientation: "h", yanchor: "bottom", y: -0.4, xanchor: "center", x: 0.5 }
+            legend: { orientation: "h", yanchor: "bottom", y: -0.4, xanchor: "center", x: 0.5 },
+            annotations: layoutBase.annotations,
             
         };
 
