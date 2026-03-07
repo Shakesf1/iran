@@ -5,10 +5,16 @@ import os
 from datetime import datetime, timezone
 from io import StringIO
 
+pd.set_option('display.max_columns', None)
+
+# Optional: Also ensure each line doesn't wrap to the next
+pd.set_option('display.width', None)
+
+
 # API Endpoints
 EVENTS_URL = "https://iranstrike.com/api/events"
 SUMMARY_URL = "https://iranstrike.com/api/summary"
-
+iran_allies = ['IRN', 'YEM', 'LBN', 'SYR', 'PSE']
 import re
 import base64
 
@@ -72,58 +78,42 @@ def read_encrypted_df(filename):
         from io import StringIO
         return pd.read_json(StringIO(decrypted_str))
 
-def update_persistent_json(new_df, filename, keys):
+    
+def update_persistent_json(new_df, filename, keys, rolling_days=5):
     SECRET_KEY = "pay_homage_to_stan_4ever"
     
     if os.path.exists(filename):
         try:
-            with open(filename, 'r') as f:
-                blob = json.load(f)
+            # 1. Load existing data
+            existing_df = read_encrypted_df(filename)
+            if existing_df.empty:
+                combined = new_df
+            else:
+                # 2. Identify the date column
+                date_col = next((c for c in ['day', 'date', 'timestamp'] if c in existing_df.columns), None)
+                
+                if date_col and rolling_days > 0:
+                    # Use format='mixed' to handle both YYYY-MM-DD and YYYY-MM-DD HH:MM
+                    existing_df[date_col] = pd.to_datetime(existing_df[date_col], format='mixed')
+                    new_df[date_col] = pd.to_datetime(new_df[date_col], format='mixed')
+                    
+                    # WIPE the rolling window from history to allow fresh overwrite
+                    cutoff = datetime.now() - pd.Timedelta(days=rolling_days)
+                    existing_df = existing_df[existing_df[date_col] < cutoff]
 
-                if isinstance(blob, list):
-                    print(f"⚠️ {filename} is a raw list. Resetting to correct format.")
-                    existing_df = pd.DataFrame(blob)
-                else:
-                    raw_payload = blob['payload']
-                    
-                    scrambled = base64.b64decode(raw_payload).decode('utf-8')
-                    decrypted_str = "".join(chr(ord(c) ^ ord(SECRET_KEY[i % len(SECRET_KEY)])) for i, c in enumerate(scrambled))
-                    
-                    # --- DEBUG BLOCK ---
-                    print(f"DEBUG [{filename}]: First 100 chars of decrypted string: {decrypted_str[:100]}")
-                    
-                    
-                    existing_df = pd.read_json(StringIO(decrypted_str))
-
-                print(f"DEBUG [{filename}]: Loaded Type: {type(existing_df)}")
-                if isinstance(existing_df, pd.DataFrame):
-                    print(f"DEBUG [{filename}]: Columns found: {existing_df.columns.tolist()}")
-                # -------------------
-
-                # Force convert to DataFrame if it loaded as a list/series
-                if not isinstance(existing_df, pd.DataFrame):
-                    existing_df = pd.DataFrame(existing_df)
-
-                # NORMALIZE: Ensure column names exist and are strings
-                for col in keys:
-                    if col not in existing_df.columns:
-                        print(f"⚠️ DEBUG: Column '{col}' missing from {filename}. Current columns: {existing_df.columns.tolist()}")
-                        # If columns are integers (0, 1, 2), this is the source of your error
-                        continue 
-                    
-                    existing_df[col] = existing_df[col].astype(str)
-                    if col in new_df.columns:
-                        new_df[col] = new_df[col].astype(str)
+                # 3. Combine
+                combined = pd.concat([existing_df, new_df], ignore_index=True)
             
-            combined = pd.concat([existing_df, new_df], ignore_index=True)
+            # 4. Deduplicate based on provided keys
             new_df = combined.drop_duplicates(subset=keys, keep='last')
-        except Exception as e: 
-            print(f"Merge error for {filename}: {e}")
+            
+        except Exception as e:
+            print(f"Rolling merge error for {filename}: {e}")
             import traceback
-            traceback.print_exc() # This will show exactly which line in Pandas failed
-            pass
+            traceback.print_exc()
 
-    # Save
+    # Save logic (Standardize dates to strings before JSON export)
+    # This prevents JSON serializing issues with Timestamp objects
     raw_json_str = new_df.to_json(orient='records', date_format='iso')
     encrypted_payload = encrypt_data(raw_json_str)
     with open(filename, 'w') as f:
@@ -143,8 +133,17 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     events_data = events_res.json().get('events', [])
     df = pd.DataFrame(events_data)
     df['timestamp'] = pd.to_datetime(df['timestamp'], format='ISO8601')
+
+    mask = (df['origin'].isna()) & (~df['location'].isin(iran_allies))
+    df.loc[mask, 'origin'] = 'IRN'
+    mask_inside_iran = (df['location'] == 'IRN') & (df['origin'].isna())
+    df.loc[mask_inside_iran, 'origin'] = 'ISR'
+
     df_irn = df[df['origin'] == 'IRN'].copy()
     
+
+ 
+
     if not df_irn.empty:
             # --- HOURLY DATA ---
             # 1. Group and unstack
@@ -196,7 +195,7 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     countries = inner_data.get('countries', [])
     
     # Define Blocs
-    iran_allies = ['IRN', 'YEM', 'LBN', 'SYR', 'PSE']
+    
     bloc_totals = {
         "Iran-Led Bloc": {"launched": 0, "intercepted": 0, "hits": 0, "mil_cas": 0, "civ_cas": 0},
         "US/Israel Bloc": {"launched": 0, "intercepted": 0, "hits": 0, "mil_cas": 0, "civ_cas": 0}
