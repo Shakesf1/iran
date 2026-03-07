@@ -134,11 +134,7 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     df = pd.DataFrame(events_data)
     df['timestamp'] = pd.to_datetime(df['timestamp'], format='ISO8601')
 
-    #mask = (df['origin'].isna()) & (~df['location'].isin(iran_allies))
-    #df.loc[mask, 'origin'] = 'IRN'
-    #mask_inside_iran = (df['location'] == 'IRN') & (df['origin'].isna())
-    df.loc[df, 'origin'] = 'ISR'
-    df = df[df['type'].isin(['strike'])]
+
 
     df_irn = df[df['origin'] == 'IRN'].copy()
     
