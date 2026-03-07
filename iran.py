@@ -164,7 +164,7 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     df_irn['cluster_time'] = df_irn['timestamp'].dt.round('10min')
 
     # Deduplicate: Keep only one record per location per 10-minute window
-    df_incidents = df_irn.drop_duplicates(subset=['cluster_time', 'location', 'origin']).copy()
+    df_incidents = df_irn.drop_duplicates(subset=['cluster_time', 'location']).copy()
 
     # 4. Final Grouping
 # 4. Final Grouping (Fixed 'H' to 'h' to resolve FutureWarning)

@@ -127,6 +127,7 @@ def process_and_save(strait_data):
                     transits_this_run += 1
 
             # Update history with latest position
+            print('Updating vessel history:', mmsi, name, curr_lon, curr_lat, ship_type)
             cursor.execute('''INSERT INTO vessel_history 
                   (mmsi, name, last_lon, last_lat, ship_type, update_time)
                   VALUES (?, ?, ?, ?, ?, ?)''', 
