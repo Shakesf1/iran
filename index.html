@@ -111,7 +111,29 @@
 <script src="monitor_core.js"></script>
     <script>
 
-
+const layoutBase = {
+    margin: { t: 10, r: 10, b: 40, l: 40 },
+    hovermode: 'x unified',
+    font: { family: 'Inter, sans-serif' },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    xaxis: { gridcolor: '#f1f5f9', zeroline: false },
+    yaxis: { gridcolor: '#f1f5f9' },
+    // WATERMARK ADDITION
+    annotations: [{
+        text: 'WARES CALATION . COM',
+        xref: 'paper',
+        yref: 'paper',
+        x: 0.5,
+        y: 0.5,
+        showarrow: false,
+        font: {
+            size: 30,
+            color: 'rgba(150, 150, 150, 0.1)' // Very faint transparent watermark
+        },
+        textangle: -30
+    }]
+};
 
 let fullBDTI = []; // Global store for filtering
 
@@ -273,6 +295,7 @@ function renderTransitChart(crossings, targetId, labelPrefix) {
         hovermode: 'x unified',
         font: { family: 'Inter, sans-serif' },
         paper_bgcolor: 'rgba(0,0,0,0)',
+        annotations: layoutBase.annotations,
         plot_bgcolor: 'rgba(0,0,0,0)',
         xaxis: { 
             gridcolor: '#f1f5f9',
