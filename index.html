@@ -257,26 +257,17 @@ async function renderEscalationCharts() {
     }], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
 
-    // --- CHART 3: STRATEGIC ESCALATION SCORE (Dynamic Fill) ---
-    const scoreTraces = [
-        // Grey Layer (Base)
-        {
-            x: x, y: scores,
-            type: 'scatter', mode: 'lines',
-            fill: 'tozeroy', 
-            fillcolor: 'rgba(148, 163, 184, 0.3)', // Slate-400 grey
-            line: { color: '#94a3b8', width: 1 },
-            showlegend: false, hoverinfo: 'skip'
-        },
-        // Red Layer (Only above 2.0)
+const scoreTraces = [
         {
             x: x, 
-            y: scores.map(v => v > threshold ? v : threshold),
-            type: 'scatter', mode: 'lines',
-            fill: 'tonexty', // This creates the "above 2" fill effect
-            fillcolor: 'rgba(220, 38, 38, 0.6)', // Red-600
-            line: { color: '#dc2626', width: 2 },
-            name: 'Escalation Level'
+            y: scores,
+            name: 'Escalation Score',
+            type: 'scatter',
+            mode: 'lines',
+            fill: 'tozeroy', 
+            fillcolor: 'rgba(148, 163, 184, 0.2)', // Light grey area
+            line: { color: '#64748b', width: 2 },  // Darker slate line
+            hovertemplate: 'Score: %{y}<extra></extra>'
         }
     ];
 
@@ -286,8 +277,18 @@ async function renderEscalationCharts() {
             ...layoutBase.yaxis,
             range: [0, Math.max(...scores, 3)],
             gridcolor: '#f1f5f9'
-        }
-        // Horizontal shape and annotation removed per your request
+        },
+        // Adding the single red horizontal line at 2.0
+        shapes: [{
+            type: 'line',
+            xref: 'paper', x0: 0, x1: 1, // Stretch across the full width
+            yref: 'y', y0: threshold, y1: threshold,
+            line: {
+                color: '#ef4444', // Red
+                width: 2,
+                dash: 'dash'      // Makes the line dashed
+            }
+        }]
     };
 
     Plotly.newPlot('scoreChart', scoreTraces, scoreLayout, { displaylogo: false, responsive: true, displayModeBar: false });
