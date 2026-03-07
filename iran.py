@@ -162,64 +162,44 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     df_incidents = df_irn.drop_duplicates(subset=['cluster_time', 'location', 'origin']).copy()
 
     # 4. Final Grouping
-    df_incidents['hour'] = df_incidents['timestamp'].dt.floor('H')
+# 4. Final Grouping (Fixed 'H' to 'h' to resolve FutureWarning)
+    df_incidents['hour'] = df_incidents['timestamp'].dt.floor('h')
     df_incidents['day'] = df_incidents['timestamp'].dt.floor('D')
         
-
-    if not df_irn.empty:
-            # --- HOURLY DATA ---
-            # 1. Group and unstack
-            hourly = df_irn.groupby(['hour','location']).size().unstack(fill_value=0)
+    # CRITICAL: Switch from df_irn to df_incidents for all calculations
+    if not df_incidents.empty:
+            # 1. Group incidents by hour and location
+            # Use 'h' instead of 'H' to avoid the FutureWarning
+            df_incidents['timestamp'] = df_incidents['timestamp'].dt.floor('h') 
+            
+            hourly = df_incidents.groupby(['timestamp', 'location']).size().unstack(fill_value=0)
             hourly_df = hourly.reset_index()
-            hourly_df['hour'] = hourly_df['hour'].dt.strftime('%Y-%m-%d %H:%M')
+            
+            # 2. Format for JSON
+            hourly_df['timestamp'] = hourly_df['timestamp'].dt.strftime('%Y-%m-%d %H:%M')
             hourly_df['total_attacks'] = hourly.sum(axis=1).values
                         
-            # 4. Use 'timestamp' as the unique key for persistence
-            update_persistent_json(hourly_df, 'hourly_data.json', ['hour'])
+            # 3. Persistence now finds 'timestamp' and succeeds
+            update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp'])
 
             # --- DAILY DATA ---
-
-            # 1. Group actual strikes by day
-            daily = df_irn.groupby(['day','location']).size().unstack(fill_value=0)
+            # Grouping clustered incidents by day and location
+            daily = df_incidents.groupby(['day','location']).size().unstack(fill_value=0)
             daily_df = daily.reset_index()
             daily_df['day'] = daily_df['day'].dt.strftime('%Y-%m-%d')
             daily_df['total_attacks'] = daily.sum(axis=1).values
             update_persistent_json(daily_df, 'daily_data.json', ['day'])
 
-            # 3. Handle Extrapolation (Only for the LIVE view)
-            # Reload the now-updated file to apply extrapolation to the current day only
-            current_daily = read_encrypted_df('daily_data.json')
-            
-            avg_pace = daily.sum(axis=1).tail(3).mean()
-            now = datetime.now(timezone.utc)
-            today_str = now.strftime('%Y-%m-%d')
-
-            # Calculate extra strikes for the remaining hours of today
-            hours_passed = now.hour + (now.minute / 60)
-            extra = avg_pace * ((24 - hours_passed) / 24) if hours_passed < 24 else 0
-
-            # Apply extrapolation column: 0 for history, 'extra' value for today
-            current_daily['Extrapolation'] = 0.0
-            current_daily['day'] = current_daily['day'].astype(str)
-            mask = current_daily['day'] == today_str
-            current_daily.loc[mask, 'Extrapolation'] = float(extra)
-            update_persistent_json(current_daily, 'daily_data.json', ['day'])
-
-        # 1. Base Tempo (Attacks per hour)
-            tempo = df_irn.groupby('hour').size().rename('attacks').reset_index()
+            # --- EXTRAPOLATION & SIGNALS ---
+            # Use df_incidents to calculate tempo and escalation
+            tempo = df_incidents.groupby('hour').size().rename('attacks').reset_index()
             tempo = tempo.sort_values('hour')
             
-            # 2. Rolling Averages for Acceleration Detection
             tempo['rolling_6h'] = tempo['attacks'].rolling(6, min_periods=1).mean()
             tempo['rolling_24h'] = tempo['attacks'].rolling(24, min_periods=1).mean()
-            tempo['tempo_change'] = (tempo['rolling_6h'] / tempo['rolling_24h']).fillna(1.0)
-            tempo['bar_color'] = tempo.apply(
-                    lambda x: '#ef4444' if x['rolling_6h'] > x['rolling_24h'] else '#94a3b8', 
-                    axis=1
-                )
-
-            # 3. Geographic & Proxy Spread
-            spread = df_irn.groupby('hour')['location'].nunique().rename('countries_hit').reset_index()
+            
+            # Use clustered data for geographic spread
+            spread = df_incidents.groupby('hour')['location'].nunique().rename('countries_hit').reset_index()
             signals = tempo.merge(spread, on='hour')
             
             signals['tempo_change'] = (signals['rolling_6h'] / signals['rolling_24h']).fillna(1.0)
@@ -227,10 +207,13 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
                 (signals['tempo_change'] * 0.7) + 
                 (signals['countries_hit'] * 0.3)
             ).round(2)
+            
+            signals['bar_color'] = signals.apply(
+                lambda x: '#ef4444' if x['rolling_6h'] > x['rolling_24h'] else '#94a3b8', 
+                axis=1
+            )
 
-            # 5. Persistence
             signals['timestamp'] = signals['hour'].dt.strftime('%Y-%m-%d %H:%M')
-            # Export to a new specialized file
             update_persistent_json(signals, 'escalation_signals.json', ['timestamp'])
 
     # --- PART B: PROCESS SUMMARY (BLOC TABLES) ---
