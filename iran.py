@@ -140,9 +140,24 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     df.loc[mask_inside_iran, 'origin'] = 'ISR'
     df = df[df['type'].isin(['launch', 'strike'])]
 
+
+
+
     df_irn = df[df['origin'] == 'IRN'].copy()
     
+    df_irn['time_diff'] = df_irn.groupby('location')['timestamp'].diff().dt.total_seconds()
+        
+    # Mark it as a new volley if the gap is > 5 minutes or if it's the first event
+    df_irn['is_new_volley'] = (df_irn['time_diff'] > 300) | (df_irn['time_diff'].isna())
+    
+    # Assign a unique ID to each group (volley)
+    df_irn['volley_id'] = df_irn.groupby('location')['is_new_volley'].cumsum()
 
+    # 4. Collapse the data: Group by Location and Volley ID, keep the first timestamp
+    df_irn = df_irn.groupby(['location', 'volley_id']).agg({
+        'timestamp': 'first',
+        'origin': 'first'
+    }).reset_index()
  
 
     if not df_irn.empty:
