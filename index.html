@@ -83,6 +83,25 @@
             <div id="cargoChart" class="w-full h-[350px]"></div>
         </section>
 
+        <section class="mb-16 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold mb-2 text-slate-800">Launch Tempo (Surge Detection)</h2>
+                <div id="tempoChart" class="h-[300px]"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold mb-2 text-slate-800">Theater Expansion (Target Spread)</h2>
+                <div id="spreadChart" class="h-[300px]"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold mb-2 text-slate-800">Proxy Coordination</h2>
+                <div id="proxyChart" class="h-[300px]"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 border-t-4 border-t-red-500">
+                <h2 class="text-xl font-bold mb-2 text-red-600 uppercase tracking-tighter">Combined Escalation Score</h2>
+                <div id="scoreChart" class="h-[300px]"></div>
+            </div>
+        </section>
+
 
     </div>
 <script src="monitor_core.js"></script>
@@ -164,6 +183,48 @@ function filterBDTI(range) {
     Plotly.newPlot('bdtiChart', [trace], layout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
 
+async function renderEscalationCharts() {
+    const res = await fetch('./escalation_signals.json');
+    const signals = descramble((await res.json()).payload);
+    
+    const layoutBase = {
+        margin: { t: 10, r: 10, b: 40, l: 40 },
+        font: { family: 'Inter, sans-serif' },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        xaxis: { gridcolor: '#f1f5f9' },
+        yaxis: { gridcolor: '#f1f5f9' }
+    };
+
+    // Chart 1: Tempo + Rolling 6h
+    Plotly.newPlot('tempoChart', [
+        { x: signals.map(s => s.timestamp), y: signals.map(s => s.attacks), name: 'Raw', type: 'bar', marker: {color: '#cbd5e1'} },
+        { x: signals.map(s => s.timestamp), y: signals.map(s => s.rolling_6h), name: '6h Trend', type: 'scatter', line: {color: '#ef4444', width: 3} }
+    ], layoutBase);
+
+    // Chart 2: Countries Hit
+    Plotly.newPlot('spreadChart', [{
+        x: signals.map(s => s.timestamp),
+        y: signals.map(s => s.countries_hit),
+        type: 'bar', marker: {color: '#8b5cf6'}
+    }], layoutBase);
+
+    // Chart 3: Proxy Coordination
+    Plotly.newPlot('proxyChart', [{
+        x: signals.map(s => s.timestamp),
+        y: signals.map(s => s.origins_active),
+        type: 'bar', marker: {color: '#f59e0b'}
+    }], layoutBase);
+
+    // Chart 4: Escalation Score (Area Chart)
+    Plotly.newPlot('scoreChart', [{
+        x: signals.map(s => s.timestamp),
+        y: signals.map(s => s.escalation_score),
+        fill: 'tozeroy', type: 'scatter', line: {color: '#dc2626'}
+    }], layoutBase);
+}
+
+
 function renderTransitChart(crossings, targetId, labelPrefix) {
     if (!crossings || crossings.length === 0) return;
 
@@ -221,7 +282,7 @@ function renderTransitChart(crossings, targetId, labelPrefix) {
 async function loadCharts() {
     try {
         await renderBDTI();
-
+        await renderEscalationCharts();
 
 
 

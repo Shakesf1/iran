@@ -132,37 +132,39 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     # --- PART A: PROCESS EVENTS (HOURLY/DAILY CHARTS) ---
     events_data = events_res.json().get('events', [])
     df = pd.DataFrame(events_data)
-    df['timestamp'] = pd.to_datetime(df['timestamp'], format='ISO8601')
 
+    df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
 
+    likely_targets = ['ISR','USA','JOR','SAU']
+    df['origin'] = df['origin'].fillna('UNK')
 
-    df_irn = df[df['origin'] == 'IRN'].copy()
+    df_irn = df[
+        (df['origin'].isin(iran_allies)) |
+        ((df['origin'] == 'UNK') & (df['location'].isin(likely_targets)))
+    ].copy()
+
+    df_irn['hour'] = df_irn['timestamp'].dt.floor('H')
+    df_irn['day'] = df_irn['timestamp'].dt.floor('D')
     
-
- 
 
     if not df_irn.empty:
             # --- HOURLY DATA ---
             # 1. Group and unstack
-            hourly = df_irn.groupby([df_irn['timestamp'].dt.floor('h'), 'location']).size().unstack(fill_value=0)
-            
-            # 2. Reset index first so 'timestamp' becomes a column
-            hourly_df = hourly.reset_index() 
-            
-            # 3. CONVERT TIMESTAMP TO STRING (This fixes the blank graph)
-            hourly_df['timestamp'] = hourly_df['timestamp'].dt.strftime('%Y-%m-%d %H:%M')
-            
+            hourly = df_irn.groupby(['hour','location']).size().unstack(fill_value=0)
+            hourly_df = hourly.reset_index()
+            hourly_df['hour'] = hourly_df['hour'].dt.strftime('%Y-%m-%d %H:%M')
+            hourly_df['total_attacks'] = hourly.sum(axis=1).values
+                        
             # 4. Use 'timestamp' as the unique key for persistence
             update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp'])
 
             # --- DAILY DATA ---
 
             # 1. Group actual strikes by day
-            daily = df_irn.groupby([df_irn['timestamp'].dt.floor('D'), 'location']).size().unstack(fill_value=0).sort_index()
-            daily.index = daily.index.strftime('%Y-%m-%d')
-            
-            # 2. Update persistent record of ACTUAL strikes (no extrapolation here)
-            daily_df = daily.reset_index().rename(columns={'timestamp': 'day'})
+            daily = df_irn.groupby(['day','location']).size().unstack(fill_value=0)
+            daily_df = daily.reset_index()
+            daily_df['day'] = daily_df['day'].dt.strftime('%Y-%m-%d')
+            daily_df['total_attacks'] = daily.sum(axis=1).values
             update_persistent_json(daily_df, 'daily_data.json', ['day'])
 
             # 3. Handle Extrapolation (Only for the LIVE view)
