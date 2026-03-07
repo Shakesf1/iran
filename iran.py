@@ -93,11 +93,11 @@ def update_persistent_json(new_df, filename, keys, rolling_days=5):
                 date_col = next((c for c in ['day', 'date', 'timestamp'] if c in existing_df.columns), None)
                 
                 if date_col and rolling_days > 0:
-                    # Use format='mixed' to handle both YYYY-MM-DD and YYYY-MM-DD HH:MM
-                    existing_df[date_col] = pd.to_datetime(existing_df[date_col], format='mixed')
-                    new_df[date_col] = pd.to_datetime(new_df[date_col], format='mixed')
+                    # Force both existing and new data to be UTC-aware
+                    existing_df[date_col] = pd.to_datetime(existing_df[date_col], format='mixed', utc=True)
+                    new_df[date_col] = pd.to_datetime(new_df[date_col], format='mixed', utc=True)
                     
-                    # WIPE the rolling window from history to allow fresh overwrite
+                    # This now works because both sides are UTC-aware
                     cutoff = datetime.now(timezone.utc) - pd.Timedelta(days=rolling_days)
                     existing_df = existing_df[existing_df[date_col] < cutoff]
 
@@ -185,7 +185,8 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
             hourly_df['total_attacks'] = hourly.sum(axis=1).values
                         
             # 3. Persistence now finds 'timestamp' and succeeds
-            update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp', 'location'])
+            print(hourly_df.head())  # Debug: Check the structure before saving
+            update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp'])
 
             # --- DAILY DATA ---
             # Grouping clustered incidents by day and location
@@ -268,7 +269,6 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     
     print(f"Successfully synced summary and history for: {inner_data.get('asOf')}")
     
-    print(f"Successfully synced: {inner_data.get('asOf')}")
 
 else:
     print(f"Error: Events ({events_res.status_code}) Summary ({summary_res.status_code})")
