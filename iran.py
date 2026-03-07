@@ -138,6 +138,7 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     df.loc[mask, 'origin'] = 'IRN'
     mask_inside_iran = (df['location'] == 'IRN') & (df['origin'].isna())
     df.loc[mask_inside_iran, 'origin'] = 'ISR'
+    df = df[df['type'].isin(['launch', 'strike'])]
 
     df_irn = df[df['origin'] == 'IRN'].copy()
     
