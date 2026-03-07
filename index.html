@@ -73,6 +73,17 @@
             <div id="bdtiChart" class="w-full h-[400px]"></div>
         </section>
 
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: VLCC Transits (Crude Oil)</h2>
+            <div id="vlccChart" class="w-full h-[350px]"></div>
+        </section>
+
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: General Cargo Transits</h2>
+            <div id="cargoChart" class="w-full h-[350px]"></div>
+        </section>
+
+
     </div>
 <script src="monitor_core.js"></script>
     <script>
@@ -153,21 +164,85 @@ function filterBDTI(range) {
     Plotly.newPlot('bdtiChart', [trace], layout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
 
+function renderTransitChart(crossings, targetId, labelPrefix) {
+    if (!crossings || crossings.length === 0) return;
+
+    // 1. Group by unique Hour/Day strings from the data
+    const hourlyGroups = {};
+    crossings.forEach(c => {
+        // Formats the key as "YYYY-MM-DD HH:00" for logical sorting
+        const hour = c.time.split(':')[0] + ":00"; 
+        if (!hourlyGroups[hour]) hourlyGroups[hour] = { WESTBOUND: [], EASTBOUND: [] };
+        hourlyGroups[hour][c.dir].push(`${c.name} (${c.mmsi})`);
+    });
+
+    const sortedHours = Object.keys(hourlyGroups).sort();
+    
+    const directions = [
+        { key: 'WESTBOUND', color: '#f43f5e', name: 'Westbound' },
+        { key: 'EASTBOUND', color: '#10b981', name: 'Eastbound' }
+    ];
+
+    const traces = directions.map(d => ({
+        x: sortedHours,
+        y: sortedHours.map(h => hourlyGroups[h][d.key].length),
+        name: d.name,
+        type: 'bar',
+        marker: { color: d.color },
+        customdata: sortedHours.map(h => hourlyGroups[h][d.key].join('<br>')),
+        // The hover will show the ship names
+        hovertemplate: `<b>%{y} ${labelPrefix}</b><br>%{customdata}<extra></extra>`
+    }));
+
+    const layout = {
+        barmode: 'group',
+        margin: { t: 10, r: 10, b: 60, l: 40 },
+        hovermode: 'x unified',
+        font: { family: 'Inter, sans-serif' },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        xaxis: { 
+            gridcolor: '#f1f5f9',
+            // Format to show Day/Month Hour:Minute (e.g. 07/Mar 15:00)
+            tickformat: '%d/%b %H:%M',
+            tickangle: -45,
+            automargin: true
+        },
+        yaxis: { 
+            gridcolor: '#f1f5f9', 
+            title: "Vessels",
+            dtick: 1 // Integer steps for ships
+        }
+    };
+
+    Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
+}
 
 async function loadCharts() {
     try {
         await renderBDTI();
 
-        const [dailyRes, hourlyRes, summaryRes] = await Promise.all([
+
+
+
+        const [dailyRes, hourlyRes, summaryRes, shippingRes] = await Promise.all([
             fetch('./daily_data.json'),
             fetch('./hourly_data.json'),
-            fetch('./summary_latest.json')
+            fetch('./summary_latest.json'),
+            fetch('./dashboard_stats.json')
         ]);
 
-        // Decrypt all data first
+        // 2. Decrypt all data using your descramble function
         const dailyData = descramble((await dailyRes.json()).payload);
         const hourlyData = descramble((await hourlyRes.json()).payload);
         const summaryData = descramble((await summaryRes.json()).payload);
+        const shippingData = descramble((await shippingRes.json()).payload);
+
+        // 3. Render the new Maritime chart
+        const vlccData = shippingData.crossings.filter(c => c.ship_type === 'VLCC');
+        const cargoData = shippingData.crossings.filter(c => c.ship_type === 'Cargo');
+        renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
+        renderTransitChart(cargoData, 'cargoChart', 'Cargo Ships');
 
         // Move the timestamp to the footer instead of the header
         const apiTime = new Date(summaryData.asOf).toLocaleString([], {

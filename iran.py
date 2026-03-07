@@ -14,7 +14,7 @@ pd.set_option('display.width', None)
 # API Endpoints
 EVENTS_URL = "https://iranstrike.com/api/events"
 SUMMARY_URL = "https://iranstrike.com/api/summary"
-iran_allies = ['IRN', 'YEM', 'LBN', 'SYR', 'PSE']
+iran_allies = ['IRN', 'YEM', 'LBN', 'SYR', 'PSE', 'IRQ']
 import re
 import base64
 
