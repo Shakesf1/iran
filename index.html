@@ -20,8 +20,8 @@
         <header class="mb-12 border-b border-slate-200 pb-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-4xl font-extrabold tracking-tight text-slate-800">Iran Strike Monitor</h1>
-                    <p class="text-slate-500 mt-2 italic">Monitoring the cost-asymmetry of regional defense.</p>
+                    <h1 class="text-4xl font-extrabold tracking-tight text-slate-800">War Escalation Monitor: Iran</h1>
+                    <p class="text-slate-500 mt-2 italic">Monitoring the cost-asymmetry of regional defense and escalation.</p>
                 </div>
                 <div class="bg-white border border-slate-200 rounded-lg px-4 py-2 shadow-sm text-sm">
                     <div class="flex items-center gap-2 mb-1">
@@ -218,37 +218,58 @@ async function renderEscalationCharts() {
     const signals = descramble((await res.json()).payload);
     
     const x = signals.map(s => s.timestamp);
+    const scores = signals.map(s => s.escalation_score);
 
-    // Chart 1: Tempo with 24h Avg & Conditional Coloring
-    Plotly.newPlot('tempoChart', [
-        { 
-            x: x, y: signals.map(s => s.attacks), 
-            name: 'Raw Attacks', type: 'bar', 
-            marker: { color: signals.map(s => s.bar_color) } 
+    // ... (Keep Chart 1 and Chart 2 as they are) ...
+
+    // Chart 3: Escalation Score with Conditional Coloring
+    const threshold = 2.0;
+    
+    const traces = [
+        // Layer 1: The "Base" (Grey fill for everything)
+        {
+            x: x, y: scores,
+            name: 'Base Score', type: 'scatter',
+            fill: 'tozeroy', fillcolor: 'rgba(148, 163, 184, 0.2)', // Slate-400
+            line: { color: '#94a3b8', shape: 'spline', width: 1 },
+            showlegend: false
         },
-        { 
-            x: x, y: signals.map(s => s.rolling_6h), 
-            name: '6h Trend', type: 'scatter', line: { color: 'black', width: 2 } 
-        },
-        { 
-            x: x, y: signals.map(s => s.rolling_24h), 
-            name: '24h Baseline', type: 'scatter', line: { color: '#3b82f6', dash: 'dot', width: 2 } 
+        // Layer 2: The "Danger Zone" (Red fill ONLY above threshold)
+        {
+            x: x, 
+            y: scores.map(v => v > threshold ? v : threshold),
+            name: 'Escalation', type: 'scatter',
+            fill: 'tonexty', // Fills between this line and the one before it
+            fillcolor: 'rgba(220, 38, 38, 0.4)', // Red-600
+            line: { color: '#dc2626', shape: 'spline', width: 2 },
+            hovertemplate: 'Score: %{y}<extra></extra>'
         }
-    ], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
+    ];
 
-    // Chart 2: Theater Spread (Simplified)
-    Plotly.newPlot('spreadChart', [{
-        x: x, y: signals.map(s => s.countries_hit),
-        type: 'bar', marker: { color: '#8b5cf6' }
-    }], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
+    const scoreLayout = {
+        ...layoutBase,
+        yaxis: { 
+            ...layoutBase.yaxis,
+            range: [0, Math.max(...scores, 3)] // Ensure line at 2 is always visible
+        },
+        shapes: [{
+            type: 'line',
+            xref: 'paper', x0: 0, x1: 1,
+            yref: 'y', y0: threshold, y1: threshold,
+            line: { color: 'rgba(220, 38, 38, 0.8)', width: 2, dash: 'dot' }
+        }],
+        annotations: [
+            ...layoutBase.annotations,
+            {
+                xref: 'paper', x: 1, yref: 'y', y: threshold,
+                text: 'CRITICAL', showarrow: false,
+                font: { color: '#dc2626', size: 10, weight: 'bold' },
+                xanchor: 'right', yanchor: 'bottom'
+            }
+        ]
+    };
 
-    // Chart 3: Escalation Score
-    Plotly.newPlot('scoreChart', [{
-        x: x, y: signals.map(s => s.escalation_score),
-        fill: 'tozeroy', type: 'scatter', 
-        line: { color: '#dc2626', shape: 'spline' },
-        fillcolor: 'rgba(220, 38, 38, 0.1)'
-    }], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
+    Plotly.newPlot('scoreChart', traces, scoreLayout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
 
 
