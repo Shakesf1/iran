@@ -148,10 +148,15 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     # We assume IRN origin if:
     # - It's explicitly in the ally list
     # - OR it hits a likely target and the origin is unknown
+    
     df_irn = df[
-        (df['origin'].isin(iran_allies)) |
-        ((df['origin'] == 'UNK') & (df['location'].isin(likely_targets)))
+        (
+            (df['origin'].isin(iran_allies)) |
+            ((df['origin'] == 'UNK') & (df['location'].isin(likely_targets)))
+        ) & 
+        (df['type'] == 'strike') # ['strike', 'report', 'intercept', 'defense', 'movement'] ==> Only strike is relevant
     ].copy()
+
 
     # 3. INCIDENT CLUSTERING (The Fix for Overcounting)
     # Round timestamps to 10-minute windows.
