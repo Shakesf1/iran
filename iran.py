@@ -130,22 +130,41 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     sync_bdti_5y(session)
 
     # --- PART A: PROCESS EVENTS (HOURLY/DAILY CHARTS) ---
+    # 1. Load data
     events_data = events_res.json().get('events', [])
     df = pd.DataFrame(events_data)
-
     df['timestamp'] = pd.to_datetime(df['timestamp'], format='ISO8601', utc=True)
 
-    likely_targets = ['ISR','USA','JOR','SAU']
+    # 2. Refined Origin Logic
+    # Instead of just location, check for indicators of Iranian-linked activity
+    likely_targets = [
+    'ISR', 'USA', 'JOR', 'SAU',  # Original core
+    'CYP', 'TUR', 'ARE', 'KWT',  # Cyprus, Turkey, UAE, Kuwait
+    'BHR', 'OMN', 'QAT', 'EGY',  # Bahrain, Oman, Qatar, Egypt
+    'SDN', 'ERI', 'DJI'          # Red Sea/Horn of Africa (relevant for shipping strikes)
+]
     df['origin'] = df['origin'].fillna('UNK')
 
+    # We assume IRN origin if:
+    # - It's explicitly in the ally list
+    # - OR it hits a likely target and the origin is unknown
     df_irn = df[
         (df['origin'].isin(iran_allies)) |
         ((df['origin'] == 'UNK') & (df['location'].isin(likely_targets)))
     ].copy()
 
-    df_irn['hour'] = df_irn['timestamp'].dt.floor('H')
-    df_irn['day'] = df_irn['timestamp'].dt.floor('D')
-    
+    # 3. INCIDENT CLUSTERING (The Fix for Overcounting)
+    # Round timestamps to 10-minute windows.
+    # If 20 drones hit the same city in 10 minutes, they become 1 'incident'.
+    df_irn['cluster_time'] = df_irn['timestamp'].dt.round('10min')
+
+    # Deduplicate: Keep only one record per location per 10-minute window
+    df_incidents = df_irn.drop_duplicates(subset=['cluster_time', 'location', 'origin']).copy()
+
+    # 4. Final Grouping
+    df_incidents['hour'] = df_incidents['timestamp'].dt.floor('H')
+    df_incidents['day'] = df_incidents['timestamp'].dt.floor('D')
+        
 
     if not df_irn.empty:
             # --- HOURLY DATA ---

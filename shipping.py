@@ -149,43 +149,52 @@ def export_stats():
     # This finds ships that moved from one side of the buffer to the other
     # between any two updates for that ship.
     cursor.execute(f'''
-        SELECT 
-                    strftime('%Y-%m-%d %H:%M', h1.update_time) as transit_time,
-                    h1.mmsi, 
-                    h1.name,
-                    CASE 
-                        WHEN h1.last_lon < 56.2 THEN 'WESTBOUND'
-                        WHEN h1.last_lon > 56.4 THEN 'EASTBOUND'
-                    END as direction,
-                    CASE WHEN h1.ship_type = 8 THEN 'VLCC' ELSE 'Cargo' END as ship_type
-                FROM vessel_history h1
-                WHERE (h1.last_lon < 56.2 OR h1.last_lon > 56.4)
-                -- 1. Must have been on the OPPOSITE side at some point previously
-                AND EXISTS (
-                    SELECT 1 FROM vessel_history h2
-                    WHERE h2.mmsi = h1.mmsi
-                    AND h2.update_time < h1.update_time
-                    AND (
-                        (h1.last_lon < 56.2 AND h2.last_lon > 56.4) OR 
-                        (h1.last_lon > 56.4 AND h2.last_lon < 56.2)
-                    )
-                )
-                -- 2. ANTI-DUPLICATE: Ensure this is the FIRST ping after crossing the line
-                AND NOT EXISTS (
-                    SELECT 1 FROM vessel_history h3
-                    WHERE h3.mmsi = h1.mmsi
-                    AND h3.update_time < h1.update_time
-                    AND h3.update_time > (
-                        SELECT MAX(update_time) FROM vessel_history 
-                        WHERE mmsi = h1.mmsi AND update_time < h1.update_time 
-                        AND ((h1.last_lon < 56.2 AND last_lon > 56.4) OR (h1.last_lon > 56.4 AND last_lon < 56.2))
-                    )
-                    AND (
-                        (h1.last_lon < 56.2 AND h3.last_lon < 56.2) OR 
-                        (h1.last_lon > 56.4 AND h3.last_lon > 56.4)
-                    )
-                )
-                ORDER BY h1.update_time ASC;
+SELECT 
+    strftime('%Y-%m-%d %H:%M', h1.update_time) as transit_time,
+    h1.mmsi, 
+    h1.name,
+    CASE 
+        WHEN h1.last_lon < 56.2 THEN 'WESTBOUND'
+        WHEN h1.last_lon > 56.4 THEN 'EASTBOUND'
+    END as direction,
+    CASE WHEN h1.ship_type = 8 THEN 'VLCC' ELSE 'Cargo' END as ship_type
+FROM vessel_history h1
+WHERE (h1.last_lon < 56.2 OR h1.last_lon > 56.4)
+
+-- 1. Directional Validation: Must have been on the OPPOSITE side previously
+AND EXISTS (
+    SELECT 1 FROM vessel_history h2
+    WHERE h2.mmsi = h1.mmsi
+    AND h2.update_time < h1.update_time
+    AND (
+        (h1.last_lon < 56.2 AND h2.last_lon > 56.4) OR 
+        (h1.last_lon > 56.4 AND h2.last_lon < 56.2)
+    )
+)
+
+-- 2. GLOBAL LOCKOUT: Ignore ANY transit for this MMSI if one occurred in the last 12h
+-- This prevents ARTMAN from toggling between West/East rapidly
+AND NOT EXISTS (
+    SELECT 1 FROM vessel_history h_recent
+    WHERE h_recent.mmsi = h1.mmsi
+    AND h_recent.update_time < h1.update_time
+    AND h_recent.update_time > datetime(h1.update_time, '-12 hours')
+    -- Check if it was already recorded on EITHER side within the lockout window
+    AND (h_recent.last_lon < 56.2 OR h_recent.last_lon > 56.4)
+    -- Crucial: Check that the recent ping had the OPPOSITE side history too
+    -- (This ensures we only lockout AFTER a successful transit was detected)
+    AND EXISTS (
+        SELECT 1 FROM vessel_history h_hist
+        WHERE h_hist.mmsi = h_recent.mmsi
+        AND h_hist.update_time < h_recent.update_time
+        AND (
+            (h_recent.last_lon < 56.2 AND h_hist.last_lon > 56.4) OR 
+            (h_recent.last_lon > 56.4 AND h_hist.last_lon < 56.2)
+        )
+    )
+)
+
+ORDER BY h1.update_time ASC;
     ''')
     
     crossings = [
@@ -200,29 +209,48 @@ def export_stats():
     
     # 2. DORMANT SHIPS: Same as before, checking for no movement over 2 hours
     cursor.execute('''
+        WITH LastTwoPositions AS (
+            SELECT 
+                mmsi,
+                last_lat,
+                last_lon,
+                update_time,
+                strftime('%Y-%m-%d %H:%M', update_time) as scrape_minute,
+                strftime('%Y-%m-%d %H:00', update_time) as scrape_hour,
+                LAG(last_lat) OVER (PARTITION BY mmsi ORDER BY update_time) as prev_lat,
+                LAG(last_lon) OVER (PARTITION BY mmsi ORDER BY update_time) as prev_lon,
+                LAG(update_time) OVER (PARTITION BY mmsi ORDER BY update_time) as prev_time
+            FROM vessel_history
+            WHERE update_time >= datetime('now', '-48 hours')
+        ),
+        DormancyCheck AS (
+            SELECT 
+                scrape_hour,
+                scrape_minute,
+                mmsi,
+                -- Using a slightly stricter threshold: 0.003 degrees (~300m) 
+                -- to ensure they are REALLY not moving.
+                CASE WHEN ABS(last_lat - prev_lat) < 0.003 AND ABS(last_lon - prev_lon) < 0.003 
+                    THEN 1 ELSE 0 END as is_dormant
+            FROM LastTwoPositions
+            WHERE prev_lat IS NOT NULL 
+            AND prev_time >= datetime(update_time, '-4 hours')
+        ),
+        MinuteTotals AS (
+            SELECT 
+                scrape_hour,
+                scrape_minute,
+                SUM(is_dormant) as dormant_in_batch
+            FROM DormancyCheck
+            GROUP BY scrape_minute
+        )
         SELECT 
-            strftime('%Y-%m-%d %H:%M', h1.update_time) as scrape_minute,
-            COUNT(DISTINCT h1.mmsi) as dormant_count
-        FROM vessel_history h1
-        WHERE h1.update_time >= datetime('now', '-24 hours')
-        AND h1.last_lon = (
-            SELECT h2.last_lon 
-            FROM vessel_history h2 
-            WHERE h2.mmsi = h1.mmsi 
-                AND h2.update_time <= datetime(h1.update_time, '-2 hours')
-            ORDER BY h2.update_time DESC 
-            LIMIT 1
-        )
-        AND h1.last_lat = (
-            SELECT h2.last_lat 
-            FROM vessel_history h2 
-            WHERE h2.mmsi = h1.mmsi 
-                AND h2.update_time <= datetime(h1.update_time, '-2 hours')
-            ORDER BY h2.update_time DESC 
-            LIMIT 1
-        )
-        GROUP BY scrape_minute
-        ORDER BY scrape_minute ASC;
+            scrape_hour,
+            -- Using ROUND(AVG()) instead of MAX() to kill the 'saw-tooth' spikes
+            CAST(AVG(dormant_in_batch) AS INT) as unique_dormant_vessels
+        FROM MinuteTotals
+        GROUP BY scrape_hour
+        ORDER BY scrape_hour ASC;
     ''')
     
     dormant = [{"time": r[0], "count": r[1]} for r in cursor.fetchall()]
