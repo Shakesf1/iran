@@ -156,7 +156,7 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
             hourly_df['total_attacks'] = hourly.sum(axis=1).values
                         
             # 4. Use 'timestamp' as the unique key for persistence
-            update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp'])
+            update_persistent_json(hourly_df, 'hourly_data.json', ['hour'])
 
             # --- DAILY DATA ---
 

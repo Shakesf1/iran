@@ -121,7 +121,7 @@ const layoutBase = {
     yaxis: { gridcolor: '#f1f5f9' },
     // WATERMARK ADDITION
     annotations: [{
-        text: 'WARES CALATION . COM',
+        text: 'WARESCALATION.COM',
         xref: 'paper',
         yref: 'paper',
         x: 0.5,
@@ -376,32 +376,34 @@ async function loadCharts() {
         function createTrace(data, xField) {
             if (!data || data.length === 0) return [];
             
-            // Get location keys (e.g., ISR, IRQ) and filter out xField and Extrapolation
-            const keys = Object.keys(data[0]).filter(k => k !== xField && k !== 'Extrapolation');
+            // 1. Identify country/location keys (e.g., ISR, USA) 
+            // Exclude metadata fields and the 'total_attacks' field from your python export
+            const exclude = [xField, 'Extrapolation', 'total_attacks', 'hour', 'day', 'timestamp'];
+            const keys = Object.keys(data[0]).filter(k => !exclude.includes(k));
             
-            // Create standard traces for each country
+            // 2. Create the visible stacked bars for each country
             const traces = keys.map(key => ({
                 x: data.map(d => d[xField]),
                 y: data.map(d => d[key]),
                 name: key, 
                 type: 'bar',
-                hovertemplate: '%{y}<extra></extra>' // Simplifies hover text
+                hovertemplate: '%{y}<extra></extra>' 
             }));
 
-            // Add Extrapolation if it exists
+            // 3. Add Extrapolation bar if it exists
             if (data[0].hasOwnProperty('Extrapolation')) {
                 traces.push({
                     x: data.map(d => d[xField]),
                     y: data.map(d => d['Extrapolation']),
-                    name: 'Extrapolation',
+                    name: 'Forecast',
                     type: 'bar',
                     marker: { color: '#cbd5e1' },
                     opacity: 0.6,
-                    hovertemplate: '%{y}<extra></extra>'
+                    hovertemplate: '%{y} (est)<extra></extra>'
                 });
             }
 
-            // --- NEW: Add the Total Trace ---
+            // 4. Calculate Total for the hover label (SCATTER mode ensures it doesn't add a bar)
             const totalY = data.map(d => {
                 return keys.reduce((sum, key) => sum + (Number(d[key]) || 0), 0) + (Number(d.Extrapolation) || 0);
             });
@@ -410,10 +412,11 @@ async function loadCharts() {
                 x: data.map(d => d[xField]),
                 y: totalY,
                 name: 'TOTAL',
-                type: 'scatter',
+                type: 'scatter', // Use scatter so it doesn't become a bar in the stack
                 mode: 'lines',
-                line: { color: 'transparent', width: 0 }, // Invisible on the chart
+                line: { color: 'transparent', width: 0 }, 
                 hoverinfo: 'y',
+                showlegend: false, // Don't show "TOTAL" in the legend to keep it clean
                 hovertemplate: '<b>Total: %{y}</b><extra></extra>'
             });
 
@@ -429,7 +432,7 @@ async function loadCharts() {
         };
 
         Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, { displaylogo: false, responsive: true, displayModeBar: false });
-        Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'timestamp'), layout, { displaylogo: false, responsive: true, displayModeBar: false  });
+        Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'hour'), layout, { displaylogo: false, responsive: true, displayModeBar: false });
 
     } catch (err) {
         console.error("Error loading data:", err);
