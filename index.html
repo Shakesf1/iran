@@ -390,7 +390,7 @@ async function loadCharts() {
                 y: data.map(d => d[key]),
                 name: key, 
                 type: 'bar',
-                hovertemplate: '%{y}<extra></extra>' 
+                hovertemplate: `<b>${key}</b>: %{y}<extra></extra>`
             }));
 
             // 3. Add Extrapolation bar if it exists
