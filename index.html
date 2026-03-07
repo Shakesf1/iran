@@ -234,13 +234,13 @@ async function renderEscalationCharts() {
             x: x, y: signals.map(s => s.rolling_24h), 
             name: '24h Baseline', type: 'scatter', line: { color: '#3b82f6', dash: 'dot', width: 2 } 
         }
-    ], layoutBase);
+    ], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
     // Chart 2: Theater Spread (Simplified)
     Plotly.newPlot('spreadChart', [{
         x: x, y: signals.map(s => s.countries_hit),
         type: 'bar', marker: { color: '#8b5cf6' }
-    }], layoutBase);
+    }], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
     // Chart 3: Escalation Score
     Plotly.newPlot('scoreChart', [{
@@ -248,7 +248,7 @@ async function renderEscalationCharts() {
         fill: 'tozeroy', type: 'scatter', 
         line: { color: '#dc2626', shape: 'spline' },
         fillcolor: 'rgba(220, 38, 38, 0.1)'
-    }], layoutBase);
+    }], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 }
 
 
