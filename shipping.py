@@ -150,31 +150,53 @@ def export_stats():
     # between any two updates for that ship.
     cursor.execute(f'''
         SELECT 
-            strftime('%Y-%m-%d %H:%M', h1.update_time) as transit_time,
-            h1.mmsi, 
-            h1.name,
-            CASE 
-                WHEN h2.last_lon >= {EAST_LIMIT} AND h1.last_lon <= {WEST_LIMIT} THEN 'WESTBOUND'
-                WHEN h2.last_lon <= {WEST_LIMIT} AND h1.last_lon >= {EAST_LIMIT} THEN 'EASTBOUND'
-            END as direction
-        FROM vessel_history h1
-        JOIN vessel_history h2 ON h1.mmsi = h2.mmsi
-        WHERE h1.update_time >= datetime('now', '-24 hours')
-        -- This subquery ensures h2 is the very last known position before h1
-        AND h2.update_time = (
-            SELECT MAX(update_time) 
-            FROM vessel_history 
-            WHERE mmsi = h1.mmsi AND update_time < h1.update_time
-        )
-        -- Filter to ONLY include rows where a crossing actually happened
-        AND (
-            (h2.last_lon >= {EAST_LIMIT} AND h1.last_lon <= {WEST_LIMIT}) OR
-            (h2.last_lon <= {WEST_LIMIT} AND h1.last_lon >= {EAST_LIMIT})
-        )
-        ORDER BY h1.update_time DESC;
+                    strftime('%Y-%m-%d %H:%M', h1.update_time) as transit_time,
+                    h1.mmsi, 
+                    h1.name,
+                    CASE 
+                        WHEN h1.last_lon < 56.2 THEN 'WESTBOUND'
+                        WHEN h1.last_lon > 56.4 THEN 'EASTBOUND'
+                    END as direction,
+                    CASE WHEN h1.ship_type = 8 THEN 'VLCC' ELSE 'Cargo' END as ship_type
+                FROM vessel_history h1
+                WHERE (h1.last_lon < 56.2 OR h1.last_lon > 56.4)
+                -- 1. Must have been on the OPPOSITE side at some point previously
+                AND EXISTS (
+                    SELECT 1 FROM vessel_history h2
+                    WHERE h2.mmsi = h1.mmsi
+                    AND h2.update_time < h1.update_time
+                    AND (
+                        (h1.last_lon < 56.2 AND h2.last_lon > 56.4) OR 
+                        (h1.last_lon > 56.4 AND h2.last_lon < 56.2)
+                    )
+                )
+                -- 2. ANTI-DUPLICATE: Ensure this is the FIRST ping after crossing the line
+                AND NOT EXISTS (
+                    SELECT 1 FROM vessel_history h3
+                    WHERE h3.mmsi = h1.mmsi
+                    AND h3.update_time < h1.update_time
+                    AND h3.update_time > (
+                        SELECT MAX(update_time) FROM vessel_history 
+                        WHERE mmsi = h1.mmsi AND update_time < h1.update_time 
+                        AND ((h1.last_lon < 56.2 AND last_lon > 56.4) OR (h1.last_lon > 56.4 AND last_lon < 56.2))
+                    )
+                    AND (
+                        (h1.last_lon < 56.2 AND h3.last_lon < 56.2) OR 
+                        (h1.last_lon > 56.4 AND h3.last_lon > 56.4)
+                    )
+                )
+                ORDER BY h1.update_time ASC;
     ''')
     
-    crossings = [{"time": r[0], "mmsi": r[1], "name": r[2], "dir": r[3]} for r in cursor.fetchall()]
+    crossings = [
+        {
+            "time": r[0], 
+            "mmsi": r[1], 
+            "name": r[2], 
+            "dir": r[3],
+            "ship_type": r[4]
+        } for r in cursor.fetchall()
+    ]
     
     # 2. DORMANT SHIPS: Same as before, checking for no movement over 2 hours
     cursor.execute('''
