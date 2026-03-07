@@ -98,7 +98,7 @@ def update_persistent_json(new_df, filename, keys, rolling_days=5):
                     new_df[date_col] = pd.to_datetime(new_df[date_col], format='mixed')
                     
                     # WIPE the rolling window from history to allow fresh overwrite
-                    cutoff = datetime.now() - pd.Timedelta(days=rolling_days)
+                    cutoff = datetime.now(timezone.utc) - pd.Timedelta(days=rolling_days)
                     existing_df = existing_df[existing_df[date_col] < cutoff]
 
                 # 3. Combine
@@ -185,7 +185,7 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
             hourly_df['total_attacks'] = hourly.sum(axis=1).values
                         
             # 3. Persistence now finds 'timestamp' and succeeds
-            update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp'])
+            update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp', 'location'])
 
             # --- DAILY DATA ---
             # Grouping clustered incidents by day and location
