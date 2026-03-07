@@ -230,8 +230,9 @@ async function renderEscalationCharts() {
     const res = await fetch('./escalation_signals.json');
     const signals = descramble((await res.json()).payload);
     
- const x = signals.map(s => s.timestamp);
-
+    const x = signals.map(s => s.timestamp);
+    const scores = signals.map(s => s.escalation_score); // Added definition
+    const threshold = 2.0; // Added const
     // Chart 1: Tempo with 24h Avg & Conditional Coloring
     Plotly.newPlot('tempoChart', [
         { 
@@ -255,7 +256,7 @@ async function renderEscalationCharts() {
         type: 'bar', marker: { color: '#8b5cf6' }
     }], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
-    threshold = 2.0; // Define the escalation threshold
+
     // --- CHART 3: STRATEGIC ESCALATION SCORE (Dynamic Fill) ---
     const scoreTraces = [
         // Grey Layer (Base)
