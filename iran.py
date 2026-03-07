@@ -194,19 +194,19 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
             tempo['rolling_6h'] = tempo['attacks'].rolling(6, min_periods=1).mean()
             tempo['rolling_24h'] = tempo['attacks'].rolling(24, min_periods=1).mean()
             tempo['tempo_change'] = (tempo['rolling_6h'] / tempo['rolling_24h']).fillna(1.0)
+            tempo['bar_color'] = tempo.apply(
+                    lambda x: '#ef4444' if x['rolling_6h'] > x['rolling_24h'] else '#94a3b8', 
+                    axis=1
+                )
 
             # 3. Geographic & Proxy Spread
-            spread = df_irn.groupby('hour').agg({
-                'location': 'nunique',
-                'origin': 'nunique'
-            }).rename(columns={'location': 'countries_hit', 'origin': 'origins_active'}).reset_index()
-
-            # 4. Final Escalation Score
+            spread = df_irn.groupby('hour')['location'].nunique().rename('countries_hit').reset_index()
             signals = tempo.merge(spread, on='hour')
+            
+            signals['tempo_change'] = (signals['rolling_6h'] / signals['rolling_24h']).fillna(1.0)
             signals['escalation_score'] = (
-                (signals['tempo_change'] * 0.6) + 
-                (signals['countries_hit'] * 0.25) + 
-                (signals['origins_active'] * 0.15)
+                (signals['tempo_change'] * 0.7) + 
+                (signals['countries_hit'] * 0.3)
             ).round(2)
 
             # 5. Persistence

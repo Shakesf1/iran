@@ -46,6 +46,27 @@
             </div>
         <p id="api-footer" class="text-[10px] text-slate-400 italic mb-12 ml-1"></p>
 
+        <section class="mb-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold text-slate-800">Launch Tempo</h2>
+                <p class="text-sm text-slate-500 mb-4">Measures attack frequency. 
+                    <span class="text-red-500 font-bold">Red bars</span> indicate the 6h surge is exceeding the 24h baseline (High Intensity).</p>
+                <div id="tempoChart" class="h-[300px]"></div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold text-slate-800">Theater Spread</h2>
+                <p class="text-sm text-slate-500 mb-4">Unique countries/territories targeted per hour. A spike here indicates conflict horizontal expansion.</p>
+                <div id="spreadChart" class="h-[300px]"></div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-red-600">
+                <h2 class="text-xl font-bold text-red-600 uppercase tracking-tighter">Strategic Escalation Score</h2>
+                <p class="text-sm text-slate-500 mb-4">A combined index of launch acceleration and geographic spread. Scores > 2.0 signal a major shift in operational tempo.</p>
+                <div id="scoreChart" class="h-[350px]"></div>
+            </div>
+        </section>
+
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-2 text-slate-800">Daily Escalation Trend</h2>
             <div id="dailyChart" class="w-full h-[500px]"></div>
@@ -83,24 +104,7 @@
             <div id="cargoChart" class="w-full h-[350px]"></div>
         </section>
 
-        <section class="mb-16 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                <h2 class="text-xl font-bold mb-2 text-slate-800">Launch Tempo (Surge Detection)</h2>
-                <div id="tempoChart" class="h-[300px]"></div>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                <h2 class="text-xl font-bold mb-2 text-slate-800">Theater Expansion (Target Spread)</h2>
-                <div id="spreadChart" class="h-[300px]"></div>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                <h2 class="text-xl font-bold mb-2 text-slate-800">Proxy Coordination</h2>
-                <div id="proxyChart" class="h-[300px]"></div>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 border-t-4 border-t-red-500">
-                <h2 class="text-xl font-bold mb-2 text-red-600 uppercase tracking-tighter">Combined Escalation Score</h2>
-                <div id="scoreChart" class="h-[300px]"></div>
-            </div>
-        </section>
+
 
 
     </div>
@@ -187,40 +191,37 @@ async function renderEscalationCharts() {
     const res = await fetch('./escalation_signals.json');
     const signals = descramble((await res.json()).payload);
     
-    const layoutBase = {
-        margin: { t: 10, r: 10, b: 40, l: 40 },
-        font: { family: 'Inter, sans-serif' },
-        paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(0,0,0,0)',
-        xaxis: { gridcolor: '#f1f5f9' },
-        yaxis: { gridcolor: '#f1f5f9' }
-    };
+    const x = signals.map(s => s.timestamp);
 
-    // Chart 1: Tempo + Rolling 6h
+    // Chart 1: Tempo with 24h Avg & Conditional Coloring
     Plotly.newPlot('tempoChart', [
-        { x: signals.map(s => s.timestamp), y: signals.map(s => s.attacks), name: 'Raw', type: 'bar', marker: {color: '#cbd5e1'} },
-        { x: signals.map(s => s.timestamp), y: signals.map(s => s.rolling_6h), name: '6h Trend', type: 'scatter', line: {color: '#ef4444', width: 3} }
+        { 
+            x: x, y: signals.map(s => s.attacks), 
+            name: 'Raw Attacks', type: 'bar', 
+            marker: { color: signals.map(s => s.bar_color) } 
+        },
+        { 
+            x: x, y: signals.map(s => s.rolling_6h), 
+            name: '6h Trend', type: 'scatter', line: { color: 'black', width: 2 } 
+        },
+        { 
+            x: x, y: signals.map(s => s.rolling_24h), 
+            name: '24h Baseline', type: 'scatter', line: { color: '#3b82f6', dash: 'dot', width: 2 } 
+        }
     ], layoutBase);
 
-    // Chart 2: Countries Hit
+    // Chart 2: Theater Spread (Simplified)
     Plotly.newPlot('spreadChart', [{
-        x: signals.map(s => s.timestamp),
-        y: signals.map(s => s.countries_hit),
-        type: 'bar', marker: {color: '#8b5cf6'}
+        x: x, y: signals.map(s => s.countries_hit),
+        type: 'bar', marker: { color: '#8b5cf6' }
     }], layoutBase);
 
-    // Chart 3: Proxy Coordination
-    Plotly.newPlot('proxyChart', [{
-        x: signals.map(s => s.timestamp),
-        y: signals.map(s => s.origins_active),
-        type: 'bar', marker: {color: '#f59e0b'}
-    }], layoutBase);
-
-    // Chart 4: Escalation Score (Area Chart)
+    // Chart 3: Escalation Score
     Plotly.newPlot('scoreChart', [{
-        x: signals.map(s => s.timestamp),
-        y: signals.map(s => s.escalation_score),
-        fill: 'tozeroy', type: 'scatter', line: {color: '#dc2626'}
+        x: x, y: signals.map(s => s.escalation_score),
+        fill: 'tozeroy', type: 'scatter', 
+        line: { color: '#dc2626', shape: 'spline' },
+        fillcolor: 'rgba(220, 38, 38, 0.1)'
     }], layoutBase);
 }
 
@@ -255,8 +256,19 @@ function renderTransitChart(crossings, targetId, labelPrefix) {
         hovertemplate: `<b>%{y} ${labelPrefix}</b><br>%{customdata}<extra></extra>`
     }));
 
+    traces.push({
+            x: sortedHours,
+            y: sortedHours.map(h => hourlyGroups[h]['WESTBOUND'].length + hourlyGroups[h]['EASTBOUND'].length),
+            name: 'TOTAL',
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: 'transparent', width: 0 },
+            hoverinfo: 'y',
+            hovertemplate: '<b>Total: %{y}</b><extra></extra>'
+        });
+
     const layout = {
-        barmode: 'group',
+        barmode: 'stack',
         margin: { t: 10, r: 10, b: 60, l: 40 },
         hovermode: 'x unified',
         font: { family: 'Inter, sans-serif' },
