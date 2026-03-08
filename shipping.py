@@ -84,7 +84,8 @@ def get_ships_with_stealth():
         print(f"Scraping Error: {e}")
         return None
     finally:
-        page.quit()
+        if page:
+            page.quit()
 
 def process_and_save(strait_data):
     if not strait_data or 'data' not in strait_data:
