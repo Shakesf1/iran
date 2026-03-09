@@ -407,7 +407,6 @@ async function loadCharts() {
         const hourlyData = descramble((await hourlyRes.json()).payload);
         const summaryData = descramble((await summaryRes.json()).payload);
         const shippingData = descramble((await shippingRes.json()).payload);
-        alert("Keys found: " + Object.keys(shippingData).join(", "));
             
         // 3. Render the new Maritime chart
         const vlccData = shippingData.crossings.filter(c => c.ship_type === 'VLCC');
