@@ -151,52 +151,40 @@ def export_stats():
     # This finds ships that moved from one side of the buffer to the other
     # between any two updates for that ship.
     cursor.execute(f'''
+WITH DefinitivePositions AS (
+    -- Step 1: Only look at pings that are strictly on one side or the other
+    -- This ignores all the "in-between" pings that break the LAG logic
+    SELECT 
+        update_time,
+        mmsi,
+        name,
+        ship_type,
+        CASE 
+            WHEN last_lon < 56.2 THEN 'WESTBOUND' 
+            WHEN last_lon > 56.4 THEN 'EASTBOUND' 
+        END as direction
+    FROM vessel_history
+    WHERE last_lon < 56.2 OR last_lon > 56.4
+),
+Transitions AS (
+    -- Step 2: Now LAG works because the 'previous' row is guaranteed to be 
+    -- the last time the ship was in a DEFINED zone.
+    SELECT 
+        *,
+        LAG(direction) OVER (PARTITION BY mmsi ORDER BY update_time) as prev_direction
+    FROM DefinitivePositions
+)
+-- Step 3: Only grab the moment it flipped sides
 SELECT 
-    strftime('%Y-%m-%d %H:%M', h1.update_time) as transit_time,
-    h1.mmsi, 
-    h1.name,
-    CASE 
-        WHEN h1.last_lon < 56.2 THEN 'WESTBOUND'
-        WHEN h1.last_lon > 56.4 THEN 'EASTBOUND'
-    END as direction,
-    CASE WHEN h1.ship_type = 8 THEN 'VLCC' ELSE 'Cargo' END as ship_type
-FROM vessel_history h1
-WHERE (h1.last_lon < 56.2 OR h1.last_lon > 56.4)
-
--- 1. Directional Validation: Must have been on the OPPOSITE side previously
-AND EXISTS (
-    SELECT 1 FROM vessel_history h2
-    WHERE h2.mmsi = h1.mmsi
-    AND h2.update_time < h1.update_time
-    AND (
-        (h1.last_lon < 56.2 AND h2.last_lon > 56.4) OR 
-        (h1.last_lon > 56.4 AND h2.last_lon < 56.2)
-    )
-)
-
--- 2. GLOBAL LOCKOUT: Ignore ANY transit for this MMSI if one occurred in the last 12h
--- This prevents ARTMAN from toggling between West/East rapidly
-AND NOT EXISTS (
-    SELECT 1 FROM vessel_history h_recent
-    WHERE h_recent.mmsi = h1.mmsi
-    AND h_recent.update_time < h1.update_time
-    AND h_recent.update_time > datetime(h1.update_time, '-12 hours')
-    -- Check if it was already recorded on EITHER side within the lockout window
-    AND (h_recent.last_lon < 56.2 OR h_recent.last_lon > 56.4)
-    -- Crucial: Check that the recent ping had the OPPOSITE side history too
-    -- (This ensures we only lockout AFTER a successful transit was detected)
-    AND EXISTS (
-        SELECT 1 FROM vessel_history h_hist
-        WHERE h_hist.mmsi = h_recent.mmsi
-        AND h_hist.update_time < h_recent.update_time
-        AND (
-            (h_recent.last_lon < 56.2 AND h_hist.last_lon > 56.4) OR 
-            (h_recent.last_lon > 56.4 AND h_hist.last_lon < 56.2)
-        )
-    )
-)
-
-ORDER BY h1.update_time ASC;
+    strftime('%Y-%m-%d %H:%M', update_time) as transit_time,
+    mmsi,
+    name,
+    direction,
+    CASE WHEN ship_type = 8 THEN 'VLCC' ELSE 'Cargo' END as ship_type
+FROM Transitions
+WHERE direction != prev_direction 
+  AND prev_direction IS NOT NULL
+ORDER BY update_time ASC;
     ''')
     
     crossings = [
