@@ -407,7 +407,7 @@ async function loadCharts() {
         const hourlyData = descramble((await hourlyRes.json()).payload);
         const summaryData = descramble((await summaryRes.json()).payload);
         const shippingData = descramble((await shippingRes.json()).payload);
-        console.log(shippingData);
+        alert("Keys found: " + Object.keys(shippingData).join(", "));
             
         // 3. Render the new Maritime chart
         const vlccData = shippingData.crossings.filter(c => c.ship_type === 'VLCC');
@@ -415,12 +415,15 @@ async function loadCharts() {
         renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
         renderTransitChart(cargoData, 'cargoChart', 'Cargo Ships');
 
-        //shippingStats = JSON.parse(shippingData);
-        // Need to make ais-last-update for the top header, and api-footer for the API timestamp at the bottom
-        const aisTime = new Date(shippingData.latest_ais).toLocaleString([], {
-            dateStyle: 'medium', timeStyle: 'short'
-        });
-        document.getElementById('ais-last-update').innerText = aisTime;
+        if (shippingData.latest_ais) {
+            const aisTime = new Date(shippingData.latest_ais).toLocaleString([], {
+                dateStyle: 'medium', timeStyle: 'short'
+            });
+            document.getElementById('ais-last-update').innerText = aisTime;
+        } else {
+            // If this shows up, the key name in shipping.py and index.html don't match
+            document.getElementById('ais-last-update').innerText = "Key Missing";
+        }
 
         // Move the timestamp to the footer instead of the header
         const apiTime = new Date(summaryData.asOf).toLocaleString([], {
