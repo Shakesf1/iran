@@ -21,11 +21,13 @@
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
         .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.7); }
+            100% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+        }
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 p-4 md:p-8">

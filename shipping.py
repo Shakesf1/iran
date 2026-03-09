@@ -245,10 +245,16 @@ ORDER BY update_time ASC;
     
     dormant = [{"time": r[0], "count": r[1]} for r in cursor.fetchall()]
     
+    cursor.execute("SELECT MAX(update_time) FROM vessel_history")
+    res = cursor.fetchone()
+    # Fallback to current time if DB is empty, otherwise use the actual event time
+    latest_ais = res[0] if res and res[0] else datetime.now().strftime("%Y-%m-%d %H:%M")
+
     raw_data = {
             "dormant": dormant, 
             "crossings": crossings,
-            "calculated_at": datetime.now().isoformat()
+            "calculated_at": datetime.now().isoformat(),
+            "latest_ais": latest_ais
         }
     json_string = json.dumps(raw_data)
 
