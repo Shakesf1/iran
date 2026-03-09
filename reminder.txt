@@ -1,15 +1,11 @@
-The "Fix-and-Push" Workflow:
+git add index.html shipping.py
 
-git pull --rebase (Get the latest .db from the server).
+# 2. Pull the latest DB from the bot and put your changes on top
+git pull --rebase --autostash origin main
 
-Make your code changes.
-
-git add .
-
-git commit -m "Update logic"
-
-git push
-
+# 3. Now push
+git commit -m "Quick fix"
+git push origin main
 
 
 ==========
