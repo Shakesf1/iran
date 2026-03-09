@@ -59,19 +59,19 @@
                 <span id="status-text" class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live</span>
             </div>
             
-            <p class="text-slate-500 text-[11px] cursor-help group relative" title="Intelligence synthesized from ISW-CTP, CENTCOM, and regional military communiqués.">
+            <p class="text-slate-500 text-[11px] cursor-help group relative" title="Open Source Intelligence (OS INT), aggregated from multiple real-time sources (Telegram, Alerts from Israel Home Office Command, etc.)">
                 <span class="border-b border-dotted border-slate-300">Multi-Source OSINT</span>: 
                 <span id="last-update" class="font-medium text-slate-800">Loading...</span>
             </p>
             
-            <p class="text-slate-500 text-[11px] cursor-help group relative" title="Data sourced via Baltic Exchange Indices and global commodity exchange reporting.">
+            <p class="text-slate-500 text-[11px] cursor-help group relative" title="Data sourced from the Baltic Exchange, reflecting the daily cost of shipping crude oil. This is a key economic indicator for the region, as it captures insurance, fuel, and security costs for tankers navigating the Strait of Hormuz.">
                 <span class="border-b border-dotted border-slate-300">Baltic Exchange</span>: 
                 <span id="bdti-last-date" class="font-medium text-slate-800">Syncing...</span>
             </p>
 
             <p class="text-slate-500 text-[11px] cursor-help group relative" title="Real-time transit analysis via Terrestrial & Satellite AIS telemetry.">
                 <span class="border-b border-dotted border-slate-300">Shipping Data</span>: 
-                <span id="ais-last-update" class="font-medium text-slate-800">Verified</span>
+                <span id="ais-last-update" class="font-medium text-slate-800">Loading...</span>
             </p>
         </div>
     </div>
@@ -408,6 +408,17 @@ async function loadCharts() {
         const cargoData = shippingData.crossings.filter(c => c.ship_type === 'Cargo');
         renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
         renderTransitChart(cargoData, 'cargoChart', 'Cargo Ships');
+
+
+        if (shippingStats.latest_ais) {
+            // Format the date for a clean look (e.g., Mar 9, 9:14 AM)
+            const aisDate = new Date(shippingStats.latest_ais);
+            document.getElementById('ais-last-update').innerText = aisDate.toLocaleString([], { 
+                dateStyle: 'medium', timeStyle: 'short' 
+            });
+        } else {
+            document.getElementById('ais-last-update').innerText = "Loading...";
+        }
 
         // Move the timestamp to the footer instead of the header
         const apiTime = new Date(summaryData.asOf).toLocaleString([], {
