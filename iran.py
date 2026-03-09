@@ -190,10 +190,35 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
 
             # --- DAILY DATA ---
             # Grouping clustered incidents by day and location
-            daily = df_incidents.groupby(['day','location']).size().unstack(fill_value=0)
+            daily = df_incidents.groupby(['day', 'location']).size().unstack(fill_value=0)
             daily_df = daily.reset_index()
             daily_df['day'] = daily_df['day'].dt.strftime('%Y-%m-%d')
             daily_df['total_attacks'] = daily.sum(axis=1).values
+
+            # 2. Extrapolation Logic
+            now = datetime.now(timezone.utc)
+            current_hour = now.hour
+            today_str = now.strftime('%Y-%m-%d')
+
+            # Get the last 3 full days of history (excluding today)
+            three_days_ago = (now - pd.Timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
+            recent_full_days = df_incidents[
+                (df_incidents['timestamp'] >= three_days_ago) & 
+                (df_incidents['day'] < pd.Timestamp(today_str, tz='UTC'))
+            ].copy()
+
+            if not recent_full_days.empty:
+                # Calculate the avg strikes occurring AFTER current hour on those days
+                recent_full_days['hr'] = recent_full_days['timestamp'].dt.hour
+                avg_remaining = recent_full_days[recent_full_days['hr'] > current_hour].groupby('day').size().mean()
+                
+                # Apply forecast to today's row
+                daily_df['Extrapolation'] = 0 # Default for all days
+                if today_str in daily_df['day'].values:
+                    daily_df.loc[daily_df['day'] == today_str, 'Extrapolation'] = round(avg_remaining if not pd.isna(avg_remaining) else 0)
+            else:
+                daily_df['Extrapolation'] = 0
+
             update_persistent_json(daily_df, 'daily_data.json', ['day'])
 
             # --- EXTRAPOLATION & SIGNALS ---
