@@ -38,15 +38,32 @@
                     <h1 class="text-4xl font-extrabold tracking-tight text-slate-800">War Escalation Monitor: Iran</h1>
                     <p class="text-slate-500 mt-2 italic">Monitoring the cost-asymmetry of regional defense and escalation.</p>
                 </div>
-                <div class="bg-white border border-slate-200 rounded-lg px-4 py-2 shadow-sm text-sm">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span id="status-dot" class="h-2 w-2 rounded-full bg-emerald-500 pulse"></span>
-                        <span id="status-text" class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live</span>
-                    </div>
-                        <p class="text-slate-500 text-[11px]">Server Sync: <span id="last-update" class="font-medium text-slate-800">Loading...</span></p>
-                        <p class="text-slate-500 text-[11px]">Latest BDTI Data: <span id="bdti-last-date" class="font-medium text-slate-800">Syncing...</span></p>
+
+            <div class="bg-white border border-slate-200 rounded-lg px-4 py-2 shadow-sm text-sm">
+                <div class="flex items-center gap-2 mb-1">
+                    <span id="status-dot" class="h-2 w-2 rounded-full bg-emerald-500 pulse"></span>
+                    <span id="status-text" class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live</span>
                 </div>
+                
+                <p class="text-slate-500 text-[11px] cursor-help group relative" 
+                title="Intelligence synthesized from ISW-CTP, CENTCOM, and regional military communiqués.">
+                    <span class="border-b border-dotted border-slate-300">Multi-Source OSINT</span>: 
+                    <span id="last-update" class="font-medium text-slate-800">Loading...</span>
+                </p>
+                
+                <p class="text-slate-500 text-[11px] cursor-help group relative" 
+                title="Data sourced via Baltic Exchange Indices and global commodity exchange reporting.">
+                    <span class="border-b border-dotted border-slate-300">Baltic Exchange</span>: 
+                    <span id="bdti-last-date" class="font-medium text-slate-800">Syncing...</span>
+                </p>
+
+                <p class="text-slate-500 text-[11px] cursor-help group relative" 
+                title="Real-time transit analysis via Terrestrial & Satellite AIS telemetry.">
+                    <span class="border-b border-dotted border-slate-300">Shipping Data</span>: 
+                    <span class="font-medium text-slate-800">Verified</span>
+                </p>
             </div>
+
 
             <div class="mt-8 max-w-3xl text-slate-600 leading-relaxed">
                 <p class="mb-4">
