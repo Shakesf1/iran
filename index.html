@@ -304,7 +304,7 @@ function renderTransitChart(crossings, targetId, labelPrefix) {
         // Formats the key as "YYYY-MM-DD HH:00" for logical sorting
         const hour = c.time.split(':')[0] + ":00"; 
         if (!hourlyGroups[hour]) hourlyGroups[hour] = { WESTBOUND: [], EASTBOUND: [] };
-        hourlyGroups[hour][c.dir].push(`${c.name} (${c.mmsi})`);
+        hourlyGroups[hour][c.dir].push(`${c.name} `);
     });
 
     const sortedHours = Object.keys(hourlyGroups).sort();
