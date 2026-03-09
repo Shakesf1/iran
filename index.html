@@ -414,17 +414,6 @@ async function loadCharts() {
         renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
         renderTransitChart(cargoData, 'cargoChart', 'Cargo Ships');
 
-        const shippingStatsJSON = JSON.parse(descramble((await shippingRes.json()).payload));
-        if (shippingStatsJSON.latest_ais) {
-            // Format the date for a clean look (e.g., Mar 9, 9:14 AM)
-            const aisDate = new Date(shippingStatsJSON.latest_ais);
-            document.getElementById('ais-last-update').innerText = aisDate.toLocaleString([], { 
-                dateStyle: 'medium', timeStyle: 'short' 
-            });
-        } else {
-            document.getElementById('ais-last-update').innerText = "Loading...";
-        }
-
         // Move the timestamp to the footer instead of the header
         const apiTime = new Date(summaryData.asOf).toLocaleString([], {
             dateStyle: 'medium', timeStyle: 'short'
