@@ -414,14 +414,16 @@ async function loadCharts() {
         renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
         renderTransitChart(cargoData, 'cargoChart', 'Cargo Ships');
 
-        if (shippingData.latest_ais) {
-            const aisTime = new Date(shippingData.latest_ais).toLocaleString([], {
-                dateStyle: 'medium', timeStyle: 'short'
+        const rawTime = shippingData.latest_ais || shippingData.calculated_at;
+
+        if (rawTime) {
+            const aisTime = new Date(rawTime).toLocaleString([], {
+                dateStyle: 'medium', 
+                timeStyle: 'short'
             });
             document.getElementById('ais-last-update').innerText = aisTime;
         } else {
-            // If this shows up, the key name in shipping.py and index.html don't match
-            document.getElementById('ais-last-update').innerText = "Key Missing";
+            document.getElementById('ais-last-update').innerText = "Pending Update";
         }
 
         // Move the timestamp to the footer instead of the header
