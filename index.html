@@ -414,6 +414,13 @@ async function loadCharts() {
         renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
         renderTransitChart(cargoData, 'cargoChart', 'Cargo Ships');
 
+
+        // Need to make ais-last-update for the top header, and api-footer for the API timestamp at the bottom
+        const aisTime = new Date(shippingData.latest_ais).toLocaleString([], {
+            dateStyle: 'medium', timeStyle: 'short'
+        });
+        document.getElementById('ais-last-update').innerText = aisTime;
+
         // Move the timestamp to the footer instead of the header
         const apiTime = new Date(summaryData.asOf).toLocaleString([], {
             dateStyle: 'medium', timeStyle: 'short'
