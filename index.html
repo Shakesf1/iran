@@ -129,7 +129,9 @@
 
 const layoutBase = {
     margin: { t: 10, r: 10, b: 40, l: 40 },
+    dragmode: false,
     hovermode: 'x unified',
+    hoverdistance: 100,
     font: { family: 'Inter, sans-serif' },
     paper_bgcolor: 'rgba(0,0,0,0)',
     plot_bgcolor: 'rgba(0,0,0,0)',
@@ -248,7 +250,7 @@ async function renderEscalationCharts() {
             x: x, y: signals.map(s => s.rolling_24h), 
             name: '24h Baseline', type: 'scatter', line: { color: '#3b82f6', dash: 'dot', width: 2 } 
         }
-    ], layoutBase);
+    ], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
     // Chart 2: Theater Spread (Simplified)
     Plotly.newPlot('spreadChart', [{
