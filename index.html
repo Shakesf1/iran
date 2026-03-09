@@ -514,12 +514,9 @@ async function loadCharts() {
         function createTrace(data, xField) {
             if (!data || data.length === 0) return [];
             
-            // 1. Identify country/location keys (e.g., ISR, USA) 
-            // Exclude metadata fields and the 'total_attacks' field from your python export
             const exclude = [xField, 'Extrapolation', 'total_attacks', 'hour', 'day', 'timestamp'];
             const keys = Object.keys(data[0]).filter(k => !exclude.includes(k));
             
-            // 2. Create the visible stacked bars for each country
             const traces = keys.map(key => ({
                 x: data.map(d => d[xField]),
                 y: data.map(d => d[key]),
@@ -528,26 +525,25 @@ async function loadCharts() {
                 hovertemplate: `<b>${key}</b>: %{y}<extra></extra>`
             }));
 
-            // 3. Add Extrapolation bar (Forecast)
-            // We check if the 'Extrapolation' key exists in the keys of the first object
-            if (Object.keys(data[0]).includes('Extrapolation')) {
+            // IMPROVED: Check for Extrapolation more robustly
+            const hasExtrapolation = data.some(d => d.hasOwnProperty('Extrapolation'));
+            
+            if (hasExtrapolation) {
                 traces.push({
                     x: data.map(d => d[xField]),
                     y: data.map(d => d['Extrapolation'] || 0),
                     name: 'Forecast',
                     type: 'bar',
-                    marker: { color: '#cbd5e1' }, // Light slate grey for the forecast
-                    opacity: 0.6,
-                    hovertemplate: '<b>Forecast</b>: %{y} (est)<extra></extra>'
+                    marker: { color: '#94a3b8' }, // Darker slate for visibility
+                    opacity: 0.4,
+                    hovertemplate: '<b>Estimated Remaining</b>: %{y}<extra></extra>'
                 });
             }
 
-            // 4. Calculate Total for the hover label 
-            // (SCATTER mode ensures it doesn't add a bar to the stack)
             const totalY = data.map(d => {
-                const countrySum = keys.reduce((sum, key) => sum + (Number(d[key]) || 0), 0);
-                const forecastSum = Number(d.Extrapolation) || 0;
-                return countrySum + forecastSum;
+                const actuals = keys.reduce((sum, key) => sum + (Number(d[key]) || 0), 0);
+                const forecast = Number(d.Extrapolation) || 0;
+                return actuals + forecast;
             });
 
             traces.push({
@@ -558,7 +554,7 @@ async function loadCharts() {
                 mode: 'lines',
                 line: { color: 'transparent', width: 0 }, 
                 showlegend: false,
-                hovertemplate: '<b>Total: %{y}</b><extra></extra>'
+                hovertemplate: '<b>Total Intensity: %{y}</b><extra></extra>'
             });
 
             return traces;
