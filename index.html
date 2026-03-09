@@ -273,16 +273,26 @@ function filterBDTI(range) {
     };
 
     const layout = {
-        margin: { t: 10, r: 10, b: 40, l: 50 },
-        hovermode: 'x unified',
-        font: { family: 'Inter, sans-serif' },
-        paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(0,0,0,0)',
-        xaxis: { gridcolor: '#f1f5f9', zeroline: false },
-        yaxis: { gridcolor: '#f1f5f9', title: "Index Points" },
-        annotations: layoutBase.annotations,
-        
-    };
+            margin: { t: 10, r: 10, b: 40, l: 50 },
+            hovermode: 'x unified',
+            font: { family: 'Inter, sans-serif' },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            
+            // ADD THESE LINES TO DISABLE ZOOM
+            xaxis: { 
+                gridcolor: '#f1f5f9', 
+                zeroline: false,
+                fixedrange: true 
+            },
+            yaxis: { 
+                gridcolor: '#f1f5f9', 
+                title: "Index Points",
+                fixedrange: true 
+            },
+            
+            annotations: layoutBase.annotations,
+        };
 
     Plotly.newPlot('bdtiChart', [trace], layout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
