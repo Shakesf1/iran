@@ -407,7 +407,7 @@ async function loadCharts() {
         const hourlyData = descramble((await hourlyRes.json()).payload);
         const summaryData = descramble((await summaryRes.json()).payload);
         const shippingData = descramble((await shippingRes.json()).payload);
-        console.log(shippingData);
+        //console.log(shippingData);
             
         // 3. Render the new Maritime chart
         const vlccData = shippingData.crossings.filter(c => c.ship_type === 'VLCC');
@@ -415,9 +415,9 @@ async function loadCharts() {
         renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
         renderTransitChart(cargoData, 'cargoChart', 'Cargo Ships');
 
-        shippingStats = JSON.parse(shippingData);
+        //shippingStats = JSON.parse(shippingData);
         // Need to make ais-last-update for the top header, and api-footer for the API timestamp at the bottom
-        const aisTime = new Date(shippingStats.latest_ais).toLocaleString([], {
+        const aisTime = new Date(shippingData.latest_ais).toLocaleString([], {
             dateStyle: 'medium', timeStyle: 'short'
         });
         document.getElementById('ais-last-update').innerText = aisTime;
