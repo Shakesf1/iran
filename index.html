@@ -410,12 +410,14 @@ function renderTransitChart(crossings, targetId, labelPrefix) {
             // Format to show Day/Month Hour:Minute (e.g. 07/Mar 15:00)
             tickformat: '%d/%b %H:%M',
             tickangle: -45,
-            automargin: true
+            automargin: true,
+            fixedrange: true // DISABLE ZOOM
         },
         yaxis: { 
             gridcolor: '#f1f5f9', 
             title: "Vessels",
-            dtick: 1 // Integer steps for ships
+            dtick: 1, // Integer steps for ships
+            fixedrange: true // DISABLE ZOOM
         }
     };
 
