@@ -188,8 +188,13 @@ async function renderBDTI() {
 
         // Update the top header with the latest BDTI date
         if (fullBDTI.length > 0) {
-            const latestDate = fullBDTI[fullBDTI.length - 1].date;
-            document.getElementById('bdti-last-date').innerText = latestDate;
+            const rawDate = fullBDTI[fullBDTI.length - 1].date;
+            const latestDate = new Date(rawDate);
+            
+            // Formats "2026-03-06" into "Mar 6, 2026"
+            document.getElementById('bdti-last-date').innerText = latestDate.toLocaleDateString([], { 
+                dateStyle: 'medium' 
+            });
         }
 
 
@@ -409,10 +414,10 @@ async function loadCharts() {
         renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
         renderTransitChart(cargoData, 'cargoChart', 'Cargo Ships');
 
-
-        if (shippingStats.latest_ais) {
+        const shippingStatsJSON = JSON.parse(descramble((await shippingRes.json()).payload));
+        if (shippingStatsJSON.latest_ais) {
             // Format the date for a clean look (e.g., Mar 9, 9:14 AM)
-            const aisDate = new Date(shippingStats.latest_ais);
+            const aisDate = new Date(shippingStatsJSON.latest_ais);
             document.getElementById('ais-last-update').innerText = aisDate.toLocaleString([], { 
                 dateStyle: 'medium', timeStyle: 'short' 
             });
