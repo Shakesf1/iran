@@ -325,67 +325,47 @@ const scoreTraces = [
 function renderTransitChart(crossings, targetId, labelPrefix) {
     if (!crossings || crossings.length === 0) return;
 
-    // 1. Group by unique Hour/Day strings from the data
-    const hourlyGroups = {};
-    crossings.forEach(c => {
-        // Formats the key as "YYYY-MM-DD HH:00" for logical sorting
-        const hour = c.time.split(':')[0] + ":00"; 
-        if (!hourlyGroups[hour]) hourlyGroups[hour] = { WESTBOUND: [], EASTBOUND: [] };
-        hourlyGroups[hour][c.dir].push(`${c.name} `);
-    });
-
-    const sortedHours = Object.keys(hourlyGroups).sort();
-    
     const directions = [
         { key: 'WESTBOUND', color: '#f43f5e', name: 'Westbound' },
         { key: 'EASTBOUND', color: '#10b981', name: 'Eastbound' }
     ];
 
-    const traces = directions.map(d => ({
-        x: sortedHours,
-        y: sortedHours.map(h => hourlyGroups[h][d.key].length),
-        name: d.name,
-        type: 'bar',
-        marker: { color: d.color },
-        customdata: sortedHours.map(h => hourlyGroups[h][d.key].join('<br>')),
-        // The hover will show the ship names
-        hovertemplate: `<b>%{y} ${labelPrefix}</b><br>%{customdata}<extra></extra>`
-    }));
-
-    traces.push({
-            x: sortedHours,
-            y: sortedHours.map(h => hourlyGroups[h]['WESTBOUND'].length + hourlyGroups[h]['EASTBOUND'].length),
-            name: 'TOTAL',
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: 'transparent', width: 0 },
-            hoverinfo: 'y',
-            hovertemplate: '<b>Total: %{y}</b><extra></extra>'
-        });
+    const traces = directions.map(d => {
+        const dirData = crossings.filter(c => c.dir === d.key);
+        return {
+            x: dirData.map(c => c.time),
+            // We give each direction a fixed Y-level so they don't overlap
+            y: dirData.map(() => d.key === 'WESTBOUND' ? 1.1 : 0.9),
+            name: d.name,
+            mode: 'markers',
+            marker: { 
+                size: 14, 
+                symbol: 'diamond',
+                color: d.color,
+                line: { width: 1, color: 'white' }
+            },
+            customdata: dirData.map(c => c.name),
+            hovertemplate: `<b>%{customdata}</b><br>Time: %{x}<extra></extra>`
+        };
+    });
 
     const layout = {
-        barmode: 'stack',
-        margin: { t: 10, r: 10, b: 60, l: 40 },
-        hovermode: 'x unified',
-        font: { family: 'Inter, sans-serif' },
-        paper_bgcolor: 'rgba(0,0,0,0)',
-        annotations: layoutBase.annotations,
-        plot_bgcolor: 'rgba(0,0,0,0)',
-        xaxis: { 
-            gridcolor: '#f1f5f9',
-            // Format to show Day/Month Hour:Minute (e.g. 07/Mar 15:00)
-            tickformat: '%d/%b %H:%M',
-            tickangle: -45,
-            automargin: true
-        },
+        ...layoutBase,
+        height: 200, // Slimmer profile
+        margin: { t: 40, r: 20, b: 40, l: 80 },
         yaxis: { 
-            gridcolor: '#f1f5f9', 
-            title: "Vessels",
-            dtick: 1 // Integer steps for ships
+            tickvals: [0.9, 1.1], 
+            ticktext: ['Eastbound', 'Westbound'],
+            range: [0.5, 1.5],
+            fixedrange: true
+        },
+        xaxis: { 
+            type: 'date',
+            tickformat: '%d %b\n%H:%M'
         }
     };
 
-    Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
+    Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: true });
 }
 
 async function loadCharts() {
