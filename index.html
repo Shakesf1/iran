@@ -77,6 +77,40 @@
     </div>
 </header>
 
+
+<div id="maritime-summary" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="bg-slate-800 text-white p-4 rounded-xl shadow-sm border border-slate-700">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">VLCC Transits (Last 24h)</h3>
+        <div class="flex justify-around items-center">
+            <div class="text-center">
+                <span id="vlcc-east" class="block text-2xl font-black text-emerald-400">0</span>
+                <span class="text-[10px] uppercase text-slate-400">Eastbound</span>
+            </div>
+            <div class="h-8 border-l border-slate-600"></div>
+            <div class="text-center">
+                <span id="vlcc-west" class="block text-2xl font-black text-red-400">0</span>
+                <span class="text-[10px] uppercase text-slate-400">Westbound</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 text-center md:text-left">General Cargo Transits (Last 24h)</h3>
+        <div class="flex justify-around items-center">
+            <div class="text-center">
+                <span id="cargo-east" class="block text-2xl font-black text-emerald-600">0</span>
+                <span class="text-[10px] uppercase text-slate-500">Eastbound</span>
+            </div>
+            <div class="h-8 border-l border-slate-200"></div>
+            <div class="text-center">
+                <span id="cargo-west" class="block text-2xl font-black text-red-600">0</span>
+                <span class="text-[10px] uppercase text-slate-500">Westbound</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
         <div id="summary-section" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
             </div>
         <p id="api-footer" class="text-[10px] text-slate-400 italic mb-12 ml-1"></p>
@@ -413,6 +447,24 @@ async function loadCharts() {
         const cargoData = shippingData.crossings.filter(c => c.ship_type === 'Cargo');
         renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
         renderTransitChart(cargoData, 'cargoChart', 'Cargo Ships');
+
+        const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+        const get24hCount = (data, direction) => data.filter(c => 
+            new Date(c.time) >= last24h && c.dir === direction
+        ).length;
+
+        // Update VLCC UI
+        document.getElementById('vlcc-east').innerText = get24hCount(vlccData, 'EASTBOUND');
+        document.getElementById('vlcc-west').innerText = get24hCount(vlccData, 'WESTBOUND');
+
+        // Update Cargo UI
+        document.getElementById('cargo-east').innerText = get24hCount(cargoData, 'EASTBOUND');
+        document.getElementById('cargo-west').innerText = get24hCount(cargoData, 'WESTBOUND');
+        // --- END SUMMARY LOGIC ---
+
+        renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
+
 
         const rawTime = shippingData.latest_ais || shippingData.calculated_at;
 
