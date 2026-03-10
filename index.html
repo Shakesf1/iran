@@ -131,7 +131,7 @@
 
             <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-red-600">
                 <h2 class="text-xl font-bold text-red-600 uppercase tracking-tighter">Strategic Escalation Score</h2>
-                <p class="text-sm text-slate-500 mb-4">A combined index of launch acceleration and geographic spread. Scores > 2.0 signal a major shift in operational tempo.</p>
+                <p class="text-sm text-slate-500 mb-4">A combined index of launch acceleration and geographic spread. Scores > 2.0 signal a major shift in operational tempo. Incident data are aggregated hourly to measure attack tempo, with a 6-hour rolling mean capturing recent activity and a 24-hour rolling mean representing the baseline, producing a tempo change ratio that signals acceleration. The number of distinct locations affected each hour is used to capture geographic spread. These components are combined into a weighted Escalation Score (70% tempo, 30% spread) to provide a time-series indicator of operational intensity and spatial expansion, stored for monitoring and visualization.</p>
                 <div id="scoreChart" class="h-[350px]"></div>
             </div>
         </section>
@@ -173,6 +173,8 @@
 
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: General Cargo Transits</h2>
+            <p class="text-slate-500 text-sm italic">Vessel transit estimates are derived from AIS position snapshots. A vessel is counted as a chokepoint transit when sequential positions are observed on opposite sides of a defined geofence surrounding the Strait of Hormuz. AIS gaps are interpolated using last-known trajectory vectors.</p>
+
             <div id="cargoChart" class="w-full h-[350px]"></div>
         </section>
 
