@@ -347,17 +347,31 @@ const scoreTraces = [
 function renderTransitChart(crossings, targetId, labelPrefix) {
     if (!crossings || crossings.length === 0) return;
 
-    // 1. Group by unique Hour/Day strings from the data
+    // 1. Find the time bounds
+    const times = crossings.map(c => new Date(c.time));
+    let current = new Date(Math.min(...times));
+    current.setMinutes(0, 0, 0); // Round down to start of the hour
+    const end = new Date(); // Go up to the current real-world hour
+    end.setMinutes(0, 0, 0);
+
+    // 2. Generate the full hourly spine
     const hourlyGroups = {};
+    while (current <= end) {
+        const hourStr = current.toISOString().split('T')[0] + " " + 
+                        current.getHours().toString().padStart(2, '0') + ":00";
+        hourlyGroups[hourStr] = { WESTBOUND: [], EASTBOUND: [] };
+        current.setHours(current.getHours() + 1);
+    }
+
+    // 3. Map actual data into the spine
     crossings.forEach(c => {
-        // Formats the key as "YYYY-MM-DD HH:00" for logical sorting
-        const hour = c.time.split(':')[0] + ":00"; 
-        if (!hourlyGroups[hour]) hourlyGroups[hour] = { WESTBOUND: [], EASTBOUND: [] };
-        hourlyGroups[hour][c.dir].push(`${c.name} `);
+        const hourStr = c.time.split(':')[0] + ":00";
+        if (hourlyGroups[hourStr]) {
+            hourlyGroups[hourStr][c.dir].push(c.name);
+        }
     });
 
     const sortedHours = Object.keys(hourlyGroups).sort();
-    
     const directions = [
         { key: 'WESTBOUND', color: '#f43f5e', name: 'Westbound' },
         { key: 'EASTBOUND', color: '#10b981', name: 'Eastbound' }
@@ -369,21 +383,9 @@ function renderTransitChart(crossings, targetId, labelPrefix) {
         name: d.name,
         type: 'bar',
         marker: { color: d.color },
-        customdata: sortedHours.map(h => hourlyGroups[h][d.key].join('<br>')),
-        // The hover will show the ship names
+        customdata: sortedHours.map(h => hourlyGroups[h][d.key].join('<br>') || "No Transits"),
         hovertemplate: `<b>%{y} ${labelPrefix}</b><br>%{customdata}<extra></extra>`
     }));
-
-    traces.push({
-            x: sortedHours,
-            y: sortedHours.map(h => hourlyGroups[h]['WESTBOUND'].length + hourlyGroups[h]['EASTBOUND'].length),
-            name: 'TOTAL',
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: 'transparent', width: 0 },
-            hoverinfo: 'y',
-            hovertemplate: '<b>Total: %{y}</b><extra></extra>'
-        });
 
     const layout = {
         barmode: 'stack',
@@ -391,21 +393,19 @@ function renderTransitChart(crossings, targetId, labelPrefix) {
         hovermode: 'x unified',
         font: { family: 'Inter, sans-serif' },
         paper_bgcolor: 'rgba(0,0,0,0)',
-        annotations: layoutBase.annotations,
         plot_bgcolor: 'rgba(0,0,0,0)',
+        annotations: layoutBase.annotations,
         xaxis: { 
             gridcolor: '#f1f5f9',
-            // Format to show Day/Month Hour:Minute (e.g. 07/Mar 15:00)
-            tickformat: '%d/%b %H:%M',
-            tickangle: -45,
+            tickformat: '%d %b\n%H:%M',
+            tickangle: 0,
             automargin: true,
-            fixedrange: true // DISABLE ZOOM
+            fixedrange: true 
         },
         yaxis: { 
             gridcolor: '#f1f5f9', 
-            title: "Vessels",
-            dtick: 1, // Integer steps for ships
-            fixedrange: true // DISABLE ZOOM
+            dtick: 1, 
+            fixedrange: true 
         }
     };
 
