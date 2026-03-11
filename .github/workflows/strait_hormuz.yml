@@ -46,7 +46,7 @@ jobs:
 
       - name: Random Delay (Jitter)
         run: |
-          DELAY=$((1 + RANDOM % 480))
+          DELAY=$((1 + RANDOM % 160))
           echo "Waiting for $DELAY seconds..."
           sleep $DELAY
 
