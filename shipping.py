@@ -219,42 +219,40 @@ def export_stats():
     # 1. DYNAMIC CROSSINGS: Calculate from vessel_history per hour
     # This finds ships that moved from one side of the buffer to the other
     # between any two updates for that ship.
+    # Pass the variables as a tuple to the execute function
     cursor.execute(f'''
-WITH DefinitivePositions AS (
-    -- Step 1: Only look at pings that are strictly on one side or the other
-    -- This ignores all the "in-between" pings that break the LAG logic
+    WITH DefinitivePositions AS (
+        SELECT 
+            update_time,
+            mmsi,
+            name,
+            ship_type,
+            CASE 
+                WHEN last_lon < ? THEN 'WESTBOUND' 
+                WHEN last_lon > ? THEN 'EASTBOUND' 
+            END as direction
+        FROM vessel_history
+        WHERE (last_lon < ? OR last_lon > ?) 
+        AND location != 'bad'
+        AND location IS NOT NULL
+    ),
+    Transitions AS (
+        SELECT 
+            *,
+            LAG(direction) OVER (PARTITION BY mmsi ORDER BY update_time) as prev_direction
+        FROM DefinitivePositions
+    )
     SELECT 
-        update_time,
+        strftime('%Y-%m-%d %H:%M', update_time) as transit_time,
         mmsi,
         name,
-        ship_type,
-        CASE 
-            WHEN last_lon < 56.2 THEN 'WESTBOUND' 
-            WHEN last_lon > 56.4 THEN 'EASTBOUND' 
-        END as direction
-    FROM vessel_history
-    WHERE last_lon < 56.2 OR last_lon > 56.4
-),
-Transitions AS (
-    -- Step 2: Now LAG works because the 'previous' row is guaranteed to be 
-    -- the last time the ship was in a DEFINED zone.
-    SELECT 
-        *,
-        LAG(direction) OVER (PARTITION BY mmsi ORDER BY update_time) as prev_direction
-    FROM DefinitivePositions
-)
--- Step 3: Only grab the moment it flipped sides
-SELECT 
-    strftime('%Y-%m-%d %H:%M', update_time) as transit_time,
-    mmsi,
-    name,
-    direction,
-    CASE WHEN ship_type = 8 THEN 'VLCC' ELSE 'Cargo' END as ship_type
-FROM Transitions
-WHERE direction != prev_direction 
-  AND prev_direction IS NOT NULL
-ORDER BY update_time ASC;
-    ''')
+        direction,
+        CASE WHEN ship_type = 8 THEN 'VLCC' ELSE 'Cargo' END as ship_type
+    FROM Transitions
+    WHERE direction != prev_direction 
+    AND prev_direction IS NOT NULL
+    ORDER BY update_time ASC;
+    ''', (WEST_LIMIT, EAST_LIMIT, WEST_LIMIT, EAST_LIMIT)) 
     
     crossings = [
         {
