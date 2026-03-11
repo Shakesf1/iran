@@ -94,7 +94,7 @@ def update_persistent_json(new_df, filename, keys, rolling_days=5):
                     new_df[date_col] = pd.to_datetime(new_df[date_col], utc=True)
                     cutoff = datetime.now(timezone.utc) - pd.Timedelta(days=rolling_days)
                     # Use > to keep RECENT data, not < to keep OLD data
-                    existing_df = existing_df[existing_df[date_col] > cutoff]
+                    existing_df = existing_df[existing_df[date_col] < cutoff]
 
                 # Combine and update the dataframe we intend to save
                 combined = pd.concat([existing_df, new_df], ignore_index=True)
