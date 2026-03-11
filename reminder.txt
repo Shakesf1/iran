@@ -1,10 +1,10 @@
-git add index.html shipping.py
+
 
 # 2. Pull the latest DB from the bot and put your changes on top
-git pull --rebase --autostash origin main
+git pull origin main --rebase  # Get the latest from the GitHub Action
 
-# 3. Now push
-git commit -m "Quick fix"
+git add .
+git commit -m "Auto-update stats"
 git push origin main
 
 

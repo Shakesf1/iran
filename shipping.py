@@ -8,9 +8,18 @@ from DrissionPage import ChromiumPage, ChromiumOptions
 import geopandas as gpd
 from shapely.geometry import Point
 
+import os
+
+# Get the absolute path of the folder containing shipping.py
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Update your paths to be absolute
+DB_PATH = os.path.join(BASE_DIR, "shipping_data.db")
+JSON_PATH = os.path.join(BASE_DIR, "dashboard_stats.json")
+
 # --- CONFIGURATION ---
 MAP_URL = "https://www.marinetraffic.com/en/ais/home/centerx:56.3/centery:26.4/zoom:9"
-DB_NAME = "shipping_data.db"
+DB_NAME = DB_PATH
 #HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
 
 WEST_LIMIT = 56.15  # Deep in the Gulf
@@ -327,7 +336,7 @@ def export_stats():
 
     encrypted_payload = encrypt_data(json_string)
 
-    with open('dashboard_stats.json', 'w') as f:
+    with open(JSON_PATH, 'w') as f:
             json.dump({
                 "payload": encrypted_payload
             }, f)   
