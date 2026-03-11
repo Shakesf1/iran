@@ -5,14 +5,16 @@ import json
 import base64
 from datetime import datetime
 from DrissionPage import ChromiumPage, ChromiumOptions
+import geopandas as gpd
+from shapely.geometry import Point
 
 # --- CONFIGURATION ---
 MAP_URL = "https://www.marinetraffic.com/en/ais/home/centerx:56.3/centery:26.4/zoom:9"
 DB_NAME = "shipping_data.db"
 #HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
 
-WEST_LIMIT = 56.1  # Deep in the Gulf
-EAST_LIMIT = 56.5  # Well out into the Gulf of Oman
+WEST_LIMIT = 56.15  # Deep in the Gulf
+EAST_LIMIT = 56.45  # Well out into the Gulf of Oman
 
 
 SECRET_KEY = "pay_homage_to_stan_4ever"
@@ -32,13 +34,20 @@ def init_db():
     
     # Updated Vessel History Table
     cursor.execute('''CREATE TABLE IF NOT EXISTS vessel_history (
-                        mmsi TEXT, 
-                        name TEXT, 
-                        last_lon REAL, 
-                        last_lat REAL, 
-                        ship_type INT,
-                        update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- YOUR system time
-                    )''')
+                            mmsi TEXT, 
+                            name TEXT, 
+                            last_lon REAL, 
+                            last_lat REAL, 
+                            ship_type INT,
+                            location TEXT DEFAULT NULL,
+                            update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        )''')
+        
+    # Ensure the location column exists for older databases
+    try:
+        cursor.execute('ALTER TABLE vessel_history ADD COLUMN location TEXT DEFAULT NULL')
+    except sqlite3.OperationalError:
+        pass # Column already exists
     
     # Updated Transit Log Table
     cursor.execute('''CREATE TABLE IF NOT EXISTS transit_logs (
@@ -52,6 +61,65 @@ def init_db():
 
     conn.commit()
     return conn
+
+def update_vessel_locations():
+    """Classifies vessel positions as water, bad, or coastal_noise using spatial data."""
+    print("--- Classifying vessel locations via GeoPandas ---")
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    # Fetch rows that haven't been classified yet
+    cursor.execute("SELECT rowid, last_lon, last_lat FROM vessel_history WHERE location IS NULL")
+    rows = cursor.fetchall()
+
+    if not rows:
+        print("No new coordinates to classify.")
+        conn.close()
+        return
+
+    row_ids = [r[0] for r in rows]
+    lons = [r[1] for r in rows]
+    lats = [r[2] for r in rows]
+
+    try:
+        # Load land polygons (Ensure this path is correct)
+        land = gpd.read_file("./ne_10m_land/ne_10m_land.shp")
+        
+        # Create GeoSeries of points
+        points = gpd.GeoSeries(
+            [Point(x, y) for x, y in zip(lons, lats)],
+            crs="EPSG:4326"
+        )
+
+        # Project to metric CRS for accurate buffering
+        land_m = land.to_crs(epsg=3857)
+        points_m = points.to_crs(epsg=3857)
+
+        # Merge land polygons for faster spatial testing
+        land_geom = land_m.union_all()
+        # 200m inland tolerance
+        land_buffer = land_geom.buffer(200)
+
+        # Classify
+        updates = []
+        for i, p in enumerate(points_m):
+            if land_geom.contains(p):
+                label = "bad"
+            elif land_buffer.contains(p):
+                label = "coastal_noise"
+            else:
+                label = "water"
+            updates.append((label, row_ids[i]))
+
+        # Bulk update the database
+        cursor.executemany("UPDATE vessel_history SET location = ? WHERE rowid = ?", updates)
+        conn.commit()
+        print(f"Successfully classified {len(updates)} records.")
+
+    except Exception as e:
+        print(f"Spatial Processing Error: {e}")
+    finally:
+        conn.close()
 
 def get_ships_with_stealth():
     co = ChromiumOptions()
@@ -144,6 +212,7 @@ def process_and_save(strait_data):
 
 
 def export_stats():
+    update_vessel_locations()
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     

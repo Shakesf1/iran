@@ -42,7 +42,7 @@ jobs:
 
       - name: Install Python Packages
         run: |
-          pip install DrissionPage
+          pip install DrissionPage geopandas shapely
 
       - name: Random Delay (Jitter)
         run: |
