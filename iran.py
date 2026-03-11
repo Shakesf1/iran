@@ -84,40 +84,37 @@ def update_persistent_json(new_df, filename, keys, rolling_days=5):
     
     if os.path.exists(filename):
         try:
-            # 1. Load existing data
             existing_df = read_encrypted_df(filename)
-            if existing_df.empty:
-                combined = new_df
-            else:
-                # 2. Identify the date column
+            if not existing_df.empty:
                 date_col = next((c for c in ['day', 'date', 'timestamp'] if c in existing_df.columns), None)
                 
+                # FIX: Ensure everything is string-based for the comparison to avoid TZ errors
                 if date_col and rolling_days > 0:
-                    # Force both existing and new data to be UTC-aware
-                    existing_df[date_col] = pd.to_datetime(existing_df[date_col], format='mixed', utc=True)
-                    new_df[date_col] = pd.to_datetime(new_df[date_col], format='mixed', utc=True)
-                    
-                    # This now works because both sides are UTC-aware
+                    existing_df[date_col] = pd.to_datetime(existing_df[date_col], utc=True)
+                    new_df[date_col] = pd.to_datetime(new_df[date_col], utc=True)
                     cutoff = datetime.now(timezone.utc) - pd.Timedelta(days=rolling_days)
-                    existing_df = existing_df[existing_df[date_col] < cutoff]
+                    # Use > to keep RECENT data, not < to keep OLD data
+                    existing_df = existing_df[existing_df[date_col] > cutoff]
 
-                # 3. Combine
+                # Combine and update the dataframe we intend to save
                 combined = pd.concat([existing_df, new_df], ignore_index=True)
-            
-            # 4. Deduplicate based on provided keys
-            new_df = combined.drop_duplicates(subset=keys, keep='last')
+                new_df = combined.drop_duplicates(subset=keys, keep='last')
             
         except Exception as e:
-            print(f"Rolling merge error for {filename}: {e}")
-            import traceback
-            traceback.print_exc()
+            print(f"⚠️ Rolling merge error for {filename}: {e}")
+            # If merge fails, we stop here to avoid overwriting history with just today's data
+            return 
 
-    # Save logic (Standardize dates to strings before JSON export)
-    # This prevents JSON serializing issues with Timestamp objects
-    raw_json_str = new_df.to_json(orient='records', date_format='iso')
+    # Standardization: Convert all Timestamps back to strings to prevent JSON errors
+    for col in new_df.columns:
+        if pd.api.types.is_datetime64_any_dtype(new_df[col]):
+            new_df[col] = new_df[col].dt.strftime('%Y-%m-%d %H:%M:%S' if 'timestamp' in col else '%Y-%m-%d')
+
+    raw_json_str = new_df.to_json(orient='records')
     encrypted_payload = encrypt_data(raw_json_str)
     with open(filename, 'w') as f:
         json.dump({"payload": encrypted_payload}, f)
+    print(f"✅ Saved {filename}")
 
 # 1. Fetch Data
 session = requests.Session()
