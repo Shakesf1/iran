@@ -142,7 +142,7 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     'CYP', 'TUR', 'ARE', 'KWT',  # Cyprus, Turkey, UAE, Kuwait
     'BHR', 'OMN', 'QAT', 'EGY',  # Bahrain, Oman, Qatar, Egypt
     'SDN', 'ERI', 'DJI'          # Red Sea/Horn of Africa (relevant for shipping strikes)
-]
+    ]
     df['origin'] = df['origin'].fillna('UNK')
 
     # We assume IRN origin if:
@@ -283,7 +283,7 @@ if events_res.status_code == 200 and summary_res.status_code == 200:
     # 2. Update the Historical File (summary_history.json)
     # This appends new days and overwrites the current day if it already exists
     history_df = pd.DataFrame(history_rows)
-    update_persistent_json(history_df, 'summary_history.json', ['date', 'bloc'])
+    update_persistent_json(history_df, 'summary_history.json', ['date', 'bloc'], rolling_days=0)
 
     # 3. Export the "Latest" snapshot as before (summary_latest.json)
     summary_str = json.dumps({"asOf": inner_data.get('asOf'), "summary": bloc_totals})
