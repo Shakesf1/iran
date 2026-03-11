@@ -164,21 +164,37 @@
             <div id="bdtiChart" class="w-full h-[400px]"></div>
         </section>
 
-        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: VLCC Transits (Crude Oil)</h2>
-            <p class="text-slate-500 text-sm italic">Vessel transit estimates are derived from AIS position snapshots. A vessel is counted as a chokepoint transit when sequential positions are observed on opposite sides of a defined geofence surrounding the Strait of Hormuz. Erroneous data is filtered out based on geo data.</p>
 
-            <div id="vlccChart" class="w-full h-[350px]"></div>
+
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: VLCC/VLGC Transits (Crude Oil)</h2>
+            <p class="text-slate-500 text-sm italic">Vessel transit estimates are derived from AIS position snapshots. A vessel is counted as a chokepoint transit when sequential positions are observed on opposite sides of a defined geofence surrounding the Strait of Hormuz. Erroneous data is filtered out based on geo data. </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
+                    <div id="vlccDailyChart" class="w-full h-[350px]"></div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Hourly Snapshots</h3>
+                    <div id="vlccChart" class="w-full h-[350px]"></div>
+                </div>
+            </div>
         </section>
 
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: General Cargo Transits</h2>
-            <p class="text-slate-500 text-sm italic">Vessel transit estimates are derived from AIS position snapshots. A vessel is counted as a chokepoint transit when sequential positions are observed on opposite sides of a defined geofence surrounding the Strait of Hormuz. Erroneous data is filtered out based on geo data. </p>
-
-            <div id="cargoChart" class="w-full h-[350px]"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
+                    <div id="cargoDailyChart" class="w-full h-[350px]"></div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Hourly Snapshots</h3>
+                    <div id="cargoChart" class="w-full h-[350px]"></div>
+                </div>
+            </div>
         </section>
-
-
 
 
     </div>
@@ -212,6 +228,31 @@ const layoutBase = {
 };
 
 let fullBDTI = []; // Global store for filtering
+
+function groupTransitsByDay(crossings) {
+    if (!crossings || crossings.length === 0) return { days: [], data: {} };
+
+    // Find bounds (Last 14 days)
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 14); // Show last 2 weeks
+
+    const dailyGroups = {};
+    let current = new Date(start);
+    while (current <= end) {
+        const dStr = current.toISOString().split('T')[0];
+        dailyGroups[dStr] = { WESTBOUND: 0, EASTBOUND: 0 };
+        current.setDate(current.getDate() + 1);
+    }
+
+    crossings.forEach(c => {
+        const dStr = c.time.split(' ')[0];
+        if (dailyGroups[dStr]) dailyGroups[dStr][c.dir]++;
+    });
+
+    const sortedDays = Object.keys(dailyGroups).sort();
+    return { days: sortedDays, data: dailyGroups };
+}
 
 async function renderBDTI() {
     try {
@@ -278,6 +319,8 @@ function filterBDTI(range) {
 
     Plotly.newPlot('bdtiChart', [trace], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 }
+
+
 
 async function renderEscalationCharts() {
     const res = await fetch('./escalation_signals.json');
@@ -347,6 +390,43 @@ const scoreTraces = [
     Plotly.newPlot('scoreChart', scoreTraces, scoreLayout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
 
+function renderDailyTransitChart(crossings, targetId) {
+    const { days, data } = groupTransitsByDay(crossings);
+    
+    const directions = [
+        { key: 'WESTBOUND', color: '#f43f5e', name: 'Westbound' },
+        { key: 'EASTBOUND', color: '#10b981', name: 'Eastbound' }
+    ];
+
+    const traces = directions.map(d => ({
+        x: days,
+        y: days.map(day => data[day][d.key]),
+        name: d.name,
+        type: 'bar',
+        marker: { color: d.color },
+        hovertemplate: `<b>${d.name}</b>: %{y}<extra></extra>`
+    }));
+
+    // Add a ghost trace for the Total on hover
+    traces.push({
+        x: days,
+        y: days.map(day => data[day].WESTBOUND + data[day].EASTBOUND),
+        name: 'TOTAL',
+        type: 'scatter', mode: 'lines', line: { color: 'transparent' },
+        showlegend: false,
+        hovertemplate: '<b>Total</b>: %{y}<extra></extra>'
+    });
+
+    const layout = {
+        ...layoutBase,
+        barmode: 'stack',
+        legend: { orientation: "h", y: -0.2, x: 0.5, xanchor: 'center' },
+        xaxis: { gridcolor: '#f1f5f9', fixedrange: true, tickformat: '%d %b' },
+        yaxis: { gridcolor: '#f1f5f9', fixedrange: true, dtick: 5 }
+    };
+
+    Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
+}
 
 function renderTransitChart(crossings, targetId, labelPrefix) {
     if (!crossings || crossings.length === 0) return;
@@ -391,13 +471,14 @@ function renderTransitChart(crossings, targetId, labelPrefix) {
         hovertemplate: `<b>%{y} ${labelPrefix}</b><br>%{customdata}<extra></extra>`
     }));
 
-    const layout = {
+const layout = {
         barmode: 'stack',
         margin: { t: 10, r: 10, b: 60, l: 40 },
         hovermode: 'x unified',
         font: { family: 'Inter, sans-serif' },
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
+        legend: { orientation: "h", y: -0.3, x: 0.5, xanchor: 'center' }, // MOVE TO BOTTOM
         annotations: layoutBase.annotations,
         xaxis: { 
             gridcolor: '#f1f5f9',
@@ -406,11 +487,7 @@ function renderTransitChart(crossings, targetId, labelPrefix) {
             automargin: true,
             fixedrange: true 
         },
-        yaxis: { 
-            gridcolor: '#f1f5f9', 
-            dtick: 1, 
-            fixedrange: true 
-        }
+        yaxis: { gridcolor: '#f1f5f9', dtick: 1, fixedrange: true }
     };
 
     Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
@@ -439,6 +516,9 @@ async function loadCharts() {
         // 3. Render the new Maritime chart
         const vlccData = shippingData.crossings.filter(c => c.ship_type === 'VLCC');
         const cargoData = shippingData.crossings.filter(c => c.ship_type === 'Cargo');
+        // Render Daily Charts (New)
+        renderDailyTransitChart(vlccData, 'vlccDailyChart');
+        renderDailyTransitChart(cargoData, 'cargoDailyChart');
         renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
         renderTransitChart(cargoData, 'cargoChart', 'Cargo Ships');
 
