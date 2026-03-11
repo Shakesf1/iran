@@ -232,15 +232,12 @@ let fullBDTI = []; // Global store for filtering
 function groupTransitsByDay(crossings) {
     if (!crossings || crossings.length === 0) return { days: [], data: {} };
 
-    // 1. Find the earliest date in the data
     const times = crossings.map(c => new Date(c.time));
     const start = new Date(Math.min(...times));
-    start.setHours(0, 0, 0, 0); // Normalize to start of that day
+    start.setHours(0, 0, 0, 0); 
     
-    const end = new Date();
-    end.setHours(0, 0, 0, 0);
+    const end = new Date(); 
 
-    // 2. Generate the full daily spine from first data point to today
     const dailyGroups = {};
     let current = new Date(start);
     while (current <= end) {
@@ -249,15 +246,19 @@ function groupTransitsByDay(crossings) {
         current.setDate(current.getDate() + 1);
     }
 
-    // 3. Populate groups
     crossings.forEach(c => {
-        const dStr = c.time.split(' ')[0];
-        if (dailyGroups[dStr]) dailyGroups[dStr][c.dir]++;
+        // Ensure we only use the YYYY-MM-DD part for the key
+        const dStr = c.time.split(' ')[0]; 
+        if (dailyGroups[dStr]) {
+            dailyGroups[dStr][c.dir]++;
+        }
     });
 
     const sortedDays = Object.keys(dailyGroups).sort();
     return { days: sortedDays, data: dailyGroups };
 }
+
+
 async function renderBDTI() {
     try {
         const res = await fetch('./shipping_data.json');
