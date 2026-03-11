@@ -237,25 +237,32 @@ function groupTransitsByDay(crossings) {
     start.setHours(0, 0, 0, 0); 
     
     const end = new Date(); 
+    // Ensure the loop includes today by setting end to the very end of today
+    end.setHours(23, 59, 59, 999);
 
     const dailyGroups = {};
     let current = new Date(start);
+    
     while (current <= end) {
-        const dStr = current.toISOString().split('T')[0];
+        // FIX: Use local date parts instead of .toISOString()
+        const y = current.getFullYear();
+        const m = String(current.getMonth() + 1).padStart(2, '0');
+        const d = String(current.getDate()).padStart(2, '0');
+        const dStr = `${y}-${m}-${d}`;
+        
         dailyGroups[dStr] = { WESTBOUND: 0, EASTBOUND: 0 };
         current.setDate(current.getDate() + 1);
     }
 
     crossings.forEach(c => {
-        // Ensure we only use the YYYY-MM-DD part for the key
+        // c.time is "YYYY-MM-DD HH:MM" from your Python script
         const dStr = c.time.split(' ')[0]; 
         if (dailyGroups[dStr]) {
             dailyGroups[dStr][c.dir]++;
         }
     });
 
-    const sortedDays = Object.keys(dailyGroups).sort();
-    return { days: sortedDays, data: dailyGroups };
+    return { days: Object.keys(dailyGroups).sort(), data: dailyGroups };
 }
 
 
