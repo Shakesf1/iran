@@ -165,6 +165,14 @@ def get_ships_with_stealth():
             page.quit()
 
 def process_and_save(strait_data):
+
+    if isinstance(strait_data, str):
+            try:
+                strait_data = json.loads(strait_data)
+            except Exception as e:
+                print(f"Error parsing JSON string: {e}")
+                return
+
     if not strait_data or 'data' not in strait_data:
         return
 
