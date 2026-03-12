@@ -151,6 +151,23 @@
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Hormuz: Oil spread</h2>
+                    <p class="text-slate-500 text-sm italic">Graph below shows the price of Oman Crude Oil as well as the spread versus Murban. Murban is higher quality oil but not dependent on shipping through Hormuz while Oman Crude is. Therefore changes in the spread are indicative of the impact of the Hormuz closure. Higher spread = more impact (normal spread is slightly negative).</p>
+                </div>
+                <div class="flex bg-slate-100 p-1 rounded-lg self-start">
+                    <button onclick="filterOil('1M')" id="btn-oil-1M" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1M</button>
+                    <button onclick="filterOil('3M')" id="btn-oil-3M" class="px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all">3M</button>
+                    <button onclick="filterOil('1Y')" id="btn-oil-1Y" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1Y</button>
+                    <button onclick="filterOil('ALL')" id="btn-oil-ALL" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">ALL</button>
+                </div>
+            </div>
+            <div id="oilSpreadChart" class="w-full h-[450px]"></div>
+        </section>
+
+
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
                     <h2 class="text-2xl font-bold text-slate-800">Maritime Economic Risk (BDTI)</h2>
                     <p class="text-slate-500 text-sm italic">Tracking the daily cost of crude oil shipping via the Baltic Dirty Tanker Index. This primarily tracks Very Large Crude Carriers (VLCCs) which carry heavy crude oil. Therefore good proxy. Also reflects hidden costs such as insurance, fuel and security premia.</p>
                 </div>
@@ -228,6 +245,7 @@ const layoutBase = {
 };
 
 let fullBDTI = []; // Global store for filtering
+let fullOilData = []; // Global store for oil prices
 
 function groupTransitsByDay(crossings) {
     if (!crossings || crossings.length === 0) return { days: [], data: {} };
@@ -265,6 +283,92 @@ function groupTransitsByDay(crossings) {
     return { days: Object.keys(dailyGroups).sort(), data: dailyGroups };
 }
 
+async function renderOilSpread() {
+    try {
+        const res = await fetch('./oil_prices_spread.json');
+        if (!res.ok) throw new Error("Oil spread file not found");
+        
+        const encrypted = await res.json();
+        // Use the same descramble logic as BDTI
+        fullOilData = descramble(encrypted.payload); 
+
+        fullOilData.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        // Default to 3M view to match BDTI default
+        filterOil('3M');
+    } catch (err) {
+        console.error("Oil Spread Load Error:", err);
+    }
+}
+
+function filterOil(range) {
+    const now = new Date();
+    let filtered = [];
+
+    if (range === '1M') {
+        const monthAgo = new Date().setMonth(now.getMonth() - 1);
+        filtered = fullOilData.filter(d => new Date(d.date) >= monthAgo);
+    } else if (range === '3M') {
+        const threeMonthsAgo = new Date().setMonth(now.getMonth() - 3);
+        filtered = fullOilData.filter(d => new Date(d.date) >= threeMonthsAgo);
+    } else if (range === '1Y') {
+        const yearAgo = new Date().setFullYear(now.getFullYear() - 1);
+        filtered = fullOilData.filter(d => new Date(d.date) >= yearAgo);
+    } else {
+        filtered = fullOilData;
+    }
+
+    // Update Button UI
+    ['1M', '3M', '1Y', 'ALL'].forEach(r => {
+        const btn = document.getElementById(`btn-oil-${r}`);
+        if (btn) btn.className = (r === range) 
+            ? "px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all" 
+            : "px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all";
+    });
+
+    const traces = [
+        {
+            x: filtered.map(d => d.date),
+            y: filtered.map(d => d.price_oman),
+            name: 'Oman Price ($)',
+            type: 'scatter', mode: 'lines',
+            line: { color: '#0f172a', width: 2 }, // Dark slate
+            yaxis: 'y1'
+        },
+        {
+            x: filtered.map(d => d.date),
+            y: filtered.map(d => d.spread),
+            name: 'Oman-Murban Spread',
+            type: 'scatter', mode: 'lines',
+            fill: 'tozeroy',
+            fillcolor: 'rgba(239, 68, 68, 0.1)', // Light red fill
+            line: { color: '#ef4444', width: 3, shape: 'spline' }, // Red spread line
+            yaxis: 'y2'
+        }
+    ];
+
+    const layout = {
+        ...layoutBase,
+        showlegend: true,
+        legend: { orientation: "h", y: -0.2, x: 0.5, xanchor: 'center' },
+        yaxis: { 
+            title: 'Oman Price ($)', 
+            gridcolor: '#f1f5f9',
+            fixedrange: true 
+        },
+        yaxis2: { 
+            title: 'Spread ($)', 
+            overlaying: 'y', 
+            side: 'right', 
+            showgrid: false,
+            fixedrange: true,
+            zeroline: true,
+            zerolinecolor: '#cbd5e1'
+        }
+    };
+
+    Plotly.newPlot('oilSpreadChart', traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
+}
 
 async function renderBDTI() {
     try {
@@ -507,6 +611,7 @@ const layout = {
 
 async function loadCharts() {
     try {
+        await renderOilSpread();
         await renderBDTI();
         await renderEscalationCharts();
 
