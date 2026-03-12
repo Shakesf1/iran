@@ -1,0 +1,65 @@
+name: Oil Price Spread Monitor
+
+on:
+  schedule:
+    # Runs every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Allows manual trigger for testing
+
+jobs:
+  update_prices:
+    runs-on: ubuntu-latest
+    # Permissions needed to commit the encrypted JSON back to the repo
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0 # Important for rebasing
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install pandas curl_cffi
+
+      - name: Random Start Delay (Jitter)
+        run: |
+          # Wait between 1 and 180 seconds to avoid fixed-interval detection
+          DELAY=$((1 + RANDOM % 180))
+          echo "Bot Evasion: Waiting $DELAY seconds..."
+          sleep $DELAY
+
+      - name: Run Oil Price Monitor
+        run: |
+          # Executes getoilprices.py which imports update_persistent_json from iran.py
+          python -u getoilprices.py
+
+      - name: Commit and Push Data
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          
+          # 1. Fetch latest changes
+          git fetch origin main
+
+          # 2. Stage the encrypted output file
+          git add oil_prices_spread.json
+
+          # 3. Pull with rebase and autostash 
+          # This reapplies your new data on top of any other commits (like from shipping.py)
+          git pull --rebase --autostash -X theirs origin main 
+
+          # 4. Check if there are actually new changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update oil prices and spread [skip ci]"
+            git push origin main
+          fi

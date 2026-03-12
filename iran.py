@@ -116,179 +116,181 @@ def update_persistent_json(new_df, filename, keys, rolling_days=5):
         json.dump({"payload": encrypted_payload}, f)
     print(f"✅ Saved {filename}")
 
-# 1. Fetch Data
-session = requests.Session()
-events_res = session.get(EVENTS_URL, impersonate="firefox144")
-summary_res = session.get(SUMMARY_URL, impersonate="firefox144")
+if __name__ == "__main__":
 
-if events_res.status_code == 200 and summary_res.status_code == 200:
-    #Sync shipping data
-    print("Syncing BDTI 5-year historical data...")
-    sync_bdti_5y(session)
+    # 1. Fetch Data
+    session = requests.Session()
+    events_res = session.get(EVENTS_URL, impersonate="firefox144")
+    summary_res = session.get(SUMMARY_URL, impersonate="firefox144")
 
-    # --- PART A: PROCESS EVENTS (HOURLY/DAILY CHARTS) ---
-    # 1. Load data
-    events_data = events_res.json().get('events', [])
-    df = pd.DataFrame(events_data)
-    df['timestamp'] = pd.to_datetime(df['timestamp'], format='ISO8601', utc=True)
+    if events_res.status_code == 200 and summary_res.status_code == 200:
+        #Sync shipping data
+        print("Syncing BDTI 5-year historical data...")
+        sync_bdti_5y(session)
 
-    # 2. Refined Origin Logic
-    # Instead of just location, check for indicators of Iranian-linked activity
-    likely_targets = [
-    'ISR', 'USA', 'JOR', 'SAU',  # Original core
-    'CYP', 'TUR', 'ARE', 'KWT',  # Cyprus, Turkey, UAE, Kuwait
-    'BHR', 'OMN', 'QAT', 'EGY',  # Bahrain, Oman, Qatar, Egypt
-    'SDN', 'ERI', 'DJI'          # Red Sea/Horn of Africa (relevant for shipping strikes)
-    ]
-    df['origin'] = df['origin'].fillna('UNK')
+        # --- PART A: PROCESS EVENTS (HOURLY/DAILY CHARTS) ---
+        # 1. Load data
+        events_data = events_res.json().get('events', [])
+        df = pd.DataFrame(events_data)
+        df['timestamp'] = pd.to_datetime(df['timestamp'], format='ISO8601', utc=True)
 
-    # We assume IRN origin if:
-    # - It's explicitly in the ally list
-    # - OR it hits a likely target and the origin is unknown
-    
-    df_irn = df[
-        (
-            (df['origin'].isin(iran_allies)) |
-            ((df['origin'] == 'UNK') & (df['location'].isin(likely_targets)))
-        ) & 
-        (df['type'] == 'strike') # ['strike', 'report', 'intercept', 'defense', 'movement'] ==> Only strike is relevant
-    ].copy()
+        # 2. Refined Origin Logic
+        # Instead of just location, check for indicators of Iranian-linked activity
+        likely_targets = [
+        'ISR', 'USA', 'JOR', 'SAU',  # Original core
+        'CYP', 'TUR', 'ARE', 'KWT',  # Cyprus, Turkey, UAE, Kuwait
+        'BHR', 'OMN', 'QAT', 'EGY',  # Bahrain, Oman, Qatar, Egypt
+        'SDN', 'ERI', 'DJI'          # Red Sea/Horn of Africa (relevant for shipping strikes)
+        ]
+        df['origin'] = df['origin'].fillna('UNK')
 
-
-    # 3. INCIDENT CLUSTERING (The Fix for Overcounting)
-    # Round timestamps to 10-minute windows.
-    # If 20 drones hit the same city in 10 minutes, they become 1 'incident'.
-    df_irn['cluster_time'] = df_irn['timestamp'].dt.round('10min')
-
-    # Deduplicate: Keep only one record per location per 10-minute window
-    df_incidents = df_irn.drop_duplicates(subset=['cluster_time', 'location']).copy()
-
-    # 4. Final Grouping
-# 4. Final Grouping (Fixed 'H' to 'h' to resolve FutureWarning)
-    df_incidents['hour'] = df_incidents['timestamp'].dt.floor('h')
-    df_incidents['day'] = df_incidents['timestamp'].dt.floor('D')
+        # We assume IRN origin if:
+        # - It's explicitly in the ally list
+        # - OR it hits a likely target and the origin is unknown
         
-    # CRITICAL: Switch from df_irn to df_incidents for all calculations
-    if not df_incidents.empty:
-            # 1. Group incidents by hour and location
-            # Use 'h' instead of 'H' to avoid the FutureWarning
-            df_incidents['timestamp'] = df_incidents['timestamp'].dt.floor('h') 
+        df_irn = df[
+            (
+                (df['origin'].isin(iran_allies)) |
+                ((df['origin'] == 'UNK') & (df['location'].isin(likely_targets)))
+            ) & 
+            (df['type'] == 'strike') # ['strike', 'report', 'intercept', 'defense', 'movement'] ==> Only strike is relevant
+        ].copy()
+
+
+        # 3. INCIDENT CLUSTERING (The Fix for Overcounting)
+        # Round timestamps to 10-minute windows.
+        # If 20 drones hit the same city in 10 minutes, they become 1 'incident'.
+        df_irn['cluster_time'] = df_irn['timestamp'].dt.round('10min')
+
+        # Deduplicate: Keep only one record per location per 10-minute window
+        df_incidents = df_irn.drop_duplicates(subset=['cluster_time', 'location']).copy()
+
+        # 4. Final Grouping
+    # 4. Final Grouping (Fixed 'H' to 'h' to resolve FutureWarning)
+        df_incidents['hour'] = df_incidents['timestamp'].dt.floor('h')
+        df_incidents['day'] = df_incidents['timestamp'].dt.floor('D')
             
-            hourly = df_incidents.groupby(['timestamp', 'location']).size().unstack(fill_value=0)
-            hourly_df = hourly.reset_index()
-            
-            # 2. Format for JSON
-            hourly_df['timestamp'] = hourly_df['timestamp'].dt.strftime('%Y-%m-%d %H:%M')
-            hourly_df['total_attacks'] = hourly.sum(axis=1).values
-                        
-            # 3. Persistence now finds 'timestamp' and succeeds
-            print(hourly_df.head())  # Debug: Check the structure before saving
-            update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp'])
-
-            # --- DAILY DATA ---
-            # Grouping clustered incidents by day and location
-            daily = df_incidents.groupby(['day', 'location']).size().unstack(fill_value=0)
-            daily_df = daily.reset_index()
-            daily_df['day'] = daily_df['day'].dt.strftime('%Y-%m-%d')
-
-            # Initialize Extrapolation to 0 for all days first
-            daily_df['Extrapolation'] = 0 
-
-            # Extrapolation Calculation
-            now = datetime.now(timezone.utc)
-            current_hour = now.hour
-            today_str = now.strftime('%Y-%m-%d')
-
-            three_days_ago = (now - pd.Timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
-            recent_full_days = df_incidents[
-                (df_incidents['timestamp'] >= three_days_ago) & 
-                (df_incidents['day'] < pd.Timestamp(today_str, tz='UTC'))
-            ].copy()
-
-            if not recent_full_days.empty:
-                recent_full_days['hr'] = recent_full_days['timestamp'].dt.hour
-                avg_remaining = recent_full_days[recent_full_days['hr'] > current_hour].groupby('day').size().mean()
+        # CRITICAL: Switch from df_irn to df_incidents for all calculations
+        if not df_incidents.empty:
+                # 1. Group incidents by hour and location
+                # Use 'h' instead of 'H' to avoid the FutureWarning
+                df_incidents['timestamp'] = df_incidents['timestamp'].dt.floor('h') 
                 
-                # Only apply to today's row
-                if today_str in daily_df['day'].values:
-                    daily_df.loc[daily_df['day'] == today_str, 'Extrapolation'] = round(avg_remaining if not pd.isna(avg_remaining) else 0)
+                hourly = df_incidents.groupby(['timestamp', 'location']).size().unstack(fill_value=0)
+                hourly_df = hourly.reset_index()
+                
+                # 2. Format for JSON
+                hourly_df['timestamp'] = hourly_df['timestamp'].dt.strftime('%Y-%m-%d %H:%M')
+                hourly_df['total_attacks'] = hourly.sum(axis=1).values
+                            
+                # 3. Persistence now finds 'timestamp' and succeeds
+                print(hourly_df.head())  # Debug: Check the structure before saving
+                update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp'])
 
-            daily_df['total_attacks'] = daily.sum(axis=1).values
-            update_persistent_json(daily_df, 'daily_data.json', ['day'])
+                # --- DAILY DATA ---
+                # Grouping clustered incidents by day and location
+                daily = df_incidents.groupby(['day', 'location']).size().unstack(fill_value=0)
+                daily_df = daily.reset_index()
+                daily_df['day'] = daily_df['day'].dt.strftime('%Y-%m-%d')
 
-            # --- EXTRAPOLATION & SIGNALS ---
-            # Use df_incidents to calculate tempo and escalation
-            tempo = df_incidents.groupby('hour').size().rename('attacks').reset_index()
-            tempo = tempo.sort_values('hour')
-            
-            tempo['rolling_6h'] = tempo['attacks'].rolling(6, min_periods=1).mean()
-            tempo['rolling_24h'] = tempo['attacks'].rolling(24, min_periods=1).mean()
-            
-            # Use clustered data for geographic spread
-            spread = df_incidents.groupby('hour')['location'].nunique().rename('countries_hit').reset_index()
-            signals = tempo.merge(spread, on='hour')
-            
-            signals['tempo_change'] = (signals['rolling_6h'] / signals['rolling_24h']).fillna(1.0)
-            signals['escalation_score'] = (
-                (signals['tempo_change'] * 0.7) + 
-                (signals['countries_hit'] * 0.3)
-            ).round(2)
-            
-            signals['bar_color'] = signals.apply(
-                lambda x: '#ef4444' if x['rolling_6h'] > x['rolling_24h'] else '#94a3b8', 
-                axis=1
-            )
+                # Initialize Extrapolation to 0 for all days first
+                daily_df['Extrapolation'] = 0 
 
-            signals['timestamp'] = signals['hour'].dt.strftime('%Y-%m-%d %H:%M')
-            update_persistent_json(signals, 'escalation_signals.json', ['timestamp'])
+                # Extrapolation Calculation
+                now = datetime.now(timezone.utc)
+                current_hour = now.hour
+                today_str = now.strftime('%Y-%m-%d')
 
-    # --- PART B: PROCESS SUMMARY (BLOC TABLES) ---
-    raw_summary = summary_res.json()
-    inner_data = raw_summary.get('data', raw_summary)
-    countries = inner_data.get('countries', [])
-    
-    # Define Blocs
-    
-    bloc_totals = {
-        "Iran-Led Bloc": {"launched": 0, "intercepted": 0, "hits": 0, "mil_cas": 0, "civ_cas": 0},
-        "US/Israel Bloc": {"launched": 0, "intercepted": 0, "hits": 0, "mil_cas": 0, "civ_cas": 0}
-    }
+                three_days_ago = (now - pd.Timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
+                recent_full_days = df_incidents[
+                    (df_incidents['timestamp'] >= three_days_ago) & 
+                    (df_incidents['day'] < pd.Timestamp(today_str, tz='UTC'))
+                ].copy()
 
-    for c in countries:
-        bloc = "Iran-Led Bloc" if c.get('entityId') in iran_allies else "US/Israel Bloc"
+                if not recent_full_days.empty:
+                    recent_full_days['hr'] = recent_full_days['timestamp'].dt.hour
+                    avg_remaining = recent_full_days[recent_full_days['hr'] > current_hour].groupby('day').size().mean()
+                    
+                    # Only apply to today's row
+                    if today_str in daily_df['day'].values:
+                        daily_df.loc[daily_df['day'] == today_str, 'Extrapolation'] = round(avg_remaining if not pd.isna(avg_remaining) else 0)
+
+                daily_df['total_attacks'] = daily.sum(axis=1).values
+                update_persistent_json(daily_df, 'daily_data.json', ['day'])
+
+                # --- EXTRAPOLATION & SIGNALS ---
+                # Use df_incidents to calculate tempo and escalation
+                tempo = df_incidents.groupby('hour').size().rename('attacks').reset_index()
+                tempo = tempo.sort_values('hour')
+                
+                tempo['rolling_6h'] = tempo['attacks'].rolling(6, min_periods=1).mean()
+                tempo['rolling_24h'] = tempo['attacks'].rolling(24, min_periods=1).mean()
+                
+                # Use clustered data for geographic spread
+                spread = df_incidents.groupby('hour')['location'].nunique().rename('countries_hit').reset_index()
+                signals = tempo.merge(spread, on='hour')
+                
+                signals['tempo_change'] = (signals['rolling_6h'] / signals['rolling_24h']).fillna(1.0)
+                signals['escalation_score'] = (
+                    (signals['tempo_change'] * 0.7) + 
+                    (signals['countries_hit'] * 0.3)
+                ).round(2)
+                
+                signals['bar_color'] = signals.apply(
+                    lambda x: '#ef4444' if x['rolling_6h'] > x['rolling_24h'] else '#94a3b8', 
+                    axis=1
+                )
+
+                signals['timestamp'] = signals['hour'].dt.strftime('%Y-%m-%d %H:%M')
+                update_persistent_json(signals, 'escalation_signals.json', ['timestamp'])
+
+        # --- PART B: PROCESS SUMMARY (BLOC TABLES) ---
+        raw_summary = summary_res.json()
+        inner_data = raw_summary.get('data', raw_summary)
+        countries = inner_data.get('countries', [])
         
-        launched_obj = c.get('launched', {})
-        launched = launched_obj.get('total', 0) if isinstance(launched_obj, dict) else 0
-        cas = c.get('casualties', {})
+        # Define Blocs
+        
+        bloc_totals = {
+            "Iran-Led Bloc": {"launched": 0, "intercepted": 0, "hits": 0, "mil_cas": 0, "civ_cas": 0},
+            "US/Israel Bloc": {"launched": 0, "intercepted": 0, "hits": 0, "mil_cas": 0, "civ_cas": 0}
+        }
 
-        bloc_totals[bloc]["launched"] += launched
-        bloc_totals[bloc]["intercepted"] += c.get('intercepted', 0)
-        bloc_totals[bloc]["hits"] += c.get('hits', 0)
-        bloc_totals[bloc]["mil_cas"] += cas.get('military', 0)
-        bloc_totals[bloc]["civ_cas"] += cas.get('civilian', 0)
+        for c in countries:
+            bloc = "Iran-Led Bloc" if c.get('entityId') in iran_allies else "US/Israel Bloc"
+            
+            launched_obj = c.get('launched', {})
+            launched = launched_obj.get('total', 0) if isinstance(launched_obj, dict) else 0
+            cas = c.get('casualties', {})
 
-    # Export a clean, latest snapshot
-    current_date = pd.to_datetime(inner_data.get('asOf')).strftime('%Y-%m-%d')
-    
-    # Flatten the bloc_totals for a dataframe format
-    history_rows = []
-    for bloc_name, stats in bloc_totals.items():
-        row = {"date": current_date, "bloc": bloc_name}
-        row.update(stats)
-        history_rows.append(row)
-    
-    # 2. Update the Historical File (summary_history.json)
-    # This appends new days and overwrites the current day if it already exists
-    history_df = pd.DataFrame(history_rows)
-    update_persistent_json(history_df, 'summary_history.json', ['date', 'bloc'], rolling_days=0)
+            bloc_totals[bloc]["launched"] += launched
+            bloc_totals[bloc]["intercepted"] += c.get('intercepted', 0)
+            bloc_totals[bloc]["hits"] += c.get('hits', 0)
+            bloc_totals[bloc]["mil_cas"] += cas.get('military', 0)
+            bloc_totals[bloc]["civ_cas"] += cas.get('civilian', 0)
 
-    # 3. Export the "Latest" snapshot as before (summary_latest.json)
-    summary_str = json.dumps({"asOf": inner_data.get('asOf'), "summary": bloc_totals})
-    with open('summary_latest.json', 'w') as f:
-        json.dump({"payload": encrypt_data(summary_str)}, f)
-    
-    print(f"Successfully synced summary and history for: {inner_data.get('asOf')}")
-    
+        # Export a clean, latest snapshot
+        current_date = pd.to_datetime(inner_data.get('asOf')).strftime('%Y-%m-%d')
+        
+        # Flatten the bloc_totals for a dataframe format
+        history_rows = []
+        for bloc_name, stats in bloc_totals.items():
+            row = {"date": current_date, "bloc": bloc_name}
+            row.update(stats)
+            history_rows.append(row)
+        
+        # 2. Update the Historical File (summary_history.json)
+        # This appends new days and overwrites the current day if it already exists
+        history_df = pd.DataFrame(history_rows)
+        update_persistent_json(history_df, 'summary_history.json', ['date', 'bloc'], rolling_days=0)
 
-else:
-    print(f"Error: Events ({events_res.status_code}) Summary ({summary_res.status_code})")
+        # 3. Export the "Latest" snapshot as before (summary_latest.json)
+        summary_str = json.dumps({"asOf": inner_data.get('asOf'), "summary": bloc_totals})
+        with open('summary_latest.json', 'w') as f:
+            json.dump({"payload": encrypt_data(summary_str)}, f)
+        
+        print(f"Successfully synced summary and history for: {inner_data.get('asOf')}")
+        
+
+    else:
+        print(f"Error: Events ({events_res.status_code}) Summary ({summary_res.status_code})")
