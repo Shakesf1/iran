@@ -226,7 +226,13 @@ const layoutBase = {
     font: { family: 'Inter, sans-serif' },
     paper_bgcolor: 'rgba(0,0,0,0)',
     plot_bgcolor: 'rgba(0,0,0,0)',
-    xaxis: { gridcolor: '#f1f5f9', zeroline: false, fixedRange: true },
+    xaxis: { 
+        gridcolor: '#f1f5f9', 
+        zeroline: false, 
+        fixedrange: true,
+        tickangle: -45,   // Slant dates to prevent overlap
+        automargin: true  // Give space for the slanted dates
+    },
     yaxis: { gridcolor: '#f1f5f9' , fixedRange: true  },
     // WATERMARK ADDITION
     annotations: [{
@@ -351,19 +357,40 @@ function filterOil(range) {
         ...layoutBase,
         showlegend: true,
         legend: { orientation: "h", y: -0.2, x: 0.5, xanchor: 'center' },
+        
+        // Fix Date Axis
+        xaxis: {
+            type: 'date',
+            tickformat: '%b %d', // Shows as "Mar 12"
+            nticks: 10,          // Limits number of dates to prevent overlap
+            fixedrange: true,
+            gridcolor: '#f1f5f9'
+        },
+
+        // Fix Primary Y-Axis (Oman Price)
         yaxis: { 
             title: 'Oman Price ($)', 
+            tickprefix: '$',     // Adds $ for clarity
+            tickformat: '.2f',   // Forces 2 decimal places
             gridcolor: '#f1f5f9',
-            fixedrange: true 
+            fixedrange: true,
+            titlefont: { color: '#0f172a' },
+            tickfont: { color: '#0f172a' }
         },
+
+        // Fix Secondary Y-Axis (Spread)
         yaxis2: { 
             title: 'Spread ($)', 
+            tickprefix: '$',
+            tickformat: '.2f',
             overlaying: 'y', 
             side: 'right', 
             showgrid: false,
             fixedrange: true,
             zeroline: true,
-            zerolinecolor: '#cbd5e1'
+            zerolinecolor: '#cbd5e1',
+            titlefont: { color: '#ef4444' }, // Red to match the line
+            tickfont: { color: '#ef4444' }   // Red to match the line
         }
     };
 
@@ -424,16 +451,31 @@ function filterBDTI(range) {
             : "px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all";
     });
 
+    const bdtiLayout = {
+        ...layoutBase,
+        xaxis: {
+            ...layoutBase.xaxis,
+            type: 'date',
+            tickformat: '%b %d'
+        },
+        yaxis: {
+            ...layoutBase.yaxis,
+            tickformat: '.0f', // BDTI is usually whole numbers
+            title: 'Index Value'
+        }
+    };
+
     const trace = {
         x: filtered.map(d => d.date),
         y: filtered.map(d => d.bdti_price),
         type: 'scatter', mode: 'lines',
         line: { color: '#0ea5e9', width: 3, shape: 'spline' },
         fill: 'tozeroy', fillcolor: 'rgba(14, 165, 233, 0.05)',
-        name: 'BDTI Value'
+        name: 'BDTI Value',
+        hovertemplate: '<b>BDTI</b>: %{y}<extra></extra>'
     };
 
-    Plotly.newPlot('bdtiChart', [trace], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
+    Plotly.newPlot('bdtiChart', [trace], bdtiLayout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
 
 
