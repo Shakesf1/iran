@@ -724,73 +724,68 @@ function renderCasualtyChart(blocName, elementId, data, label) {
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     const xValues = filtered.map(d => d.date);
-    
-    // Determine keys based on label (Deaths vs Injuries)
     const isDeaths = label === 'Deaths';
     const totalKey = isDeaths ? 'total_cas' : 'injuries';
-    const milKey = 'mil_cas';
-    const civKey = 'civ_cas';
-
-    // Calculate Deltas for the Stacked Bars
-    const milDelta = [];
-    const civDelta = [];
-    const cumulative = filtered.map(d => Number(d[totalKey]));
-
-    filtered.forEach((d, i) => {
-        if (i === 0) {
-            milDelta.push(Number(d[milKey] || 0));
-            civDelta.push(Number(d[civKey] || 0));
-        } else {
-            // Calculate change, but cap at 0 so bars don't go negative during "drops"
-            const mChange = Number(d[milKey]) - Number(filtered[i-1][milKey]);
-            const cChange = Number(d[civKey]) - Number(filtered[i-1][civKey]);
-            milDelta.push(Math.max(0, mChange));
-            civDelta.push(Math.max(0, cChange));
-        }
+    
+    // 1. Calculate the daily delta for the total (Injuries or Total Deaths)
+    const dailyDelta = filtered.map((d, i) => {
+        if (i === 0) return Number(d[totalKey] || 0);
+        const change = Number(d[totalKey]) - Number(filtered[i-1][totalKey]);
+        return Math.max(0, change);
     });
 
-    // Color Logic
-    const baseColor = blocName.includes('Iran') ? '#ef4444' : '#3b82f6'; // Red vs Blue
-    const milColor = blocName.includes('Iran') ? '#991b1b' : '#1e40af'; // Darker Red/Blue
+    const cumulative = filtered.map(d => Number(d[totalKey]));
+    const themeColor = blocName.includes('Iran') ? '#ef4444' : '#3b82f6';
+    const milColor = blocName.includes('Iran') ? '#991b1b' : '#1e40af';
 
-    const traces = [
-        {
+    let traces = [];
+
+    if (isDeaths) {
+        // If Deaths: Show stacked Mil/Civ bars
+        const milDelta = filtered.map((d, i) => {
+            if (i === 0) return Number(d.mil_cas || 0);
+            return Math.max(0, Number(d.mil_cas) - Number(filtered[i-1].mil_cas));
+        });
+        const civDelta = filtered.map((d, i) => {
+            if (i === 0) return Number(d.civ_cas || 0);
+            return Math.max(0, Number(d.civ_cas) - Number(filtered[i-1].civ_cas));
+        });
+
+        traces.push({ x: xValues, y: milDelta, name: 'Mil. Deaths', type: 'bar', marker: { color: milColor }, yaxis: 'y' });
+        traces.push({ x: xValues, y: civDelta, name: 'Civ. Deaths', type: 'bar', marker: { color: themeColor, opacity: 0.7 }, yaxis: 'y' });
+    } else {
+        // If Injuries: Show a single bar for daily increase
+        traces.push({
             x: xValues,
-            y: milDelta,
-            name: `Mil. ${label}`,
+            y: dailyDelta,
+            name: `Daily ${label}`,
             type: 'bar',
-            marker: { color: milColor },
+            marker: { color: themeColor, opacity: 0.6 },
             yaxis: 'y'
-        },
-        {
-            x: xValues,
-            y: civDelta,
-            name: `Civ. ${label}`,
-            type: 'bar',
-            marker: { color: baseColor, opacity: 0.7 },
-            yaxis: 'y'
-        },
-        {
-            x: xValues,
-            y: cumulative,
-            name: `Total ${label} (Cumulative)`,
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: '#0f172a', width: 2 },
-            yaxis: 'y2'
-        }
-    ];
+        });
+    }
+
+    // Always add the cumulative line
+    traces.push({
+        x: xValues,
+        y: cumulative,
+        name: `Total ${label}`,
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: '#0f172a', width: 2 },
+        yaxis: 'y2'
+    });
 
     const layout = {
         ...layoutBase,
         title: { text: `<b>${blocName}</b>: ${label}`, x: 0.05 },
-        barmode: 'stack', // Crucial for the Mil/Civ split
+        barmode: 'stack',
         showlegend: true,
         legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.3 },
         margin: { t: 60, r: 60, b: 100, l: 60 },
         xaxis: { type: 'date', tickformat: '%b %d', fixedrange: true },
-        yaxis: { title: `Daily ${label}`, side: 'left', fixedrange: true, tickformat: ',d' },
-        yaxis2: { title: `Total ${label}`, overlaying: 'y', side: 'right', fixedrange: true, showgrid: false, tickformat: ',d' }
+        yaxis: { title: `Daily ${label}`, side: 'left', fixedrange: true },
+        yaxis2: { title: `Total ${label}`, overlaying: 'y', side: 'right', fixedrange: true, showgrid: false }
     };
 
     Plotly.newPlot(elementId, traces, layout, { responsive: true, displayModeBar: false });
