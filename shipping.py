@@ -18,7 +18,7 @@ DB_PATH = os.path.join(BASE_DIR, "shipping_data.db")
 JSON_PATH = os.path.join(BASE_DIR, "dashboard_stats.json")
 
 # --- CONFIGURATION ---
-MAP_URL = "https://www.marinetraffic.com/en/ais/home/centerx:56.3/centery:26.4/zoom:9"
+MAP_URL = "https://www.marinetraffic.com/en/ais/home/centerx:60.4/centery:25.8/zoom:7"
 DB_NAME = DB_PATH
 #HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
 
