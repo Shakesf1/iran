@@ -129,9 +129,14 @@
 
 
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div id="chart-iran-cas" class="h-[350px] bg-white p-4 rounded-xl shadow-sm border border-slate-100"></div>
-    <div id="chart-us-cas" class="h-[350px] bg-white p-4 rounded-xl shadow-sm border border-slate-100"></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div id="chart-iran-cas" class="bg-white p-4 rounded shadow h-80"></div>
+    <div id="chart-us-cas" class="bg-white p-4 rounded shadow h-80"></div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+    <div id="chart-iran-inj" class="bg-white p-4 rounded shadow h-80"></div>
+    <div id="chart-us-inj" class="bg-white p-4 rounded shadow h-80"></div>
 </div>
 
 <p class="text-[10px] text-slate-400 leading-relaxed mb-8 px-2">
@@ -648,43 +653,32 @@ async function renderCasualties() {
         const res = await fetch('./casualties_history.json');
         if (!res.ok) throw new Error("Casualties file not found");
         const json = await res.json();
-        
-        // Descramble and store in the variable accessible to this function
         const decodedData = descramble(json.payload);
-        
-        // 1. Get ONLY the latest date in the file
-        const latestDate = [...new Set(decodedData.map(d => d.date))].sort().pop();
-        
-        const blocs = [
-            { id: 'iran', name: 'Iran-Led Bloc' },
-            { id: 'us', name: 'US-Israel Bloc' }
-        ];
+
+        // Update Summary Table (Latest Date)
+        const dates = [...new Set(decodedData.map(d => d.date))].sort();
+        const latestDate = dates[dates.length - 1];
+        const blocs = [{ id: 'iran', name: 'Iran-Led Bloc' }, { id: 'us', name: 'US-Israel Bloc' }];
 
         blocs.forEach(bloc => {
-            // 2. Filter for only the latest entries for the summary table
-            const latestEntry = decodedData.find(d => d.date === latestDate && d.bloc === bloc.name);
-            
-            if (latestEntry) {
-                            // SAFETY HELPER: Checks if ID exists before updating
-                            const updateIfExits = (suffix, value) => {
-                                const el = document.getElementById(`${bloc.id}-${suffix}`);
-                                if (el) {
-                                    el.innerText = Number(value).toLocaleString();
-                                } else {
-                                    console.warn(`Missing HTML ID: ${bloc.id}-${suffix}`);
-                                }
-                            };
-
-                            updateIfExits('mil', latestEntry.mil_cas);
-                            updateIfExits('civ', latestEntry.civ_cas);
-                            updateIfExits('total', latestEntry.total_cas);
-                            updateIfExits('injuries', latestEntry.injuries);
-                        }
+            const entry = decodedData.find(d => d.date === latestDate && d.bloc === bloc.name);
+            if (entry) {
+                const safeSet = (id, val) => { 
+                    const el = document.getElementById(id);
+                    if(el) el.innerText = Number(val).toLocaleString(); 
+                };
+                safeSet(`${bloc.id}-mil`, entry.mil_cas);
+                safeSet(`${bloc.id}-civ`, entry.civ_cas);
+                safeSet(`${bloc.id}-total`, entry.total_cas);
+                safeSet(`${bloc.id}-injuries`, entry.injuries);
+            }
         });
 
-        // 3. Trigger the charts, PASSING decodedData to the next function
-        renderCasualtyChart('Iran-Led Bloc', 'chart-iran-cas', decodedData);
-        renderCasualtyChart('US-Israel Bloc', 'chart-us-cas', decodedData);
+        // Generate the 4 Charts
+        renderCasualtyChart('Iran-Led Bloc', 'chart-iran-cas', decodedData, 'total_cas', 'Deaths');
+        renderCasualtyChart('US-Israel Bloc', 'chart-us-cas', decodedData, 'total_cas', 'Deaths');
+        renderCasualtyChart('Iran-Led Bloc', 'chart-iran-inj', decodedData, 'injuries', 'Injuries');
+        renderCasualtyChart('US-Israel Bloc', 'chart-us-inj', decodedData, 'injuries', 'Injuries');
 
     } catch (err) {
         console.error("Casualty Load Error:", err);
@@ -692,65 +686,71 @@ async function renderCasualties() {
 }
 
 // Added 'data' parameter to fix the ReferenceError
-function renderCasualtyChart(blocName, elementId, data) {
+function renderCasualtyChart(blocName, elementId, data, dataKey, label) {
+    const targetDiv = document.getElementById(elementId);
+    if (!targetDiv) return;
 
-    // --- DEBUGGING START ---
-    console.log(`--- Debugging Data for: ${blocName} ---`);
-    console.table(data); // This creates a readable table in your browser console
-    // --- DEBUGGING END ---
-
-    if (!data || data.length === 0) return;
-
-    // Use the passed 'data' argument instead of a global variable
-    const filteredData = data
+    // Filter and Sort
+    const filtered = data
         .filter(d => d.bloc === blocName)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
+    const xValues = filtered.map(d => d.date);
+    const cumulativeValues = filtered.map(d => Number(d[dataKey]));
+    
+    // Calculate Daily Delta (Today's Total - Yesterday's Total)
+    const dailyValues = cumulativeValues.map((val, i) => {
+        if (i === 0) return val; 
+        return Math.max(0, val - cumulativeValues[i - 1]); // Max(0) prevents negative bars if data is corrected
+    });
 
-
-    let sum = 0;
-    const cumulative = filteredData.map(d => sum += Number(d.total_cas));
+    const themeColor = blocName.includes('Iran') ? '#ef4444' : '#3b82f6';
 
     const traces = [
         {
-            x: filteredData.map(d => d.date),
-            y: filteredData.map(d => d.total_cas),
-            name: 'Daily Deaths',
+            x: xValues,
+            y: dailyValues,
+            name: `Daily ${label}`,
             type: 'bar',
-            marker: { color: blocName.includes('Iran') ? '#ef4444' : '#3b82f6' },
+            marker: { color: themeColor, opacity: 0.6 },
             yaxis: 'y'
         },
         {
-            x: filteredData.map(d => d.date),
-            y: cumulative,
-            name: 'Cumulative',
+            x: xValues,
+            y: cumulativeValues,
+            name: `Total ${label}`,
             type: 'scatter',
-            mode: 'lines',
-            line: { color: '#0f172a', width: 2 },
+            mode: 'lines+markers',
+            line: { color: '#1e293b', width: 2, shape: 'hv' }, // 'hv' creates a step-line effect for totals
+            marker: { size: 4, color: '#1e293b' },
             yaxis: 'y2'
         }
     ];
 
     const layout = {
         ...layoutBase,
-        title: { text: blocName, font: { size: 14, weight: 'bold' } },
-        margin: { t: 40, r: 60, b: 60, l: 60 }, // Adjusted margins for axis legibility
-        showlegend: false,
-        xaxis: { 
-            ...layoutBase.xaxis,
-            type: 'date',
-            tickformat: '%b %d',
-            tickangle: -45,
-            automargin: true
+        title: {
+            text: `<b>${blocName}</b>: ${label} Over Time`,
+            font: { size: 16, color: '#1e293b' },
+            x: 0.05
         },
-        yaxis: { title: 'Daily', fixedrange: true, tickformat: ',d' },
+        showlegend: true,
+        legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.2 },
+        margin: { t: 50, r: 60, b: 80, l: 60 },
+        xaxis: { type: 'date', tickformat: '%b %d', fixedrange: true },
+        yaxis: { 
+            title: `Daily ${label}`, 
+            side: 'left', 
+            fixedrange: true,
+            showgrid: true,
+            gridcolor: '#f1f5f9'
+        },
         yaxis2: { 
-            title: 'Total', 
+            title: `Cumulative ${label}`, 
             overlaying: 'y', 
             side: 'right', 
-            showgrid: false, 
             fixedrange: true,
-            tickformat: ',d'
+            showgrid: false
         }
     };
 
