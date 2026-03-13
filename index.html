@@ -133,11 +133,7 @@
     </div>
 </div>
 
-<div class="text-center mb-2">
-    <p class="text-sm font-medium text-slate-500 italic">
-        Bars are daily reported casualties. Line is cumulative (RHS).
-    </p>
-</div>
+
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -784,7 +780,7 @@ function renderCasualtyChart(blocName, elementId, data, label) {
 
     const layout = {
         ...layoutBase,
-        title: { text: `<b>${blocName}</b>: ${label}`, x: 0.05 },
+        title: { text: `<b>${blocName}</b>: ${label}<br><span style="font-size:12px; color:#64748b; font-weight:normal;">Bars: Daily / Line: Cumulative (RHS)</span>`, x: 0.05, y:0.95 },
         barmode: 'stack',
         showlegend: true,
         legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.3 },
