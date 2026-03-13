@@ -891,7 +891,7 @@ async function loadCharts() {
                 dateStyle: 'medium', 
                 timeStyle: 'short'
             });
-
+            document.getElementById('ais-last-update').innerText = aisTime;
         } else {
             document.getElementById('ais-last-update').innerText = "Pending Update";
         }
@@ -900,7 +900,7 @@ async function loadCharts() {
         const apiTime = new Date(summaryData.asOf).toLocaleString([], {
             dateStyle: 'medium', timeStyle: 'short'
         });
-        document.getElementById('api-footer').innerText = `API Official Summary Timestamp: ${apiTime}`;
+
 
         // 1. Data Freshness Check
         const lastModified = dailyRes.headers.get('Last-Modified');
