@@ -653,31 +653,34 @@ async function renderCasualties() {
         if (!res.ok) throw new Error("Casualties file not found");
         const json = await res.json();
         
-        // Descramble the payload
-        fullCasualtyData = descramble(json.payload);
+        // Descramble
+        const fullData = descramble(json.payload);
         
-        // 1. Get the latest date available in the dataset
-        const dates = [...new Set(fullCasualtyData.map(d => d.date))].sort();
-        const latestDate = dates[dates.length - 1];
+        // 1. Get ONLY the latest date in the file
+        const latestDate = [...new Set(fullData.map(d => d.date))].sort().pop();
         
-        const blocs = {
-            'iran': 'Iran-Led Bloc',
-            'us': 'US-Israel Bloc'
-        };
+        const blocs = [
+            { id: 'iran', name: 'Iran-Led Bloc' },
+            { id: 'us', name: 'US-Israel Bloc' }
+        ];
 
-        // 2. Update the Summary Table Numbers
-        for (const [prefix, name] of Object.entries(blocs)) {
-            const data = fullCasualtyData.find(d => d.date === latestDate && d.bloc === name);
-            if (data) {
-                // Ensure these IDs exist in your HTML
-                document.getElementById(`${prefix}-mil`).innerText = data.mil_cas.toLocaleString();
-                document.getElementById(`${prefix}-civ`).innerText = data.civ_cas.toLocaleString();
-                document.getElementById(`${prefix}-total`).innerText = data.total_cas.toLocaleString();
-                document.getElementById(`${prefix}-injuries`).innerText = data.injuries.toLocaleString();
+        blocs.forEach(bloc => {
+            // 2. Filter for only the latest entry for this specific bloc
+            const latestEntry = fullData.find(d => d.date === latestDate && d.bloc === bloc.name);
+            
+            if (latestEntry) {
+                // Use Number() to ensure we aren't appending strings
+                document.getElementById(`${bloc.id}-mil`).innerText = Number(latestEntry.mil_cas).toLocaleString();
+                document.getElementById(`${bloc.id}-civ`).innerText = Number(latestEntry.civ_cas).toLocaleString();
+                document.getElementById(`${bloc.id}-total`).innerText = Number(latestEntry.total_cas).toLocaleString();
+                document.getElementById(`${bloc.id}-injuries`).innerText = Number(latestEntry.injuries).toLocaleString();
             }
-            // 3. Render the specific charts
-            renderCasualtyChart(name, `chart-${prefix}-cas`);
-        }
+        });
+
+        // 3. Trigger the charts
+        renderCasualtyChart('Iran-Led Bloc', 'chart-iran-cas', fullData);
+        renderCasualtyChart('US-Israel Bloc', 'chart-us-cas', fullData);
+
     } catch (err) {
         console.error("Casualty Load Error:", err);
     }
