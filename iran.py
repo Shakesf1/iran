@@ -116,6 +116,31 @@ def update_persistent_json(new_df, filename, keys, rolling_days=5):
         json.dump({"payload": encrypted_payload}, f)
     print(f"✅ Saved {filename}")
 
+def process_casualties_csv():
+    # Define the blocs as requested
+    iran_led = ['Iran', 'Lebanon', 'Iraq']
+    
+    # Read the local CSV
+    df = pd.read_csv('Casualties.csv')
+    df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
+    
+    # Assign Blocs
+    df['bloc'] = df['Country'].apply(lambda x: 'Iran-Led Bloc' if x in iran_led else 'US-Israel Bloc')
+    
+    # Group by Date and Bloc to get daily totals
+    daily_bloc = df.groupby(['Date', 'bloc']).agg({
+        'Civ. Deaths': 'sum',
+        'Mil. Deaths': 'sum',
+        'Total Deaths': 'sum',
+        'Injuries': 'sum'
+    }).reset_index()
+    
+    # Rename columns to match JS expectations
+    daily_bloc.columns = ['date', 'bloc', 'civ_cas', 'mil_cas', 'total_cas', 'injuries']
+    
+    # Scramble and save using your existing persistence function
+    update_persistent_json(daily_bloc, 'casualties_history.json', keys=['date', 'bloc'], rolling_days=0)
+
 if __name__ == "__main__":
 
     # 1. Fetch Data
@@ -249,6 +274,9 @@ if __name__ == "__main__":
         inner_data = raw_summary.get('data', raw_summary)
         countries = inner_data.get('countries', [])
         
+
+
+
         # Define Blocs
         
         bloc_totals = {
@@ -289,7 +317,12 @@ if __name__ == "__main__":
         with open('summary_latest.json', 'w') as f:
             json.dump({"payload": encrypt_data(summary_str)}, f)
         
+
+
         print(f"Successfully synced summary and history for: {inner_data.get('asOf')}")
+
+        process_casualties_csv()
+        print('✅ Casualties data processed and saved.')
         
 
     else:
