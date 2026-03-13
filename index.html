@@ -665,12 +665,21 @@ async function renderCasualties() {
             const latestEntry = decodedData.find(d => d.date === latestDate && d.bloc === bloc.name);
             
             if (latestEntry) {
-                // Ensure math addition (Number) and formatting
-                document.getElementById(`${bloc.id}-mil`).innerText = Number(latestEntry.mil_cas).toLocaleString();
-                document.getElementById(`${bloc.id}-civ`).innerText = Number(latestEntry.civ_cas).toLocaleString();
-                document.getElementById(`${bloc.id}-total`).innerText = Number(latestEntry.total_cas).toLocaleString();
-                document.getElementById(`${bloc.id}-injuries`).innerText = Number(latestEntry.injuries).toLocaleString();
-            }
+                            // SAFETY HELPER: Checks if ID exists before updating
+                            const updateIfExits = (suffix, value) => {
+                                const el = document.getElementById(`${bloc.id}-${suffix}`);
+                                if (el) {
+                                    el.innerText = Number(value).toLocaleString();
+                                } else {
+                                    console.warn(`Missing HTML ID: ${bloc.id}-${suffix}`);
+                                }
+                            };
+
+                            updateIfExits('mil', latestEntry.mil_cas);
+                            updateIfExits('civ', latestEntry.civ_cas);
+                            updateIfExits('total', latestEntry.total_cas);
+                            updateIfExits('injuries', latestEntry.injuries);
+                        }
         });
 
         // 3. Trigger the charts, PASSING decodedData to the next function
