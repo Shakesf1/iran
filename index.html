@@ -751,8 +751,8 @@ function renderCasualtyChart(blocName, elementId, data, label) {
             return Math.max(0, Number(d.civ_cas) - Number(filtered[i-1].civ_cas));
         });
 
-        traces.push({ x: xValues, y: milDelta, name: 'Mil. Deaths', type: 'bar', marker: { color: milColor }, yaxis: 'y' });
-        traces.push({ x: xValues, y: civDelta, name: 'Civ. Deaths', type: 'bar', marker: { color: themeColor, opacity: 0.7 }, yaxis: 'y' });
+        traces.push({ x: xValues, y: milDelta, name: 'Military', type: 'bar', marker: { color: milColor }, yaxis: 'y' });
+        traces.push({ x: xValues, y: civDelta, name: 'Civilian', type: 'bar', marker: { color: themeColor, opacity: 0.7 }, yaxis: 'y' });
     } else {
         // If Injuries: Show a single bar for daily increase
         traces.push({
