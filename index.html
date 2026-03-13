@@ -647,40 +647,47 @@ function renderDailyTransitChart(crossings, targetId) {
 }
 
 
-
-
 async function renderCasualties() {
-    const res = await fetch('./casualties_history.json');
-    const json = await res.json();
-    fullCasualtyData = descramble(json.payload);
-    
-    // Sort to find latest entry per bloc
-    const latestDate = [...new Set(fullCasualtyData.map(d => d.date))].sort().pop();
-    
-    const blocs = {
-        'iran': 'Iran-Led Bloc',
-        'us': 'US-Israel Bloc'
-    };
+    try {
+        const res = await fetch('./casualties_history.json');
+        if (!res.ok) throw new Error("Casualties file not found");
+        const json = await res.json();
+        
+        // Descramble the payload
+        fullCasualtyData = descramble(json.payload);
+        
+        // 1. Get the latest date available in the dataset
+        const dates = [...new Set(fullCasualtyData.map(d => d.date))].sort();
+        const latestDate = dates[dates.length - 1];
+        
+        const blocs = {
+            'iran': 'Iran-Led Bloc',
+            'us': 'US-Israel Bloc'
+        };
 
-    for (const [prefix, name] of Object.entries(blocs)) {
-        const data = fullCasualtyData.find(d => d.date === latestDate && d.bloc === name);
-        if (data) {
-            document.getElementById(`${prefix}-mil`).innerText = data.mil_cas.toLocaleString();
-            document.getElementById(`${prefix}-civ`).innerText = data.civ_cas.toLocaleString();
-            document.getElementById(`${prefix}-total`).innerText = data.total_cas.toLocaleString();
-            document.getElementById(`${prefix}-injuries`).innerText = data.injuries.toLocaleString();
+        // 2. Update the Summary Table Numbers
+        for (const [prefix, name] of Object.entries(blocs)) {
+            const data = fullCasualtyData.find(d => d.date === latestDate && d.bloc === name);
+            if (data) {
+                // Ensure these IDs exist in your HTML
+                document.getElementById(`${prefix}-mil`).innerText = data.mil_cas.toLocaleString();
+                document.getElementById(`${prefix}-civ`).innerText = data.civ_cas.toLocaleString();
+                document.getElementById(`${prefix}-total`).innerText = data.total_cas.toLocaleString();
+                document.getElementById(`${prefix}-injuries`).innerText = data.injuries.toLocaleString();
+            }
+            // 3. Render the specific charts
+            renderCasualtyChart(name, `chart-${prefix}-cas`);
         }
-        renderCasualtyChart(name, `chart-${prefix}-cas`);
+    } catch (err) {
+        console.error("Casualty Load Error:", err);
     }
 }
-
 
 function renderCasualtyChart(blocName, elementId) {
     const data = fullCasualtyData
         .filter(d => d.bloc === blocName)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Calculate Cumulative
     let sum = 0;
     const cumulative = data.map(d => sum += d.total_cas);
 
@@ -688,9 +695,10 @@ function renderCasualtyChart(blocName, elementId) {
         {
             x: data.map(d => d.date),
             y: data.map(d => d.total_cas),
-            name: 'Daily Total',
+            name: 'Daily Deaths',
             type: 'bar',
-            marker: { color: blocName.includes('Iran') ? '#ef4444' : '#3b82f6' }
+            marker: { color: blocName.includes('Iran') ? '#ef4444' : '#3b82f6' },
+            yaxis: 'y'
         },
         {
             x: data.map(d => d.date),
@@ -698,17 +706,24 @@ function renderCasualtyChart(blocName, elementId) {
             name: 'Cumulative',
             type: 'scatter',
             mode: 'lines',
-            yaxis: 'y2',
-            line: { color: '#0f172a', width: 2 }
+            line: { color: '#0f172a', width: 2 },
+            yaxis: 'y2'
         }
     ];
 
     const layout = {
         ...layoutBase,
         title: { text: blocName, font: { size: 14, weight: 'bold' } },
+        margin: { t: 40, r: 50, b: 40, l: 50 },
         showlegend: false,
-        yaxis2: { overlaying: 'y', side: 'right', showgrid: false, fixedrange: true },
-        margin: { t: 40, r: 40, b: 40, l: 40 }
+        yaxis: { title: 'Daily', fixedrange: true },
+        yaxis2: { 
+            title: 'Total', 
+            overlaying: 'y', 
+            side: 'right', 
+            showgrid: false, 
+            fixedrange: true 
+        }
     };
 
     Plotly.newPlot(elementId, traces, layout, { responsive: true, displayModeBar: false });
