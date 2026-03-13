@@ -122,6 +122,12 @@ def process_casualties_csv():
     
     # Read the local CSV
     df = pd.read_csv('Casualties.csv')
+
+    cols_to_fix = ['Civ. Deaths', 'Mil. Deaths', 'Total Deaths', 'Injuries']
+    for col in cols_to_fix:
+        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
+
+    print(df)
     df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
     
     # Assign Blocs
@@ -137,7 +143,8 @@ def process_casualties_csv():
     
     # Rename columns to match JS expectations
     daily_bloc.columns = ['date', 'bloc', 'civ_cas', 'mil_cas', 'total_cas', 'injuries']
-    
+    print('✅ Processed casualties CSV into daily bloc format:')
+    print(daily_bloc)
     # Scramble and save using your existing persistence function
     update_persistent_json(daily_bloc, 'casualties_history.json', keys=['date', 'bloc'], rolling_days=0)
 
