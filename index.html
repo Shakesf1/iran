@@ -675,83 +675,92 @@ async function renderCasualties() {
         });
 
         // Generate the 4 Charts
-        renderCasualtyChart('Iran-Led Bloc', 'chart-iran-cas', decodedData, 'total_cas', 'Deaths');
-        renderCasualtyChart('US-Israel Bloc', 'chart-us-cas', decodedData, 'total_cas', 'Deaths');
-        renderCasualtyChart('Iran-Led Bloc', 'chart-iran-inj', decodedData, 'injuries', 'Injuries');
-        renderCasualtyChart('US-Israel Bloc', 'chart-us-inj', decodedData, 'injuries', 'Injuries');
-
+        renderCasualtyChart('Iran-Led Bloc', 'chart-iran-cas', decodedData, 'Deaths');
+        renderCasualtyChart('US-Israel Bloc', 'chart-us-cas', decodedData, 'Deaths');
+        renderCasualtyChart('Iran-Led Bloc', 'chart-iran-inj', decodedData, 'Injuries');
+        renderCasualtyChart('US-Israel Bloc', 'chart-us-inj', decodedData, 'Injuries');
     } catch (err) {
         console.error("Casualty Load Error:", err);
     }
 }
 
 // Added 'data' parameter to fix the ReferenceError
-function renderCasualtyChart(blocName, elementId, data, dataKey, label) {
+function renderCasualtyChart(blocName, elementId, data, label) {
     const targetDiv = document.getElementById(elementId);
     if (!targetDiv) return;
 
-    // Filter and Sort
     const filtered = data
         .filter(d => d.bloc === blocName)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     const xValues = filtered.map(d => d.date);
-    const cumulativeValues = filtered.map(d => Number(d[dataKey]));
     
-    // Calculate Daily Delta (Today's Total - Yesterday's Total)
-    const dailyValues = cumulativeValues.map((val, i) => {
-        if (i === 0) return val; 
-        return Math.max(0, val - cumulativeValues[i - 1]); // Max(0) prevents negative bars if data is corrected
+    // Determine keys based on label (Deaths vs Injuries)
+    const isDeaths = label === 'Deaths';
+    const totalKey = isDeaths ? 'total_cas' : 'injuries';
+    const milKey = 'mil_cas';
+    const civKey = 'civ_cas';
+
+    // Calculate Deltas for the Stacked Bars
+    const milDelta = [];
+    const civDelta = [];
+    const cumulative = filtered.map(d => Number(d[totalKey]));
+
+    filtered.forEach((d, i) => {
+        if (i === 0) {
+            milDelta.push(Number(d[milKey] || 0));
+            civDelta.push(Number(d[civKey] || 0));
+        } else {
+            // Calculate change, but cap at 0 so bars don't go negative during "drops"
+            const mChange = Number(d[milKey]) - Number(filtered[i-1][milKey]);
+            const cChange = Number(d[civKey]) - Number(filtered[i-1][civKey]);
+            milDelta.push(Math.max(0, mChange));
+            civDelta.push(Math.max(0, cChange));
+        }
     });
 
-    const themeColor = blocName.includes('Iran') ? '#ef4444' : '#3b82f6';
+    // Color Logic
+    const baseColor = blocName.includes('Iran') ? '#ef4444' : '#3b82f6'; // Red vs Blue
+    const milColor = blocName.includes('Iran') ? '#991b1b' : '#1e40af'; // Darker Red/Blue
 
     const traces = [
         {
             x: xValues,
-            y: dailyValues,
-            name: `Daily ${label}`,
+            y: milDelta,
+            name: `Mil. ${label}`,
             type: 'bar',
-            marker: { color: themeColor, opacity: 0.6 },
+            marker: { color: milColor },
             yaxis: 'y'
         },
         {
             x: xValues,
-            y: cumulativeValues,
-            name: `Total ${label}`,
+            y: civDelta,
+            name: `Civ. ${label}`,
+            type: 'bar',
+            marker: { color: baseColor, opacity: 0.7 },
+            yaxis: 'y'
+        },
+        {
+            x: xValues,
+            y: cumulative,
+            name: `Total ${label} (Cumulative)`,
             type: 'scatter',
-            mode: 'lines+markers',
-            line: { color: '#1e293b', width: 2, shape: 'hv' }, // 'hv' creates a step-line effect for totals
-            marker: { size: 4, color: '#1e293b' },
+            mode: 'lines',
+            line: { color: '#0f172a', width: 2 },
             yaxis: 'y2'
         }
     ];
 
     const layout = {
         ...layoutBase,
-        title: {
-            text: `<b>${blocName}</b>: ${label} Over Time`,
-            font: { size: 16, color: '#1e293b' },
-            x: 0.05
-        },
+        title: { text: `<b>${blocName}</b>: ${label}`, x: 0.05 },
+        barmode: 'stack', // Crucial for the Mil/Civ split
         showlegend: true,
-        legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.2 },
-        margin: { t: 50, r: 60, b: 80, l: 60 },
+        legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.3 },
+        margin: { t: 60, r: 60, b: 100, l: 60 },
         xaxis: { type: 'date', tickformat: '%b %d', fixedrange: true },
-        yaxis: { 
-            title: `Daily ${label}`, 
-            side: 'left', 
-            fixedrange: true,
-            showgrid: true,
-            gridcolor: '#f1f5f9'
-        },
-        yaxis2: { 
-            title: `Cumulative ${label}`, 
-            overlaying: 'y', 
-            side: 'right', 
-            fixedrange: true,
-            showgrid: false
-        }
+        yaxis: { title: `Daily ${label}`, side: 'left', fixedrange: true },
+        yaxis2: { title: `Total ${label}`, overlaying: 'y', side: 'right', fixedrange: true, showgrid: false }
     };
 
     Plotly.newPlot(elementId, traces, layout, { responsive: true, displayModeBar: false });
