@@ -117,7 +117,7 @@ def update_persistent_json(new_df, filename, keys, rolling_days=5):
     print(f"✅ Saved {filename}")
 
 def process_casualties_csv():
-    iran_led = ['Iran', 'Lebanon', 'Iraq']
+    iran_led = ['Iran', 'Lebanon', 'Iraq', 'Yemen', 'Syria']
     if not os.path.exists('Casualties.csv'): return
 
     df = pd.read_csv('Casualties.csv')
