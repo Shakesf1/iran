@@ -1053,6 +1053,12 @@ async function loadCharts() {
     }
 }
 loadCharts();
+
+// Refresh the entire page every 300 seconds
+setTimeout(function(){
+   window.location.reload();
+}, 300000); // 300,000 milliseconds = 300 seconds
+
     </script>
 
     <script data-goatcounter="https://shakes.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
