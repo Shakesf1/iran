@@ -647,18 +647,17 @@ function renderDailyTransitChart(crossings, targetId) {
     Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
 
-
 async function renderCasualties() {
     try {
         const res = await fetch('./casualties_history.json');
         if (!res.ok) throw new Error("Casualties file not found");
         const json = await res.json();
         
-        // Descramble
-        const fullData = descramble(json.payload);
+        // Descramble and store in the variable accessible to this function
+        const decodedData = descramble(json.payload);
         
         // 1. Get ONLY the latest date in the file
-        const latestDate = [...new Set(fullData.map(d => d.date))].sort().pop();
+        const latestDate = [...new Set(decodedData.map(d => d.date))].sort().pop();
         
         const blocs = [
             { id: 'iran', name: 'Iran-Led Bloc' },
@@ -666,11 +665,11 @@ async function renderCasualties() {
         ];
 
         blocs.forEach(bloc => {
-            // 2. Filter for only the latest entry for this specific bloc
-            const latestEntry = fullData.find(d => d.date === latestDate && d.bloc === bloc.name);
+            // 2. Filter for only the latest entries for the summary table
+            const latestEntry = decodedData.find(d => d.date === latestDate && d.bloc === bloc.name);
             
             if (latestEntry) {
-                // Use Number() to ensure we aren't appending strings
+                // Ensure math addition (Number) and formatting
                 document.getElementById(`${bloc.id}-mil`).innerText = Number(latestEntry.mil_cas).toLocaleString();
                 document.getElementById(`${bloc.id}-civ`).innerText = Number(latestEntry.civ_cas).toLocaleString();
                 document.getElementById(`${bloc.id}-total`).innerText = Number(latestEntry.total_cas).toLocaleString();
@@ -678,34 +677,38 @@ async function renderCasualties() {
             }
         });
 
-        // 3. Trigger the charts
-        renderCasualtyChart('Iran-Led Bloc', 'chart-iran-cas', fullData);
-        renderCasualtyChart('US-Israel Bloc', 'chart-us-cas', fullData);
+        // 3. Trigger the charts, PASSING decodedData to the next function
+        renderCasualtyChart('Iran-Led Bloc', 'chart-iran-cas', decodedData);
+        renderCasualtyChart('US-Israel Bloc', 'chart-us-cas', decodedData);
 
     } catch (err) {
         console.error("Casualty Load Error:", err);
     }
 }
 
-function renderCasualtyChart(blocName, elementId) {
-    const data = fullCasualtyData
+// Added 'data' parameter to fix the ReferenceError
+function renderCasualtyChart(blocName, elementId, data) {
+    if (!data || data.length === 0) return;
+
+    // Use the passed 'data' argument instead of a global variable
+    const filteredData = data
         .filter(d => d.bloc === blocName)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     let sum = 0;
-    const cumulative = data.map(d => sum += d.total_cas);
+    const cumulative = filteredData.map(d => sum += Number(d.total_cas));
 
     const traces = [
         {
-            x: data.map(d => d.date),
-            y: data.map(d => d.total_cas),
+            x: filteredData.map(d => d.date),
+            y: filteredData.map(d => d.total_cas),
             name: 'Daily Deaths',
             type: 'bar',
             marker: { color: blocName.includes('Iran') ? '#ef4444' : '#3b82f6' },
             yaxis: 'y'
         },
         {
-            x: data.map(d => d.date),
+            x: filteredData.map(d => d.date),
             y: cumulative,
             name: 'Cumulative',
             type: 'scatter',
@@ -718,15 +721,23 @@ function renderCasualtyChart(blocName, elementId) {
     const layout = {
         ...layoutBase,
         title: { text: blocName, font: { size: 14, weight: 'bold' } },
-        margin: { t: 40, r: 50, b: 40, l: 50 },
+        margin: { t: 40, r: 60, b: 60, l: 60 }, // Adjusted margins for axis legibility
         showlegend: false,
-        yaxis: { title: 'Daily', fixedrange: true },
+        xaxis: { 
+            ...layoutBase.xaxis,
+            type: 'date',
+            tickformat: '%b %d',
+            tickangle: -45,
+            automargin: true
+        },
+        yaxis: { title: 'Daily', fixedrange: true, tickformat: ',d' },
         yaxis2: { 
             title: 'Total', 
             overlaying: 'y', 
             side: 'right', 
             showgrid: false, 
-            fixedrange: true 
+            fixedrange: true,
+            tickformat: ',d'
         }
     };
 
