@@ -693,6 +693,12 @@ async function renderCasualties() {
 
 // Added 'data' parameter to fix the ReferenceError
 function renderCasualtyChart(blocName, elementId, data) {
+
+    // --- DEBUGGING START ---
+    console.log(`--- Debugging Data for: ${blocName} ---`);
+    console.table(data); // This creates a readable table in your browser console
+    // --- DEBUGGING END ---
+
     if (!data || data.length === 0) return;
 
     // Use the passed 'data' argument instead of a global variable
@@ -700,10 +706,7 @@ function renderCasualtyChart(blocName, elementId, data) {
         .filter(d => d.bloc === blocName)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // --- DEBUGGING START ---
-    console.log(`--- Debugging Data for: ${blocName} ---`);
-    console.table(filteredData); // This creates a readable table in your browser console
-    // --- DEBUGGING END ---
+
 
     let sum = 0;
     const cumulative = filteredData.map(d => sum += Number(d.total_cas));
