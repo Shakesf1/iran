@@ -77,6 +77,65 @@
     </div>
 </header>
 
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
+            <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span> Iran-Led Bloc
+        </h3>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-bold">Military Deaths</p>
+                <p id="iran-mil" class="text-2xl font-black text-slate-800">---</p>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-bold">Civilian Deaths</p>
+                <p id="iran-civ" class="text-2xl font-black text-slate-800">---</p>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-bold">Total Deaths</p>
+                <p id="iran-total" class="text-2xl font-black text-slate-800">---</p>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-bold">Injuries</p>
+                <p id="iran-injuries" class="text-2xl font-black text-slate-800">---</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
+            <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span> US-Israel Bloc
+        </h3>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-bold">Military Deaths</p>
+                <p id="us-mil" class="text-2xl font-black text-slate-800">---</p>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-bold">Civilian Deaths</p>
+                <p id="us-civ" class="text-2xl font-black text-slate-800">---</p>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-bold">Total Deaths</p>
+                <p id="us-total" class="text-2xl font-black text-slate-800">---</p>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-bold">Injuries</p>
+                <p id="us-injuries" class="text-2xl font-black text-slate-800">---</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="text-[10px] text-slate-400 leading-relaxed mb-8 px-2">
+    <strong>Source:</strong> Casualty data is aggregated daily from official and semi-official reports, including MoH (Lebanon/Gaza), HRANA/Hengaw (Iran), IDF/Magen David Adom (Israel), and US Pentagon updates. Figures represent a combination of confirmed combatant losses and reported non-combatant fatalities; due to the speed of kinetic events, reporting lags of 24-48 hours are common for remote strike zones.
+</p>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div id="chart-iran-cas" class="h-[350px] bg-white p-4 rounded-xl shadow-sm border border-slate-100"></div>
+    <div id="chart-us-cas" class="h-[350px] bg-white p-4 rounded-xl shadow-sm border border-slate-100"></div>
+</div>
+
 
 <div id="maritime-summary" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
@@ -252,6 +311,7 @@ const layoutBase = {
 
 let fullBDTI = []; // Global store for filtering
 let fullOilData = []; // Global store for oil prices
+let casualtyData = [];
 
 function groupTransitsByDay(crossings) {
     if (!crossings || crossings.length === 0) return { days: [], data: {} };
@@ -586,6 +646,90 @@ function renderDailyTransitChart(crossings, targetId) {
     Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
 
+
+
+
+async function renderCasualties() {
+    const res = await fetch('./casualties_history.json');
+    const json = await res.json();
+    fullCasualtyData = descramble(json.payload);
+    
+    // Sort to find latest entry per bloc
+    const latestDate = [...new Set(fullCasualtyData.map(d => d.date))].sort().pop();
+    
+    const blocs = {
+        'iran': 'Iran-Led Bloc',
+        'us': 'US-Israel Bloc'
+    };
+
+    for (const [prefix, name] of Object.entries(blocs)) {
+        const data = fullCasualtyData.find(d => d.date === latestDate && d.bloc === name);
+        if (data) {
+            document.getElementById(`${prefix}-mil`).innerText = data.mil_cas.toLocaleString();
+            document.getElementById(`${prefix}-civ`).innerText = data.civ_cas.toLocaleString();
+            document.getElementById(`${prefix}-total`).innerText = data.total_cas.toLocaleString();
+            document.getElementById(`${prefix}-injuries`).innerText = data.injuries.toLocaleString();
+        }
+        renderCasualtyChart(name, `chart-${prefix}-cas`);
+    }
+}
+
+
+function renderCasualtyChart(blocName, elementId) {
+    const data = fullCasualtyData
+        .filter(d => d.bloc === blocName)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Calculate Cumulative
+    let sum = 0;
+    const cumulative = data.map(d => sum += d.total_cas);
+
+    const traces = [
+        {
+            x: data.map(d => d.date),
+            y: data.map(d => d.total_cas),
+            name: 'Daily Total',
+            type: 'bar',
+            marker: { color: blocName.includes('Iran') ? '#ef4444' : '#3b82f6' }
+        },
+        {
+            x: data.map(d => d.date),
+            y: cumulative,
+            name: 'Cumulative',
+            type: 'scatter',
+            mode: 'lines',
+            yaxis: 'y2',
+            line: { color: '#0f172a', width: 2 }
+        }
+    ];
+
+    const layout = {
+        ...layoutBase,
+        title: { text: blocName, font: { size: 14, weight: 'bold' } },
+        showlegend: false,
+        yaxis2: { overlaying: 'y', side: 'right', showgrid: false, fixedrange: true },
+        margin: { t: 40, r: 40, b: 40, l: 40 }
+    };
+
+    Plotly.newPlot(elementId, traces, layout, { responsive: true, displayModeBar: false });
+}
+
+function updateStatsCards() {
+    // Sort by date to get the latest
+    const sorted = [...casualtyData].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const blocs = ['Iran-Led Bloc', 'US-Israel Bloc'];
+    
+    blocs.forEach(bloc => {
+        const latest = sorted.find(d => d.bloc === bloc);
+        const prefix = bloc === 'Iran-Led Bloc' ? 'iran' : 'us';
+        if (latest) {
+            document.getElementById(`${prefix}-mil-cas`).innerText = latest.mil_cas.toLocaleString();
+            document.getElementById(`${prefix}-civ-cas`).innerText = latest.civ_cas.toLocaleString();
+            // Total deaths and injuries would follow the same pattern
+        }
+    });
+}
+
 function renderTransitChart(crossings, targetId, labelPrefix) {
     if (!crossings || crossings.length === 0) return;
 
@@ -726,22 +870,6 @@ async function loadCharts() {
             });
         }
 
-
-        const summaryHtml = Object.entries(summaryData.summary).map(([name, data]) => {
-            const isUS = name.includes('US');
-            return `
-                <div class="bg-white p-6 rounded-xl border-l-4 ${isUS ? 'border-blue-500' : 'border-red-500'} shadow-sm">
-                    <h3 class="text-xl font-bold mb-4 text-slate-800">${name}</h3>
-                    <div class="grid grid-cols-2 gap-y-3 text-sm">
-                        <div class="text-slate-500">Launched</div><div class="font-bold text-right">${data.launched.toLocaleString()}</div>
-                        <div class="text-slate-500">Intercepted</div><div class="font-bold text-right">${data.intercepted.toLocaleString()}</div>
-                        <div class="text-slate-500">Hits Taken</div><div class="font-bold text-right text-orange-600">${data.hits.toLocaleString()}</div>
-                        <div class="text-slate-500 pt-2 border-t">Military Casualties</div><div class="font-bold text-right pt-2 border-t">${data.mil_cas.toLocaleString()}</div>
-                        <div class="text-slate-500">Civilian Casualties</div><div class="font-bold text-right">${data.civ_cas.toLocaleString()}</div>
-                    </div>
-                </div>`;
-        }).join('');
-        document.getElementById('summary-section').innerHTML = summaryHtml;
 
         // 3. Render Charts
         function createTrace(data, xField) {
