@@ -117,36 +117,33 @@ def update_persistent_json(new_df, filename, keys, rolling_days=5):
     print(f"✅ Saved {filename}")
 
 def process_casualties_csv():
-    # Define the blocs as requested
     iran_led = ['Iran', 'Lebanon', 'Iraq']
-    
-    # Read the local CSV
+    if not os.path.exists('Casualties.csv'): return
+
     df = pd.read_csv('Casualties.csv')
 
-    cols_to_fix = ['Civ. Deaths', 'Mil. Deaths', 'Total Deaths', 'Injuries']
-    for col in cols_to_fix:
+    # 1. Force Clean Numbers
+    cols = ['Civ. Deaths', 'Mil. Deaths', 'Total Deaths', 'Injuries']
+    for col in cols:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
 
-    print(df)
+    # 2. Force Clean Date Strings (Do not let them become Timestamps)
     df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
     
-    # Assign Blocs
+    # 3. Aggregate
     df['bloc'] = df['Country'].apply(lambda x: 'Iran-Led Bloc' if x in iran_led else 'US-Israel Bloc')
-    
-    # Group by Date and Bloc to get daily totals
-    daily_bloc = df.groupby(['Date', 'bloc']).agg({
-        'Civ. Deaths': 'sum',
-        'Mil. Deaths': 'sum',
-        'Total Deaths': 'sum',
-        'Injuries': 'sum'
-    }).reset_index()
-    
-    # Rename columns to match JS expectations
+    daily_bloc = df.groupby(['Date', 'bloc']).sum(numeric_only=True).reset_index()
     daily_bloc.columns = ['date', 'bloc', 'civ_cas', 'mil_cas', 'total_cas', 'injuries']
-    print('✅ Processed casualties CSV into daily bloc format:')
-    print(daily_bloc)
-    # Scramble and save using your existing persistence function
-    update_persistent_json(daily_bloc, 'casualties_history.json', keys=['date', 'bloc'], rolling_days=0)
+
+    # 4. DIRECT SAVE (Skip the update_persistent_json function)
+    # This prevents duplicates and date corruption
+    raw_json_str = daily_bloc.to_json(orient='records')
+    encrypted_payload = encrypt_data(raw_json_str)
+    
+    with open('casualties_history.json', 'w') as f:
+        json.dump({"payload": encrypted_payload}, f)
+        
+    print("✅ Casualties History Overwritten Cleanly")
 
 if __name__ == "__main__":
 
