@@ -580,6 +580,19 @@ async function renderEscalationCharts() {
     const x = signals.map(s => s.timestamp);
     const scores = signals.map(s => s.escalation_score); // Added definition
     const threshold = 2.0; // Added const
+
+    const tempoLayout = {
+        ...layoutBase, // This keeps all your existing layoutBase settings
+        legend: { 
+            orientation: "h",   // Horizontal legend
+            yanchor: "bottom", 
+            y: -0.4,            // Positions it below the x-axis
+            xanchor: "center", 
+            x: 0.5              // Centers it
+        },
+        margin: { t: 20, r: 20, b: 80, l: 40 } // Ensure there is enough bottom margin (b)
+    };
+
     // Chart 1: Tempo with 24h Avg & Conditional Coloring
     Plotly.newPlot('tempoChart', [
         { 
@@ -595,7 +608,7 @@ async function renderEscalationCharts() {
             x: x, y: signals.map(s => s.rolling_24h), 
             name: '24h Baseline', type: 'scatter', line: { color: '#3b82f6', dash: 'dot', width: 2 } 
         }
-    ], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
+    ], tempoLayout, { displaylogo: false, responsive: true, displayModeBar: false });
 
     // Chart 2: Theater Spread (Simplified)
     Plotly.newPlot('spreadChart', [{
