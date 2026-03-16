@@ -145,6 +145,7 @@ def get_today_oman():
 
 if __name__ == "__main__":
     df_spread = get_combined_data()
+    print(df_spread)
     if not df_spread.empty:
             # Update the persistent JSON file
             update_persistent_json(df_spread, "oil_prices_spread.json", keys=['date'], rolling_days=3)
