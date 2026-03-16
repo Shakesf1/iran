@@ -7,6 +7,7 @@ import json
 import time
 import random
 from iran import update_persistent_json
+from datetime import datetime
 
 # Endpoints
 API_URL = "https://oilprice.com/freewidgets/json_get_oilprices"
@@ -16,6 +17,68 @@ BARCHART_CSV_URL = "https://www.barchart.com/proxies/timeseries/historical/query
 # We use *0 (Nearby) for both to ensure a proper "rolled" comparison
 SYMBOL_MURBAN = "DB*1"
 SYMBOL_OMAN = "OQ*1"
+
+
+def get_today_murban():
+    """Fetches latest Murban price and its source timestamp from OilPrice.com widget."""
+    session = requests.Session()
+    payload = {"oilprices": "156"} # 156 is usually the ID for Murban on their widget
+    headers = {"Referer": "https://oilprice.com/"}
+    
+    response = session.post(API_URL, data=payload, headers=headers, impersonate="firefox144")
+    if response.status_code == 200:
+        data = response.json().get("prices", [])
+        if data:
+            latest = data[-1] # Get the most recent entry
+            # Convert source unix timestamp to readable string
+            source_time = datetime.fromtimestamp(int(latest['time'])).strftime('%Y-%m-%d %H:%M:%S')
+            return float(latest['price']), source_time
+    return None, None
+
+def get_today_commodity_price(Ticker):
+    """Fetches latest Oman price and its source timestamp from Barchart."""
+    session = requests.Session()
+    headers = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:148.0) Gecko/20100101 Firefox/148.0"}
+    try:
+        session.get("https://www.barchart.com/", headers=headers, impersonate="firefox144")
+        xsrf_token = unquote(session.cookies.get("XSRF-TOKEN", ""))
+        api_headers = {**headers, "X-XSRF-TOKEN": xsrf_token, "Referer": "https://www.barchart.com/"}
+        params = {"fields": "lastPrice,tradeTime", "root": Ticker, "lists": "futures.contractInRoot", "raw": "1"}
+        
+        response = session.get(BARCHART_API, params=params, headers=api_headers, impersonate="firefox144")
+        if response.status_code == 200:
+            item = response.json()['data'][0]
+            price = float(item['lastPrice'])
+            # Barchart usually provides tradeTime in ISO format or timestamp
+            source_time = item['tradeTime'] 
+            return price, source_time
+    except Exception as e:
+        print(f"Oman Fetch Error: {e}")
+    return None, None
+
+def update_intraday_oil():
+    """Saves a high-frequency snapshot of the current energy spread."""
+    INTRADAY_FILE = 'intraday_oilprices.json'
+
+    price_m, time_m = get_today_commodity_price("DB")
+    price_o, time_o = get_today_commodity_price("OQ")
+
+    if price_m and price_o:
+        # Save to the new high-frequency file
+        intraday_data = {
+            "source_time_murban": time_m,
+            "source_time_oman": time_o,
+            "price_murban": price_m,
+            "price_oman": price_o,
+            "spread": round(price_o - price_m, 2),
+            "fetched_at": datetime.now().strftime('%Y-%m-%d %H:%M:%S') # Our sync time
+        }
+        new_df = pd.DataFrame([intraday_data])
+        update_persistent_json(new_df, "oil_prices_spread.json", keys=['source_time_oman', 'source_time_murban'], rolling_days=0)
+        
+
+        print(f"Intraday Update Success. Spread: {intraday_data['spread']}")
+
 
 def get_random_user_agent():
     """Returns a random modern user agent to rotate identity."""
@@ -149,3 +212,5 @@ if __name__ == "__main__":
     if not df_spread.empty:
             # Update the persistent JSON file
             update_persistent_json(df_spread, "oil_prices_spread.json", keys=['date'], rolling_days=3)
+
+    update_intraday_oil()
