@@ -74,7 +74,7 @@ def update_intraday_oil():
             "fetched_at": datetime.now().strftime('%Y-%m-%d %H:%M:%S') # Our sync time
         }
         new_df = pd.DataFrame([intraday_data])
-        update_persistent_json(new_df, "oil_prices_spread.json", keys=['source_time_oman', 'source_time_murban'], rolling_days=0)
+        update_persistent_json(new_df, "oil_prices_spread_intraday.json", keys=['source_time_oman', 'source_time_murban'], rolling_days=0)
         
 
         print(f"Intraday Update Success. Spread: {intraday_data['spread']}")
