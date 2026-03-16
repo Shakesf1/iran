@@ -27,7 +27,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pandas curl_cffi
+          pip install pandas curl_cffi datetime
 
       - name: Random Start Delay (Jitter)
         run: |
