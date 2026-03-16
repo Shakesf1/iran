@@ -278,28 +278,20 @@
             <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: VLCC/VLGC Transits (Crude Oil)</h2>
             <p class="text-slate-500 text-sm italic">Vessel transit estimates are derived from AIS position snapshots. A vessel is counted as a chokepoint transit when sequential positions are observed on opposite sides of a defined geofence surrounding the Strait of Hormuz. Erroneous data is filtered out based on geo data. </p>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
                 <div>
                     <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
                     <div id="vlccDailyChart" class="w-full h-[350px]"></div>
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Hourly Snapshots</h3>
-                    <div id="vlccChart" class="w-full h-[350px]"></div>
                 </div>
             </div>
         </section>
 
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: General Cargo Transits</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
                 <div>
                     <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
                     <div id="cargoDailyChart" class="w-full h-[350px]"></div>
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Hourly Snapshots</h3>
-                    <div id="cargoChart" class="w-full h-[350px]"></div>
                 </div>
             </div>
         </section>
@@ -348,34 +340,27 @@ let casualtyData = [];
 function groupTransitsByDay(crossings) {
     if (!crossings || crossings.length === 0) return { days: [], data: {} };
 
-    const times = crossings.map(c => new Date(c.time));
-    const start = new Date(Math.min(...times));
-    start.setHours(0, 0, 0, 0); 
-    
-    const end = new Date(); 
-    // Ensure the loop includes today by setting end to the very end of today
-    end.setHours(23, 59, 59, 999);
-
     const dailyGroups = {};
-    let current = new Date(start);
     
-    while (current <= end) {
-        // FIX: Use local date parts instead of .toISOString()
-        const y = current.getFullYear();
-        const m = String(current.getMonth() + 1).padStart(2, '0');
-        const d = String(current.getDate()).padStart(2, '0');
-        const dStr = `${y}-${m}-${d}`;
-        
-        dailyGroups[dStr] = { WESTBOUND: 0, EASTBOUND: 0 };
-        current.setDate(current.getDate() + 1);
-    }
-
+    // Initialize groups for the last 30 days or available range
     crossings.forEach(c => {
-        // c.time is "YYYY-MM-DD HH:MM" from your Python script
-        const dStr = c.time.split(' ')[0]; 
-        if (dailyGroups[dStr]) {
-            dailyGroups[dStr][c.dir]++;
+        const dStr = c.time.split(' ')[0]; // Extract YYYY-MM-DD
+        if (!dailyGroups[dStr]) {
+            dailyGroups[dStr] = { 
+                WESTBOUND: 0, 
+                EASTBOUND: 0, 
+                westShips: [], 
+                eastShips: [] 
+            };
         }
+        
+        const timeOnly = c.time.split(' ')[1]; // Extract HH:MM
+        dailyGroups[dStr][c.dir]++;
+        
+        // Save the ship details for the hover
+        const shipDetail = `${c.name} (${timeOnly})`;
+        if (c.dir === 'WESTBOUND') dailyGroups[dStr].westShips.push(shipDetail);
+        else dailyGroups[dStr].eastShips.push(shipDetail);
     });
 
     return { days: Object.keys(dailyGroups).sort(), data: dailyGroups };
@@ -657,8 +642,8 @@ function renderDailyTransitChart(crossings, targetId) {
     const { days, data } = groupTransitsByDay(crossings);
     
     const directions = [
-        { key: 'WESTBOUND', color: '#f43f5e', name: 'Westbound' },
-        { key: 'EASTBOUND', color: '#10b981', name: 'Eastbound' }
+        { key: 'WESTBOUND', shipKey: 'westShips', color: '#f43f5e', name: 'Westbound' },
+        { key: 'EASTBOUND', shipKey: 'eastShips', color: '#10b981', name: 'Eastbound' }
     ];
 
     const traces = directions.map(d => ({
@@ -667,25 +652,21 @@ function renderDailyTransitChart(crossings, targetId) {
         name: d.name,
         type: 'bar',
         marker: { color: d.color },
-        hovertemplate: `<b>${d.name}</b>: %{y}<extra></extra>`
+        // Pass the array of ship names for each day
+        customdata: days.map(day => data[day][d.shipKey].join('<br>')),
+        // Update hover to show the count and then the list of ships
+        hovertemplate: 
+            `<b>%{y} ${d.name} Transits</b><br>` +
+            `------------------<br>` +
+            `%{customdata}<extra></extra>`
     }));
-
-    // Add a ghost trace for the Total on hover
-    traces.push({
-        x: days,
-        y: days.map(day => data[day].WESTBOUND + data[day].EASTBOUND),
-        name: 'TOTAL',
-        type: 'scatter', mode: 'lines', line: { color: 'transparent' },
-        showlegend: false,
-        hovertemplate: '<b>Total</b>: %{y}<extra></extra>'
-    });
 
     const layout = {
         ...layoutBase,
         barmode: 'stack',
         legend: { orientation: "h", y: -0.2, x: 0.5, xanchor: 'center' },
         xaxis: { gridcolor: '#f1f5f9', fixedrange: true, tickformat: '%d %b' },
-        yaxis: { gridcolor: '#f1f5f9', fixedrange: true, dtick: 5 }
+        yaxis: { gridcolor: '#f1f5f9', fixedrange: true, dtick: 1 } // dtick 1 for clearer small counts
     };
 
     Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
@@ -937,8 +918,7 @@ async function loadCharts() {
         // Render Daily Charts (New)
         renderDailyTransitChart(vlccData, 'vlccDailyChart');
         renderDailyTransitChart(cargoData, 'cargoDailyChart');
-        renderTransitChart(vlccData, 'vlccChart', 'VLCCs');
-        renderTransitChart(cargoData, 'cargoChart', 'Cargo Ships');
+
 
         const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
