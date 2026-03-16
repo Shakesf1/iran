@@ -491,7 +491,7 @@ function filterOil(range) {
     const traces = [
         {
             x: filtered.map(d => d.date),
-            y: filtered.map(d => d.price_oman),
+            y: filtered.map(d => d.Oman),
             name: 'Oman Price ($)',
             type: 'scatter', mode: 'lines',
             line: { color: '#0f172a', width: 2 }, // Dark slate
@@ -499,7 +499,7 @@ function filterOil(range) {
         },
         {
             x: filtered.map(d => d.date),
-            y: filtered.map(d => d.spread),
+            y: filtered.map(d => d.spread_oman_durban),
             name: 'Oman-Murban Spread',
             type: 'scatter', mode: 'lines',
             fill: 'tozeroy',
