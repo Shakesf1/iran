@@ -50,7 +50,7 @@ jobs:
           git fetch origin main
 
           # 2. Stage the encrypted output file
-          git add oil_prices_spread.json
+          git add oil_prices_spread.json oil_prices_spread_intraday.json
 
           # 3. Pull with rebase and autostash 
           # This reapplies your new data on top of any other commits (like from shipping.py)
