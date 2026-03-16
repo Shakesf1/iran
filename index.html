@@ -946,16 +946,39 @@ async function loadCharts() {
         // --- RE-ENABLE DAILY/HOURLY ESCALATION PLOTS ---
         function createTrace(data, xField) {
             if (!data || data.length === 0) return [];
+            
+            // 1. Identify categories (exclude time/ID fields and Extrapolation)
             const exclude = [xField, 'Extrapolation', 'total_attacks', 'hour', 'day', 'timestamp'];
             const keys = Object.keys(data[0]).filter(k => !exclude.includes(k));
             
-            return keys.map(key => ({
+            // 2. Create the standard stacked bars (Confirmed Data)
+            const traces = keys.map(key => ({
                 x: data.map(d => d[xField]),
                 y: data.map(d => d[key]),
                 name: key, 
                 type: 'bar',
                 hovertemplate: `<b>${key}</b>: %{y}<extra></extra>`
             }));
+
+            // 3. Add the Extrapolation bar (Projected Data)
+            // We only want to show the projection on the current day/hour
+            traces.push({
+                x: data.map(d => d[xField]),
+                y: data.map(d => d['Extrapolation'] || 0),
+                name: 'Projected',
+                type: 'bar',
+                marker: {
+                    color: 'rgba(100, 116, 139, 0.3)', // Semi-transparent Slate
+                    line: {
+                        color: 'rgb(100, 116, 139)',
+                        width: 1,
+                        dash: 'dot'
+                    }
+                },
+                hovertemplate: `<b>Projected Remaining</b>: %{y}<extra></extra>`
+            });
+
+            return traces;
         }
 
         const layout = { 
