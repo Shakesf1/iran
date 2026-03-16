@@ -20,6 +20,7 @@
     <title>War Escalation Monitor: Iran - Real-Time Conflict Tracking</title>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 
@@ -27,6 +28,58 @@
             0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.7); }
             100% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
         }
+
+        .signup-container {
+            background: linear-gradient(145deg, #1a1a1c, #111);
+            border: 1px solid #333;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .monitor-tag {
+            font-size: 10px;
+            color: #e63946;
+            border: 1px solid #e63946;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        h2 { color: #fff; margin-bottom: 10px; font-weight: 700; }
+        p { color: #888; font-size: 0.9rem; margin-bottom: 25px; }
+
+        .input-stack { display: flex; flex-direction: column; gap: 15px; }
+
+        input {
+            width: 100%;
+            background: #000;
+            border: 1px solid #444;
+            padding: 14px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #e63946;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+
+        button:hover { background: #ff4d5a; transform: scale(1.02); }
+        .status-msg { margin-top: 15px; font-size: 0.8rem; height: 1rem; }
 
     </style>
 </head>
@@ -99,6 +152,28 @@
         </div>
     </div>
 </section>
+
+<div class="bg-white backdrop-blur-md rounded-xl p-6 mb-6">
+    <h3 class="text-blue-500 text-lg font-semibold mb-4">
+        NEWSLETTER
+    </h3>
+    <p>Sign-up for the Warescalation Newsletter! Irregular frequency, only for important updates. No spam, we promise.</p><br/>
+    
+    <div class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
+            <input type="email" id="subEmail" placeholder="Email Address" required 
+                class="bg-gray-100 border-none rounded-lg p-3 text-gray-900 text-sm placeholder-gray-500 focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+
+        <button onclick="handleSubscribe()" id="subBtn" 
+            class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-colors duration-200 uppercase tracking-wider text-xs">
+            Submit
+        </button>
+
+        <p id="subStatus" class="text-center text-xs mt-2 min-h-[1rem]"></p>
+    </div>
+</div>
+
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
@@ -301,6 +376,9 @@
     </div>
 <script src="monitor_core.js"></script>
     <script>
+
+
+
 
 const layoutBase = {
     margin: { t: 10, r: 10, b: 40, l: 40 },
@@ -557,6 +635,57 @@ function filterBDTI(range) {
 }
 
 
+const SUPABASE_URL = 'https://tyktxwlekvvdjftkexzd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_1MjwD_-NQUnW7M3obTljwA_b8yIfI2x';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function handleSubscribe() {
+    const name = null;
+    const email = document.getElementById('subEmail').value.trim();
+    const btn = document.getElementById('subBtn');
+    const status = document.getElementById('subStatus');
+
+    if (!email) {
+        status.innerText = "Email is required.";
+        status.className = "text-center text-xs mt-2 text-red-400";
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "SENDING...";
+
+    try {
+        const { error } = await _supabase
+            .from('subscribers')
+            .insert([{ email: email, name: name || null }]);
+
+        if (error) {
+            if (error.code === '23505') {
+                status.innerText = "Already subscribed.";
+                status.className = "text-center text-sm mt-2 text-blue-400";
+            } else {
+                throw error;
+            }
+        } else {
+            status.innerText = "Success! Thank you for subscribing.";
+            status.className = "text-center text-sm mt-2 text-blue-400";
+ 
+            document.getElementById('subEmail').value = "";
+        }
+    } catch (err) {
+        status.innerText = "Error. Try again.";
+        status.className = "text-center text-xs mt-2 text-red-400";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "SUBMIT";
+    }
+}
+
+function updateStatus(msg, color) {
+    const status = document.getElementById('subStatus');
+    status.innerText = msg;
+    status.style.color = color;
+}
 
 async function renderEscalationCharts() {
     const res = await fetch('./escalation_signals.json');
