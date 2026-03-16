@@ -491,21 +491,23 @@ function filterOil(range) {
     const traces = [
         {
             x: filtered.map(d => d.date),
-            y: filtered.map(d => d.Oman),
+            y: filtered.map(d => d.Oman), // Matches your JSON key 'Oman'
             name: 'Oman Price ($)',
-            type: 'scatter', mode: 'lines',
-            line: { color: '#0f172a', width: 2 }, // Dark slate
-            yaxis: 'y1'
+            type: 'scatter', 
+            mode: 'lines',
+            line: { color: '#0f172a', width: 2 },
+            yaxis: 'y' // Change 'y1' to 'y' (standard primary axis)
         },
         {
             x: filtered.map(d => d.date),
-            y: filtered.map(d => d.spread_oman_durban),
+            y: filtered.map(d => d.spread_oman_murban),
             name: 'Oman-Murban Spread',
-            type: 'scatter', mode: 'lines',
+            type: 'scatter', 
+            mode: 'lines',
             fill: 'tozeroy',
-            fillcolor: 'rgba(239, 68, 68, 0.1)', // Light red fill
-            line: { color: '#ef4444', width: 3, shape: 'spline' }, // Red spread line
-            yaxis: 'y2'
+            fillcolor: 'rgba(239, 68, 68, 0.1)',
+            line: { color: '#ef4444', width: 3, shape: 'spline' },
+            yaxis: 'y2' // Secondary axis
         }
     ];
 
@@ -514,27 +516,21 @@ function filterOil(range) {
         showlegend: true,
         legend: { orientation: "h", y: -0.2, x: 0.5, xanchor: 'center' },
         margin: { t: 40, r: 80, b: 80, l: 60 },
-        // Fix Date Axis
         xaxis: {
             type: 'date',
-            tickformat: '%b %d', // Shows as "Mar 12"
-            nticks: 10,          // Limits number of dates to prevent overlap
-            fixedrange: true,
+            tickformat: '%b %d',
+            nticks: 10,
             gridcolor: '#f1f5f9'
         },
-
-        // Fix Primary Y-Axis (Oman Price)
+        // FIX: Explicitly define 'yaxis' (the primary axis for Oman Price)
         yaxis: { 
             title: 'Oman Price ($)', 
-            tickprefix: '$',     // Adds $ for clarity
-            tickformat: '.2f',   // Forces 2 decimal places
+            tickprefix: '$',
+            tickformat: '.2f',
             gridcolor: '#f1f5f9',
             fixedrange: true,
-            titlefont: { color: '#0f172a' },
-            tickfont: { color: '#0f172a' }
+            side: 'left' // Explicitly set to left
         },
-
-        // Fix Secondary Y-Axis (Spread)
         yaxis2: { 
             title: 'Spread ($)', 
             tickprefix: '$',
@@ -542,11 +538,7 @@ function filterOil(range) {
             overlaying: 'y', 
             side: 'right', 
             showgrid: false,
-            fixedrange: true,
-            zeroline: true,
-            zerolinecolor: '#cbd5e1',
-            titlefont: { color: '#ef4444' }, // Red to match the line
-            tickfont: { color: '#ef4444' }   // Red to match the line
+            fixedrange: true
         }
     };
 
