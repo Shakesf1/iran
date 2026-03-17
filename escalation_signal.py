@@ -47,19 +47,18 @@ def sanitize_data(obj):
     return obj
 
 def calculate_history():
-    # Load Tables
+    # Load Tables (Keep your existing encrypted loading logic)
     df_daily = read_encrypted_df(DAILY_FILE)
-    df_hourly = read_encrypted_df(HOURLY_FILE)
     df_oil = read_encrypted_df(OIL_FILE)
     shipping_raw = read_encrypted_dict(SHIPPING_FILE) 
     bdti = read_encrypted_dict(BDTI_FILE) 
-    #df_oil = df_oil.ffill(axis=0)
+    
+    # Process inputs
+    df_daily['total_attacks'] = df_daily['total_attacks'] + df_daily['Extrapolation']
+    df_bdti = pd.DataFrame(bdti).sort_values('date')
+    df_bdti['date'] = pd.to_datetime(df_bdti['date'])
 
-
-    df_daily['total_attacks'] = df_daily['total_attacks'] + df_daily['Extrapolation'] # Combine actual + extrapolated for the most recent days
-
-
-    # --- Pre-process Shipping (Eastbound VLCCs only) ---
+    # --- Pre-process Shipping ---
     m_daily_counts = {}
     if shipping_raw and 'crossings' in shipping_raw:
         for c in shipping_raw['crossings']:
@@ -67,127 +66,89 @@ def calculate_history():
             if c['ship_type'] == 'VLCC' and c['dir'] == 'EASTBOUND':
                 m_daily_counts[day_key] = m_daily_counts.get(day_key, 0) + 1
 
-    # --- Pre-process BDTI Data with Log Returns ---
-    df_bdti = pd.DataFrame(bdti)
-    df_bdti['date'] = pd.to_datetime(df_bdti['date'])
-    df_bdti = df_bdti.sort_values('date')
-
-    # Calculate log returns
-    df_bdti['log_return'] = np.log(df_bdti['bdti_price'] / df_bdti['bdti_price'].shift(1))
-
-    # Initialize expanding window variables
-    ewma_bdti_mean = None
-    ewma_bdti_std = None
-
-    # Start calculations well before March 1st
-    all_dates = pd.date_range(start=df_bdti['date'].min(), end=df_bdti['date'].max())
-    df_bdti = df_bdti.set_index('date').reindex(all_dates).rename_axis('date').reset_index()
-
-    # Forward-fill missing values for continuity
-    df_bdti['log_return'] = df_bdti['log_return'].fillna(0.0)
-
-    # --- Adjust Oil Spread Handling ---
-    df_oil['spread_murban_brent'] = df_oil['spread_murban_brent'].ffill(axis=0)
-    raw_oil_std = df_oil['spread_murban_brent'].std(skipna=True)
-
-    # --- 7-Day Rolling Baseline Logic ---
     dates = pd.date_range(start="2026-02-28", end=datetime.now().strftime('%Y-%m-%d'))
     history_out = []
 
-    ewma_attacks = None
-    ewma_attacks_std = None
-    ewma_shipping = None
-    ewma_shipping_std = None
-    ewma_energy = None
-    ewma_energy_std = None
+    # Initialize EWMA states
+    states = {
+        'attacks': {'mean': None, 'var': None},
+        'energy': {'mean': None, 'var': None},
+        'bdti': {'mean': None, 'var': None}
+    }
 
     for idx, d in enumerate(dates):
         d_str = d.strftime('%Y-%m-%d')
-        window_start = d - timedelta(days=7)
-
-        # 1. KINETIC (Strikes)
-        mask = (df_daily['day'] >= window_start.strftime('%Y-%m-%d')) & (df_daily['day'] < d_str)
-        hist_k = df_daily.loc[mask, 'total_attacks'].tolist()
-
-        if idx < 7:
-            # Use rolling mean and std for the first 7 days
-            padding_needed = 7 - len(hist_k)
-            rolling_k_vals = ([0] * padding_needed) + hist_k
-            k_mean = np.mean(rolling_k_vals)
-            k_std = np.std(rolling_k_vals) or 1.0
-        else:
-            # Use EWMA after 7 days
-            val_k = df_daily[df_daily['day'] == d_str]['total_attacks'].sum()
-            ewma_attacks = (ewma_attacks * 0.97 + val_k * (1 - 0.97)) if ewma_attacks is not None else np.mean(hist_k)
-            ewma_attacks_std = (ewma_attacks_std * 0.97 + ((val_k - ewma_attacks) ** 2) * (1 - 0.97)) if ewma_attacks_std is not None else np.std(hist_k)
-            k_mean = ewma_attacks
-            k_std = np.sqrt(ewma_attacks_std)
-
+        
+        # --- 1. KINETIC (Attacks) ---
+        # --- 1. KINETIC (Attacks) - Updated with 7-Day Warmup ---
         val_k = df_daily[df_daily['day'] == d_str]['total_attacks'].sum()
-        zk = (val_k - k_mean) / k_std
+        
+        # Get all attack data recorded up to this loop date
+        attacks_so_far = df_daily[df_daily['day'] <= d_str]['total_attacks'].tolist()
+        num_days_in = len(attacks_so_far)
 
-        # 2. MARITIME (Eastbound VLCCs)
-        hist_m = []
-        for i in range(1, 8):
-            prev_date = (d - timedelta(days=i)).strftime('%Y-%m-%d')
-            hist_m.append(m_daily_counts.get(prev_date, 0.0))
+        if num_days_in <= 7:
+            # PHASE 1: Rolling 7-day window using "Ghost" zeros for pre-war days
+            ghost_zeros = [0.0] * (7 - num_days_in)
+            effective_window = ghost_zeros + attacks_so_far
+            
+            k_mean = np.mean(effective_window)
+            k_std = np.std(effective_window)
+            
+            # Prevent division by zero
+            if k_std == 0: k_std = 1.0
+            
+            zk = (val_k - k_mean) / k_std
 
-        # Assume 0 ships passed between March 1st and March 6th, with mean 10 and std 1.5
-        if '2026-03-01' <= d_str <= '2026-03-06':
-            val_m = 0.0
+            # SEED THE STATE: On exactly Day 7, prepare the mean/var for Day 8's EWMA
+            if num_days_in == 7:
+                states['attacks']['mean'] = k_mean
+                states['attacks']['var'] = k_std**2
         else:
-            val_m = m_daily_counts.get(d_str, 0.0)
+            # PHASE 2: Expanding Window (0.97 decay)
+            # This only runs starting Day 8, so mean is guaranteed to not be None
+            k_mean = states['attacks']['mean']
+            k_std = np.sqrt(states['attacks']['var'])
+            
+            zk = (val_k - k_mean) / k_std
+            
+            # Update the EWMA state for the next day in the loop
+            states['attacks']['mean'] = k_mean * 0.97 + val_k * 0.03
+            states['attacks']['var'] = states['attacks']['var'] * 0.97 + ((val_k - k_mean)**2) * 0.03
 
-        # Transform shipping value
+        # --- 2. MARITIME (Shipping) ---
+        # Keep your hardcoded baseline for shipping to represent "Normalcy"
+        val_m = 0.0 if '2026-03-01' <= d_str <= '2026-03-06' else m_daily_counts.get(d_str, 0.0)
         zm = -1 * ((val_m - 5) / 2)
 
-        # 3. ENERGY (Oil Spread)
-        mask_s = (df_oil['date'] >= window_start.strftime('%Y-%m-%d')) & (df_oil['date'] < d_str)
-        hist_s = df_oil.loc[mask_s, 'spread_murban_brent'].tolist()
-
-        if idx < 7:
-            padding_s = 7 - len(hist_s)
-            rolling_s_vals = ([0.0] * padding_s) + hist_s
-            s_mean = np.mean(rolling_s_vals)
-            s_std = raw_oil_std  # Use raw standard deviation without carry-forward
-        else:
-            day_s = df_oil[df_oil['date'] == d_str]
-            val_s = day_s['spread_murban_brent'].values[0] if not day_s.empty else 0.0
-            ewma_energy = (ewma_energy * 0.97 + val_s * (1 - 0.97)) if ewma_energy is not None else np.mean(hist_s)
-            ewma_energy_std = (ewma_energy_std * 0.97 + ((val_s - ewma_energy) ** 2) * (1 - 0.97)) if ewma_energy_std is not None else raw_oil_std
-            s_mean = ewma_energy
-            s_std = np.sqrt(ewma_energy_std)
-
-        day_s = df_oil[df_oil['date'] == d_str]
-        val_s = day_s['spread_murban_brent'].values[0] if not day_s.empty else 0.0
-        zs = (val_s - s_mean) / s_std
-
-        # 4. BDTI (Baltic Dirty Tanker Index with Log Returns)
-        mask_bdti = (df_bdti['date'] >= window_start.strftime('%Y-%m-%d')) & (df_bdti['date'] < d_str)
-        hist_bdti = df_bdti.loc[mask_bdti, 'log_return'].tolist()
-
-        if idx < 7:
-            padding_bdti = 7 - len(hist_bdti)
-            rolling_bdti_vals = ([0.0] * padding_bdti) + hist_bdti
-            bdti_mean = np.mean(rolling_bdti_vals)
-            bdti_std = np.std(rolling_bdti_vals) or 1.0
-        else:
-            day_bdti = df_bdti[df_bdti['date'] == d_str]
-            val_bdti = day_bdti['log_return'].values[0] if not day_bdti.empty else 0.0
-            ewma_bdti_mean = (ewma_bdti_mean * 0.97 + val_bdti * (1 - 0.97)) if ewma_bdti_mean is not None else np.mean(hist_bdti)
-            ewma_bdti_std = (ewma_bdti_std * 0.97 + ((val_bdti - ewma_bdti_mean) ** 2) * (1 - 0.97)) if ewma_bdti_std is not None else np.std(hist_bdti)
-            bdti_mean = ewma_bdti_mean
-            bdti_std = np.sqrt(ewma_bdti_std)
-
-        day_bdti = df_bdti[df_bdti['date'] == d_str]
-        val_bdti = day_bdti['log_return'].values[0] if not day_bdti.empty else 0.0
-        zbdti = (val_bdti - bdti_mean) / bdti_std
-
-
+        # --- 3. ENERGY (Oil Spread) ---
+        # Only look at oil data available up to today
+        current_oil = df_oil[df_oil['date'] <= d_str]['spread_murban_brent'].ffill()
+        val_s = current_oil.iloc[-1] if not current_oil.empty else 0.0
         
-        # Update composite score to include BDTI
+        if states['energy']['mean'] is None:
+            states['energy']['mean'], states['energy']['var'] = val_s, (df_oil['spread_murban_brent'].std() or 1.0)
+            
+        zs = (val_s - states['energy']['mean']) / np.sqrt(states['energy']['var'])
+        states['energy']['mean'] = states['energy']['mean'] * 0.97 + val_s * 0.03
+        states['energy']['var'] = states['energy']['var'] * 0.97 + ((val_s - states['energy']['mean'])**2) * 0.03
+
+        # --- 4. BDTI (Log Returns) ---
+        # Calculate log return only using today and yesterday
+        price_today = df_bdti[df_bdti['date'] <= d]['bdti_price'].iloc[-1]
+        price_yesterday = df_bdti[df_bdti['date'] < d]['bdti_price'].iloc[-1] if any(df_bdti['date'] < d) else price_today
+        val_bdti = np.log(price_today / price_yesterday) if price_yesterday != 0 else 0.0
+
+        if states['bdti']['mean'] is None:
+            states['bdti']['mean'], states['bdti']['var'] = val_bdti, 0.01 # Small seed variance for returns
+            
+        zbdti = (val_bdti - states['bdti']['mean']) / np.sqrt(states['bdti']['var'] + 1e-6)
+        states['bdti']['mean'] = states['bdti']['mean'] * 0.97 + val_bdti * 0.03
+        states['bdti']['var'] = states['bdti']['var'] * 0.97 + ((val_bdti - states['bdti']['mean'])**2) * 0.03
+
+        # --- COMPOSITE ---
         composite = (0.2 * zk + 0.2 * zm + 0.3 * zs + 0.3 * zbdti)
-        composite = max(min(composite, 3), -3)  # Limit composite score between -3 and 3
+        composite = max(min(composite, 3), -3)
 
         history_out.append({
             "date": d_str,
