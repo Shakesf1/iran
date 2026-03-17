@@ -27,7 +27,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pandas curl_cffi datetime
+          pip install pandas curl_cffi datetime numpy 
 
       - name: Random Start Delay (Jitter)
         run: |
@@ -40,7 +40,7 @@ jobs:
         run: |
           # Executes getoilprices.py which imports update_persistent_json from iran.py
           python -u getoilprices.py
-
+          python -u escalation_signal.py
       - name: Commit and Push Data
         run: |
           git config --global user.name "GitHub Actions Bot"
@@ -50,7 +50,7 @@ jobs:
           git fetch origin main
 
           # 2. Stage the encrypted output file
-          git add oil_prices_spread.json oil_prices_spread_intraday.json
+          git add oil_prices_spread.json oil_prices_spread_intraday.json escalation_history.json
 
           # 3. Pull with rebase and autostash 
           # This reapplies your new data on top of any other commits (like from shipping.py)
