@@ -18,9 +18,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <title>War Escalation Monitor: Iran - Real-Time Conflict Tracking</title>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 
@@ -380,6 +378,9 @@
 
 
     </div>
+    <script src="https://cdn.plot.ly/plotly-basic-2.27.0.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>    
 <script src="monitor_core.js"></script>
     <script>
 
@@ -438,7 +439,7 @@ async function loadEscalationChart() {
                 x: dates,
                 y: composite,
                 name: 'Composite Index',
-                type: 'scatter',
+                type: 'scattergl',
                 mode: 'lines+markers',
                 line: { color: '#1e293b', width: 3 },
                 fill: 'tozeroy',
@@ -576,7 +577,7 @@ function filterOil(range) {
             x: filtered.map(d => d.date),
             y: filtered.map(d => d.Oman), // Matches your JSON key 'Oman'
             name: 'Oman Price ($)',
-            type: 'scatter', 
+            type: 'scattergl', 
             mode: 'lines',
             line: { color: '#0f172a', width: 2 },
             yaxis: 'y' // Change 'y1' to 'y' (standard primary axis)
@@ -585,7 +586,7 @@ function filterOil(range) {
             x: filtered.map(d => d.date),
             y: filtered.map(d => d.spread_oman_murban),
             name: 'Oman-Murban Spread',
-            type: 'scatter', 
+            type: 'scattergl', 
             mode: 'lines',
             fill: 'tozeroy',
             fillcolor: 'rgba(239, 68, 68, 0.1)',
@@ -699,7 +700,7 @@ function filterBDTI(range) {
     const trace = {
         x: filtered.map(d => d.date),
         y: filtered.map(d => d.bdti_price),
-        type: 'scatter', mode: 'lines',
+        type: 'scattergl', mode: 'lines',
         line: { color: '#0ea5e9', width: 3, shape: 'spline' },
         fill: 'tozeroy', fillcolor: 'rgba(14, 165, 233, 0.05)',
         name: 'BDTI Value',
@@ -791,11 +792,11 @@ async function renderEscalationCharts() {
         },
         { 
             x: x, y: signals.map(s => s.rolling_6h), 
-            name: '6h Trend', type: 'scatter', line: { color: 'black', width: 2 } 
+            name: '6h Trend', type: 'scattergl', line: { color: 'black', width: 2 } 
         },
         { 
             x: x, y: signals.map(s => s.rolling_24h), 
-            name: '24h Baseline', type: 'scatter', line: { color: '#3b82f6', dash: 'dot', width: 2 } 
+            name: '24h Baseline', type: 'scattergl', line: { color: '#3b82f6', dash: 'dot', width: 2 } 
         }
     ], tempoLayout, { displaylogo: false, responsive: true, displayModeBar: false });
 
@@ -958,7 +959,7 @@ function renderCasualtyChart(blocName, elementId, data, label) {
         x: xValues,
         y: cumulative,
         name: `Total ${label} (RHS)`,
-        type: 'scatter',
+        type: 'scattergl',
         mode: 'lines',
         line: { color: '#0f172a', width: 2 },
         yaxis: 'y2'
