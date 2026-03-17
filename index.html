@@ -79,13 +79,65 @@
         button:hover { background: #ff4d5a; transform: scale(1.02); }
         .status-msg { margin-top: 15px; font-size: 0.8rem; height: 1rem; }
 
+        /* Background overlay */
+        .modal {
+        display: none; 
+        position: fixed; 
+        z-index: 1000; 
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.6); /* Dimmed background */
+        }
+
+        /* Modal Box */
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto; 
+            padding: 40px;          /* This creates the inner "breathing room" */
+            border-radius: 8px;
+            width: 90%;             /* Use a percentage for responsiveness */
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            
+            /* CRITICAL FIXES */
+            text-align: left !important; 
+            display: block !important; 
+        }
+
+        .modal-content section {
+            text-align: left !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+        }
+
+        /* Close Button */
+        .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        }
+
+        .close:hover { color: #000; }        
+
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 p-4 md:p-8">
+
+
+
+
     <div class="max-w-6xl mx-auto">
 <header class="mb-12 border-b border-slate-200 pb-8">
+
     <div class="flex flex-col md:flex-row justify-between items-start gap-6">
         
+
+
         <div class="max-w-3xl">
             <h1 class="text-4xl font-extrabold tracking-tight text-slate-800">War Escalation Monitor: Iran</h1>
             <p class="text-slate-500 mt-2 italic mb-6">Monitoring the cost-asymmetry of regional defense and escalation.</p>
@@ -107,7 +159,7 @@
         <div class="bg-white border border-slate-200 rounded-lg px-4 py-2 shadow-sm text-sm min-w-[220px] md:mt-2">
             <div class="flex items-center gap-2 mb-1">
                 <span id="status-dot" class="h-2 w-2 rounded-full bg-emerald-500 pulse"></span>
-                <span id="status-text" class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live</span>
+                <span id="status-text" class="font-bold text-slate-700 uppercase tracking-wider text-xs">Information/span>
             </div>
             
             <p class="text-slate-500 text-[11px] cursor-help group relative" title="Open Source Intelligence (OS INT), aggregated from multiple real-time sources (Telegram, Alerts from Israel Home Office Command, etc.)">
@@ -124,6 +176,19 @@
                 <span class="border-b border-dotted border-slate-300">Shipping Data</span>: 
                 <span id="ais-last-update" class="font-medium text-slate-800">Loading...</span>
             </p>
+
+            <span id="aboutBtn" style="
+                color: #666; 
+                cursor: pointer; 
+                font-size: 0.85em; 
+                text-decoration: underline; 
+                margin-left: 0px;
+                display: inline-block;
+                transition: none !important;
+                transform: none !important;
+                font-family: inherit;
+            ">Creator & Methodology</span>
+
         </div>
     </div>
 </header>
@@ -378,6 +443,35 @@
 
 
     </div>
+
+
+<script>
+// This function waits for the full page to load before running
+window.onload = function() {
+    const modal = document.getElementById("aboutModal");
+    const btn = document.getElementById("aboutBtn"); // This now finds the <span>
+    const span = document.getElementsByClassName("close")[0];
+
+    if (btn) {
+        btn.onclick = function() { 
+            modal.style.display = "block"; 
+        }
+    }
+
+    if (span) {
+        span.onclick = function() { 
+            modal.style.display = "none"; 
+        }
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+};
+</script>
+
     <script src="https://cdn.plot.ly/plotly-basic-2.27.0.min.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>    
@@ -1184,6 +1278,44 @@ setTimeout(function(){
 
     </script>
 
+
+
+
+<div id="aboutModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    
+    <header style="border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 20px;">
+        <h2>Strategic Pulse: Methodology</h2>
+        <p style="font-size: 1.2em; color: #666; font-weight: bold;">Quantitative metrics on Iran War</p>
+    </header>
+
+    <section>
+        <h3 style="font-weight: bold;">Author: Stan Verhoeven</h3>
+        <p>I started this page out of pure interest to get real-time insights into the Iran War and its impact on global markets (for investing purposes). On this dashboard I plot useful time-series data to gain a different perspective on the war and its impact on markets ahead.<br/><br/> I have a long track record in managing systematic portfolios across asset classes and specifically commodities. Lastly at Goldman Sachs.</p>
+        <br/>
+        <a href="https://www.linkedin.com/in/stanverhoeven/" target="_blank" style="color: #0077b5; text-decoration: none; font-weight: bold;">Professional credentials: LinkedIn.</a>
+    </section>
+
+    <section style="margin-top: 25px;">
+        <h3  style="font-weight: bold;">Signal Logic</h3>
+        <p>The <strong>Escalation Score</strong> utilizes an <strong>Expanding Window with Exponential Decay (EWMA)</strong> applying a <code>0.97 decay factor</code> on daily data (last day uses intraday update). Starting generally at beginning of the war, except for market metrics which start earlier to get a proper baseline. </p>
+        <p><br/>
+            <strong>Kinetic:</strong> Tracks strikes of Iran and its proxies. Initial baseline assumed at 0 prior to conflict. <br/>
+            <strong>Maritime:</strong> Monitors VLCC transits through Hormuz (Pre-war mean: 10).<br/>
+            <strong>Energy:</strong> Analyzes Murban-Brent spread as a localized risk premium indicator.<br/>
+            <strong>Shipping:</strong> Tracks BDTI log returns, incorporating insurance and freight volatility.<br/>
+        </p>
+        
+    </section>
+  </div>
+</div>
+
+
     <script data-goatcounter="https://shakes.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+
+
+
 </body>
 </html>
