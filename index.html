@@ -296,9 +296,16 @@
             </div>
 
             <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-red-600">
-                <h2 class="text-xl font-bold text-red-600 uppercase tracking-tighter">Strategic Escalation Score</h2>
-                <p class="text-sm text-slate-500 mb-4">A combined index of launch acceleration and geographic spread. Scores > 2.0 signal a major shift in operational tempo. Incident data are aggregated hourly to measure attack tempo, with a 6-hour rolling mean capturing recent activity and a 24-hour rolling mean representing the baseline, producing a tempo change ratio that signals acceleration. The number of distinct locations affected each hour is used to capture geographic spread. These components are combined into a weighted Escalation Score (70% tempo, 30% spread) to provide a time-series indicator of operational intensity and spatial expansion, stored for monitoring and visualization.</p>
-                <div id="scoreChart" class="h-[350px]"></div>
+                <h2 class="text-xl font-bold text-slate-800 mb-2">Strategic Escalation Score</h2>
+                <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                    A multi-factor composite index measuring theater intensity. Values <strong>> above 1</strong> signal active escalation; 
+                    <strong>while values  below -1</strong> indicate significant cooling. The score integrates four pillars: 
+                    <strong>Kinetics</strong> (launch acceleration), <strong>Maritime Friction</strong> (VLCC passing through Hormuz), 
+                    <strong>Energy Risk</strong> (spread between Murban and Brent Crude and <strong>Economic Cost</strong> of shipping (log changes in BDTI). 
+                    This hybrid Z-score approach balances physical battlefield tempo with global market stress to provide a 
+                    timely indicator of escalation or de-escalation. Most recent observation updates intraday as new data arrives (every 30 minutes)
+                </p>
+                <div id="escalationChart" class="h-[350px]"></div>
             </div>
         </section>
 
@@ -414,6 +421,83 @@ const layoutBase = {
 let fullBDTI = []; // Global store for filtering
 let fullOilData = []; // Global store for oil prices
 let casualtyData = [];
+
+async function loadEscalationChart() {
+    try {
+        const response = await fetch('escalation_history.json');
+        const data = await response.json();
+
+        const dates = data.map(d => d.date);
+        const composite = data.map(d => d.composite);
+        const attacks = data.map(d => d.components.Attacks);
+        const shipping = data.map(d => d.components.Crossings);
+
+        const traces = [
+            // The Main Composite Score
+            {
+                x: dates,
+                y: composite,
+                name: 'Composite Index',
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#1e293b', width: 3 },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(30, 41, 59, 0.05)'
+            },
+            // Threshold Lines
+            {
+                x: [dates[0], dates[dates.length - 1]],
+                y: [1, 1],
+                name: 'Escalation Threshold',
+                mode: 'lines',
+                line: { color: '#ef4444', width: 1, dash: 'dot' },
+                showlegend: false
+            },
+            {
+                x: [dates[0], dates[dates.length - 1]],
+                y: [-1, -1],
+                name: 'De-escalation Threshold',
+                mode: 'lines',
+                line: { color: '#22c55e', width: 1, dash: 'dot' },
+                showlegend: false
+            }
+        ];
+
+        const layout = {
+            height: 350,
+            margin: { t: 10, r: 10, b: 40, l: 40 },
+            hovermode: 'x unified',
+            showlegend: true,
+            legend: { orientation: 'h', y: -0.2 },
+            xaxis: { showgrid: false, fixedrange: true },
+            yaxis: { 
+                title: 'Z-Score / Index',
+                zeroline: true,
+                zerolinecolor: '#cbd5e1',
+                fixedrange: true 
+            },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            // Highlighting the "Neutral Zone"
+            shapes: [{
+                type: 'rect',
+                xref: 'paper',
+                yref: 'y',
+                x0: 0,
+                x1: 1,
+                y0: -1,
+                y1: 1,
+                fillcolor: '#f8fafc',
+                opacity: 0.5,
+                line: { width: 0 }
+            }]
+        };
+
+        Plotly.newPlot('escalationChart', traces, layout, { displayModeBar: false, responsive: true });
+    } catch (err) {
+        console.error("Escalation Data Error:", err);
+    }
+}
 
 function groupTransitsByDay(crossings) {
     if (!crossings || crossings.length === 0) return { days: [], data: {} };
@@ -722,41 +806,6 @@ async function renderEscalationCharts() {
     }], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
 
-const scoreTraces = [
-        {
-            x: x, 
-            y: scores,
-            name: 'Escalation Score',
-            type: 'scatter',
-            mode: 'lines',
-            fill: 'tozeroy', 
-            fillcolor: 'rgba(148, 163, 184, 0.2)', // Light grey area
-            line: { color: '#64748b', width: 2 },  // Darker slate line
-            hovertemplate: 'Score: %{y}<extra></extra>'
-        }
-    ];
-
-    const scoreLayout = {
-        ...layoutBase,
-        yaxis: { 
-            ...layoutBase.yaxis,
-            range: [0, Math.max(...scores, 3)],
-            gridcolor: '#f1f5f9'
-        },
-        // Adding the single red horizontal line at 2.0
-        shapes: [{
-            type: 'line',
-            xref: 'paper', x0: 0, x1: 1, // Stretch across the full width
-            yref: 'y', y0: threshold, y1: threshold,
-            line: {
-                color: '#ef4444', // Red
-                width: 2,
-                dash: 'dash'      // Makes the line dashed
-            }
-        }]
-    };
-
-    Plotly.newPlot('scoreChart', scoreTraces, scoreLayout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
 
 function renderDailyTransitChart(crossings, targetId) {
@@ -1017,7 +1066,7 @@ async function loadCharts() {
         await renderBDTI();
         await renderEscalationCharts();
         await renderCasualties();
-
+        await loadEscalationChart();
         const [dailyRes, hourlyRes, summaryRes, shippingRes] = await Promise.all([
             fetch('./daily_data.json'),
             fetch('./hourly_data.json'),
