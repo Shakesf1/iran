@@ -24,6 +24,15 @@ MAP_URL = "https://www.marinetraffic.com/en/ais/home/centerx:60.4/centery:25.8/z
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
 
+
+if not url:
+    print("CRITICAL ERROR: SUPABASE_URL is missing from environment!")
+if not key:
+    print("CRITICAL ERROR: SUPABASE_KEY is missing from environment!")
+
+if not url or not key:
+    raise ValueError("Cannot initialize Supabase client: Missing credentials.")
+
 supabase: Client = create_client(url, key)
 #HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
 
