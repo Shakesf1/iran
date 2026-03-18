@@ -176,17 +176,17 @@
                 <span id="status-text" class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live:</span>
             </div>
             
-            <p class="text-slate-500 text-[11px] cursor-help group relative" title="Open Source Intelligence (OS INT), aggregated from multiple real-time sources (Telegram, Alerts from Israel Home Office Command, etc.)">
+            <p class="text-slate-500 text-[11px]">
                 <span class="border-b border-dotted border-slate-300">Multi-Source OSINT</span>: 
                 <span id="last-update" class="font-medium text-slate-800">Loading...</span>
             </p>
             
-            <p class="text-slate-500 text-[11px] cursor-help group relative" title="Data sourced from the Baltic Exchange, reflecting the daily cost of shipping crude oil. This is a key economic indicator for the region, as it captures insurance, fuel, and security costs for tankers navigating the Strait of Hormuz.">
+            <p class="text-slate-500 text-[11px]">
                 <span class="border-b border-dotted border-slate-300">Baltic Exchange</span>: 
                 <span id="bdti-last-date" class="font-medium text-slate-800">Syncing...</span>
             </p>
 
-            <p class="text-slate-500 text-[11px] cursor-help group relative" title="Aggregated AIS position data from multiple publicly accessible maritime tracking services and satellite/terrestrial AIS networks. Cleaned up using geo data to remove erroneous points. Updated roughly every 30m, with the latest vessel positions and transit counts through the Strait of Hormuz.">
+            <p class="text-slate-500 text-[11px]">
                 <span class="border-b border-dotted border-slate-300">Shipping Data</span>: 
                 <span id="ais-last-update" class="font-medium text-slate-800">Loading...</span>
             </p>
@@ -201,7 +201,7 @@
                 transition: none !important;
                 transform: none !important;
                 font-family: inherit;
-            ">Creator & Methodology</span>
+            ">About, Methodology & Sources  </span>
 
         </div>
     </div>
@@ -1321,6 +1321,23 @@ setTimeout(function(){
         </p>
         
     </section>
+    
+    <section>
+        <br/>
+        <h3 class="text-lg font-bold text-slate-800 mb-4">Methodology & Data Sources</h3>
+        <div class="space-y-4 text-xs">
+            <p>
+                <strong>Multi-Source OSINT:</strong> Aggregated real-time intelligence from Telegram channels, Israeli Home Office Command alerts, and regional news wires. It tracks launch tempos and theater spread.
+            </p>
+            <p>
+                <strong>Baltic Exchange Data:</strong> Reflects daily cost fluctuations in crude shipping (BDTI). This captures the market's "Risk Premium," including insurance and security surcharges.
+            </p>
+            <p>
+                <strong>Shipping AIS (VLCC Tracking):</strong> Proprietary scraping of satellite/terrestrial AIS networks. This monitors VLCC movements through the Strait of Hormuz, a critical chokepoint for global oil supply. It provides near real-time insights into maritime activity and potential disruptions.
+            </p>
+        </div>
+    </section>
+
   </div>
 </div>
 
