@@ -45,15 +45,6 @@ CHOKEPOINTS = [
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
 
-print(url)
-print(key)
-if not url:
-    print("CRITICAL ERROR: SUPABASE_URL is missing from environment!")
-if not key:
-    print("CRITICAL ERROR: SUPABASE_KEY is missing from environment!")
-
-if not url or not key:
-    raise ValueError("Cannot initialize Supabase client: Missing credentials.")
 
 supabase: Client = create_client(url, key)
 #HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
@@ -167,7 +158,21 @@ def get_ships_with_stealth(map_url):
         page.listen.start('get_data_json')
         page.get(map_url)
         page.wait.ele_displayed('css:.leaflet-container', timeout=20)
-        packet = page.listen.wait(timeout=30)
+
+        time.sleep(random.uniform(4, 6))  # Wait for potential AJAX calls to populate data
+
+        for attempt in range(3):  # Try up to 3 times to find a 'meaty' packet
+            packet = page.listen.wait(timeout=10)
+            if packet and packet.response.body:
+                body_str = str(packet.response.body)
+                # Check if the packet is large enough to contain real data
+                if len(body_str) > 2000: 
+                    print(f"✅ Captured valid data packet ({len(body_str)} bytes)")
+                    return packet.response.body
+                else:
+                    print(f"⚠️ Captured small packet ({len(body_str)} bytes), skipping...")
+
+
 
         if not packet:
             return None
@@ -197,7 +202,6 @@ def process_and_save(strait_data):
     for ship in rows:
         try:
             # MarineTraffic API fields are often strings in dict format
-            print(ship)
             vessel_record = {
                 "shipid": str(ship.get('SHIP_ID')),
                 "name": ship.get('SHIPNAME', 'Unknown'),
