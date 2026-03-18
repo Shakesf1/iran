@@ -22,6 +22,8 @@ for env_var in ["SUPABASE_URL", "SUPABASE_KEY", "GITHUB_ACTIONS", "DISPLAY"]:
     force_print(f"{env_var}: {'[PRESENT]' if val else '[MISSING]'}")
     if env_var == "SUPABASE_URL" and val:
         force_print(f"URL Start: {val[:10]}...") 
+    if env_var == "SUPABASE_KEY" and val:
+        force_print(f"KEY Start: {val[:10]}...")     
 force_print("--- END ENV DEBUG ---")
 
 
