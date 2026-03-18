@@ -76,23 +76,24 @@ jobs:
 
       - name: Commit and Push Data
         run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
+          # 2. Check exactly where the file is
+          echo "Locating dashboard_stats.json..."
+          find . -name "dashboard_stats.json"
 
+          # 3. Pull latest changes to avoid conflicts (non-rebase)
+          git pull origin main --no-rebase
 
-          
-          git add dashboard_stats.json
+          # 4. Add the file (using wildcard to ensure it's found if in a subdir)
+          git add **/dashboard_stats.json || git add dashboard_stats.json
+
+          # 5. Only commit and push if the file actually changed
           if git diff --staged --quiet; then
-            echo "No changes in dashboard_stats.json"
+            echo "No changes detected in dashboard_stats.json"
           else
-            git commit -m "Update dashboard stats [skip ci]"
-            
-            # 3. Pull any remote changes (like manual README edits) using merge instead of rebase
-            # This is safer for automated data pushes
-            git pull --no-rebase origin main
-            
-            # 4. Push back to main
+            git commit -m "Update shipping data and dashboard [skip ci]"
             git push origin main
           fi
 
