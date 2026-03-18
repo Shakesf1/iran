@@ -1208,15 +1208,28 @@ async function loadCharts() {
 
         // Update timestamps
         const rawTime = shippingData.latest_ais || shippingData.calculated_at;
+
         if (rawTime) {
-            document.getElementById('ais-last-update').innerText = new Date(rawTime).toLocaleString([], {
-                dateStyle: 'medium', timeStyle: 'short'
+            // Ensure the string has a 'Z' or ISO format so the browser knows it's UTC
+            // Replace space with 'T' and add 'Z' if not present
+            const isoTime = rawTime.includes('T') ? rawTime : rawTime.replace(' ', 'T') + 'Z';
+            
+            const dateObj = new Date(isoTime);
+            
+            document.getElementById('ais-last-update').innerText = dateObj.toLocaleString([], {
+                dateStyle: 'medium', 
+                timeStyle: 'short'
             });
         }
 
         const lastModified = dailyRes.headers.get('Last-Modified');
         if (lastModified) {
-            document.getElementById('last-update').innerText = new Date(lastModified).toLocaleString([], { 
+
+            const isoTime = lastModified.includes('T') ? lastModified : lastModified.replace(' ', 'T') + 'Z';
+            
+            const dateObj = new Date(isoTime);
+
+            document.getElementById('last-update').innerText = dateObj.toLocaleString([], { 
                 dateStyle: 'medium', timeStyle: 'short' 
             });
         }
