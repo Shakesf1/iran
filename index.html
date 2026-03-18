@@ -1273,7 +1273,9 @@ async function loadCharts() {
 
 
 
-loadCharts();
+document.addEventListener('DOMContentLoaded', () => {
+    loadCharts();
+});
 
 // Refresh the entire page every 300 seconds
 setTimeout(function(){
