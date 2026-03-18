@@ -385,12 +385,6 @@
             <div id="dailyChart" class="w-full h-[500px]"></div>
         </section>
 
-        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <h2 class="text-2xl font-bold mb-2 text-slate-800">Hourly Intensity</h2>
-            <p class="text-slate-600 mb-6 text-sm">Detailed breakdown by target location. Click legend items to filter regions.</p>
-            <div id="hourlyChart" class="w-full h-[500px]"></div>
-        </section>
-
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
@@ -1262,7 +1256,6 @@ async function loadCharts() {
         };
 
         Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, { displaylogo: false, responsive: true, displayModeBar: false });
-        Plotly.newPlot('hourlyChart', createTrace(hourlyData, 'timestamp'), layout, { displaylogo: false, responsive: true, displayModeBar: false });
 
     } catch (err) {
         console.error("Error loading data:", err);
