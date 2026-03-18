@@ -2,7 +2,7 @@ name: Deploy Dashboard
 
 on:
   schedule:
-    - cron: '0 * * * *' # Runs every hour
+    - cron: '*/15 * * * *' # Runs at minute 0, 15, 30, and 45
   push:
     branches: ["main"]
   workflow_dispatch:     # Manual run button
