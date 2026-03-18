@@ -36,7 +36,12 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 JSON_PATH = os.path.join(BASE_DIR, "dashboard_stats.json")
 
 # --- CONFIGURATION ---
-MAP_URL = "https://www.marinetraffic.com/en/ais/home/centerx:60.4/centery:25.8/zoom:7"
+CHOKEPOINTS = [
+    "https://www.marinetraffic.com/en/ais/home/centerx:60.4/centery:25.8/zoom:7", # Hormuz
+    "https://www.marinetraffic.com/en/ais/home/centerx:45.4/centery:14.4/zoom:7", # Bab al-Mandab
+    "https://www.marinetraffic.com/en/ais/home/centerx:29.7/centery:30.3/zoom:7"  # Suez
+]
+
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
 
@@ -140,7 +145,7 @@ def update_vessel_locations():
         print(f"Spatial Processing Error: {e}")
 
 
-def get_ships_with_stealth():
+def get_ships_with_stealth(map_url):
     co = ChromiumOptions()
     co.set_argument('--no-sandbox')
     co.set_argument('--headless=new')
@@ -160,7 +165,7 @@ def get_ships_with_stealth():
         time.sleep(random.uniform(2, 4))
         page = ChromiumPage(co)
         page.listen.start('get_data_json')
-        page.get(MAP_URL)
+        page.get(map_url)
         page.wait.ele_displayed('css:.leaflet-container', timeout=20)
         packet = page.listen.wait(timeout=30)
 
@@ -289,8 +294,11 @@ def export_stats():
 
 if __name__ == "__main__":
     print(f"--- Monitoring Strait of Hormuz: {datetime.now()} ---")
-    data = get_ships_with_stealth()
-    if data:
-        process_and_save(data)
+    for url in CHOKEPOINTS:
+        time.sleep(random.uniform(2, 4))
+        print(f"Scraping URL: {url}")
+        data = get_ships_with_stealth(url)
+        if data:
+            process_and_save(data)
 
     export_stats()
