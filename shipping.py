@@ -10,6 +10,20 @@ from shapely.geometry import Point
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import os
+import sys 
+
+def force_print(msg):
+    print(msg)
+    sys.stdout.flush()
+
+force_print("--- START ENV DEBUG ---")
+for env_var in ["SUPABASE_URL", "SUPABASE_KEY", "GITHUB_ACTIONS", "DISPLAY"]:
+    val = os.environ.get(env_var)
+    force_print(f"{env_var}: {'[PRESENT]' if val else '[MISSING]'}")
+    if env_var == "SUPABASE_URL" and val:
+        force_print(f"URL Start: {val[:10]}...") 
+force_print("--- END ENV DEBUG ---")
+
 
 load_dotenv()    
 # Get the absolute path of the folder containing shipping.py
