@@ -24,7 +24,8 @@ MAP_URL = "https://www.marinetraffic.com/en/ais/home/centerx:60.4/centery:25.8/z
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
 
-
+print(url)
+print(key)
 if not url:
     print("CRITICAL ERROR: SUPABASE_URL is missing from environment!")
 if not key:
