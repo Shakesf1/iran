@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Python Packages
         run: |
-          pip install DrissionPage geopandas shapely
+          pip install DrissionPage geopandas shapely supabase python-dotenv
 
       - name: Random Delay (Jitter)
         run: |
@@ -54,6 +54,8 @@ jobs:
       - name: Run Shipping Monitor
         env:
           DISPLAY: :99
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}          
         run: |
           #          1. Force kill any existing chrome or xvfb processes
           pkill -9 chrome || true
@@ -81,7 +83,7 @@ jobs:
           git fetch origin main
 
           # 2. STAGE your new data first so --autostash can see it
-          git add shipping_data.db dashboard_stats.json
+          git add dashboard_stats.json
 
           # 3. Pull with rebase and autostash. 
           # This handles the "behind origin" issue by tucking your changes away,
