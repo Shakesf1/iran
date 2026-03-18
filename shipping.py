@@ -166,7 +166,7 @@ def get_ships_with_stealth(map_url):
             if packet and packet.response.body:
                 body_str = str(packet.response.body)
                 # Check if the packet is large enough to contain real data
-                if len(body_str) > 2000: 
+                if len(body_str) > 10000: 
                     print(f"✅ Captured valid data packet ({len(body_str)} bytes)")
                     return packet.response.body
                 else:
