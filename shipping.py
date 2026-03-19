@@ -142,6 +142,9 @@ def get_ships_with_stealth(map_url):
     co.set_argument('--headless=new')
     co.set_argument('--disable-dev-shm-usage') # Uses /tmp instead of memory (Slower but stable)
     co.set_argument('--disable-gpu')
+    profile_path = f'/tmp/chrome_profile_{os.getpid()}'
+    co.set_user_data_path(profile_path)
+    co.set_paths(local_port=9222)
 
     ua_list = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
