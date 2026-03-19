@@ -13,7 +13,7 @@ supabase: Client = create_client(url, key)
 resend.api_key = os.getenv("RESEND_API_KEY")
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-image_path = os.path.join(current_dir, "static", "March17Pulse.png")
+image_path = os.path.join(current_dir, "static", "iranstrikes-19mar.png")
 
 def get_subscribers():
     try:
@@ -28,7 +28,7 @@ def get_subscribers():
         return []
 
 def send_newsletter():
-    subject = "Strategic Pulse: Day 17 of Iran War"
+    subject = "Strategic Pulse: Day 20 of Iran War"
     
     # 1. Read the image file as bytes
     try:
@@ -40,80 +40,112 @@ def send_newsletter():
 
     # Your HTML content (keep your existing HTML, just ensuring the CID matches)
     html_content = """
-    <div dir="ltr">
-    <div>Dear reader,</div>
-    <div><br /></div>
-    <div>
-        The conflict enters its third week with a sharpening divide between political rhetoric and reality. While the Trump
-        administration implies a unilateral timeline for resolution, Tehran’s leverage over the Strait of Hormuz remains the
-        primary variable. Unlike previous theatres (e.g., Venezuela), Iran’s ability to choke 20% of global oil flow creates
-        a dynamic where the market, not the White House, dictates terms (TACO) of ending the war. Our new Escalation Score
-        metric is at 0.24, showing the war is not de-escalating currently. From a financial perspective, nothing indicates
-        alleviating market stress. Instead the longer this drags on the larger the impact on global growth (implying further
-        discounts to markets). Commodities will be able to find their way to markets eventually but this is a long
-        process.  
-    </div>
+<div dir="ltr">
+  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
+    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>Dear Reader,</span>
+  </p>
+  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
+    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >Today marks the 20th day of the conflict. We are entering the most dangerous phase of any war: </span
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'><b>Normalization.</b></span
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>
+      As the initial shock fades from the headlines, public attention wavers but the data tells a different story. As impact on global markets will now become real. </span
+    >
+  </p>
+  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
+    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>On </span
+    ><a href="http://www.warescalation.com/?campaign=newsletter" title="http://www.warescalation.com/"
+      ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,238)'><u>warescalation.com</u></span></a>
+      <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >, the metrics remain relentless. Despite claims from Washington and Jerusalem that the Iranian command structure
+      is &quot;on its knees&quot; following the liquidation of senior leaders, the reality tells us different. Iran’s
+      launch tempo has not decayed. It has stabilized:</span>
+  </p>
     <div style="text-align: left; margin: 20px 0;">
-        <img src="cid:pulse-chart" alt="Escalation Score" width="545" height="158" />
+        <img src="cid:pulse-chart" alt="Iran Attacks" width="510" height="270" />
     </div>
-    <div>
-        We have updated our <b>Strategic Escalation Score</b> to integrate physical strikes with market stress and naval
-        activity in Hormuz. Despite a reduction, albeit at glacier speed, strikes originating from Iran the index remains in
-        the red due to two critical factors:
-    </div>
-    <div><br /></div>
-    <div>
-        · <b>Shipping</b>: Commercial transits have effectively bottomed out, yet Iranian oil sales remain at pre-war
-        levels. Iran is successfully funding its operations in real-time while the rest of the world bears the cost of the
-        blockade. The latest ship we tracking passing through was “KING CHAIN”, sailing under the flag of Cameroon and
-        previously shipping under name of “STELLANN” and others is officially sanctioned (imo: 9277761) under various
-        jurisdictions. Most ships are, although a few are not. SHIVALIK crossed to sail to India and is not part of the
-        shadow fleet. This seemed to be negotiated between Iran and India, showing diplomacy can get ships through.
-    </div>
-    <div><br /></div>
-    <div>
-        · <b>The Mine-Sweeping Deficit</b>: Reports (via TWZ &amp; Defense Security Asia) indicate that legacy U.S.
-        mine-sweepers were decommissioned last year. Their replacements (LCS units like the USS Tulsa) were recently spotted
-        in Malaysia rather than the Gulf. This asset gap implies that a quick reopening of the Strait is physically
-        impossible, regardless of political statements.
-    </div>
-    <div><br /></div>
-    <b>The Data Brief:</b><br />· <b>Kinetics</b>: Strike frequency is slowing, but lethality remains high.<br />·
-    <b>Maritime</b>: Shipping through Hormuz is virtually non-existent for third-party vessels.<br />· <b>Markets</b>:
-    Crude spreads and the Baltic Dry Clean Tanker Index (BDTI) are implying a &quot;higher for longer&quot; inflation
-    regime, with Europe markets impacted a lot but troubles also brewing in Asia (e.g. India). <br />
-    <div>
-        · <b>Casualties</b>: Our T-1 time-series shows a steady climb. While &quot;truth is the first casualty of war&quot;
-        (so look at the trend, not absolutes) our aggregated quality sources indicate the human cost is beginning to outpace
-        early-war projections.
-    </div>
-    <div><br /></div>
-    <div>
-        <font size="2"
-        ><u><b>The Bottom Line</b>: </u></font
-        >
-    </div>
-    <div>
-        <font size="2"
-        ><u
-            >Expect a sustained negative financial impact. The potency of Iran’s disruption ensures this remains a global
-            economic event rather than a localized skirmish. Inflationary pressures will continue to build the longer Hormuz
-            remains closed and could be exacerbated if Iran successfully targets Middle Eastern supplies and refining.</u
-        ></font
-        >
-    </div>
-    <div><br /></div>
-    <div>Feedback is much appreciated!</div>
-    ———————————————————————————-<br />
-    <div></div>
-    <div><font size="1">Newsletter is send intermittently, not daily. </font></div>
-    <font size="1">To unsubscribe, please reply to this email with &quot;UNSUBSCRIBE&quot;.</font
-    ><br />———————————————————————————-<br /><br />
-    </div>
+  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
+    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>
+      The most critical data point is the </span
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'><b>Strait of Hormuz</b></span
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >. Total transit volume remains at historic lows. Our AIS tracking shows a striking anomaly: the few ships
+      currently transiting are almost exclusively members of the “Shadow Fleet” or vessels taking non-standard routes
+      under guidance of Iran (Indian ships earlier in the week). This implies a &quot;negotiated&quot; crossing, </span
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >Iran is still acting as the gatekeeper.</span
+    >
+  </p>
+  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
+    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >Geopolitically, the implications are binary. The U.S. and Israel can strike the heartland, but if they cannot
+      guarantee some ships to pass through Hormuz they are losing the strategic war. This mirrors the </span
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'><b>Tanker Wars of the 1980s</b></span
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >, but with a modern twist: Iran doesn&#39;t need to physically block the Strait; they only need to keep insurance
+      premiums high enough to make it a &quot;no-go&quot; zone for Western capital. To avoid a visible strategic defeat,
+      the U.S. will need to escalate and institute navy convoys through the Strait.
+    </span>
+  </p>
+  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
+    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >Secondly, for global markets it’s all about inflation. PPI yesterday printed significantly higher than expected
+      and that was pre-Iran War (February). </span
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >Interesting research was done by the FED in 2024 (last updated): “</span
+    ><a
+      href="https://www.federalreserve.gov/econres/notes/feds-notes/oil-price-shocks-and-inflation-in-a-dsge-model-of-the-global-economy-20240802.html"
+      title="FED Research: Oil Price Shocks and Inflation in a DSGE Model for the Global Economy"
+      ><span style='font-family:"Arial";font-size:11pt;color:rgb(5,99,193)'
+        ><u>Oil Price Shocks and Inflation in a DSGE Model for the Global Economy</u></span
+      ></a
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >”. This links Oil Price Shocks to inflation. Oil impacts food prices, wages (due to cost of living) and
+      expectations. The impac</span
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >t is larger when the cause is not transitory but long lasting. Central Banks are in a bind. They can fight
+      inflation (higher rates) which hurts growth or support economic growth (which boosts inflation). Rate cuts are
+      less likely (increases more, Polymarke</span
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >t assigns 40+% probability to ECB hiking rates) and policy will become reactive. Long story short, the real
+      economic impact worsens the longer the war continues. Impacting global growth and inflation, effectively making
+      stagflation more likely by the day.
+    </span>
+  </p>
+  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
+    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >If you find it interesting, please share the site – </span
+    ><a href="http://www.warescalation.com/?campaign=newsletter" title="http://www.warescalation.com"
+      ><span style='font-family:"Arial";font-size:11pt;color:rgb(5,99,193)'><u>warescalation.com</u></span></a
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>
+      – with your friends! Don’t keep all the good stuff to yourself. :-) </span
+    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>Feedback is also very much appreciated. </span>
+  </p>
+  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
+    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>Kind regards,</span>
+  </p>
+  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
+    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>Stan</span>
+  </p>
+<hr style="border: 0; border-top: 1px solid #000; margin: 10pt 0;">
+  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
+    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >Newsletter is send intermittently, not daily.
+    </span>
+  </p>
+  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
+    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
+      >To unsubscribe, please reply to this email with &quot;UNSUBSCRIBE&quot;.<br /><span> 
+      <hr style="border: 0; border-top: 1px solid #000; margin: 10pt 0;">
+  </p>
+  <br />
+</div>
+
+ 
     """
 
     subscribers = ["stan@warescalation.com"]
-    #subscribers = get_subscribers()
+    subscribers = get_subscribers()
     print(subscribers)
     for email in subscribers:
         try:
@@ -124,7 +156,7 @@ def send_newsletter():
                 "html": html_content,
                 "attachments": [
                     {
-                        "filename": "March17Pulse.png",
+                        "filename": "iranstrikes-19mar.png",
                         "content": image_data,  # FIX: Use 'content' (bytes) instead of 'path'
                         "content_id": "pulse-chart" 
                     }
