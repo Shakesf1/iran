@@ -452,7 +452,7 @@ def get_multiple_historical_intraday_data(symbols_list=["DB", "QA", "OQ"], commo
 
     return pd.DataFrame(all_data)
 
-def export_spreads_to_json(filename="oil_spreads_intraday.json"):
+def export_spreads_to_json(filename="oil_prices_spread.json"):
     try:
         # 1. Call the RPC function we created in Step 1
         response = supabase.rpc("get_oil_spreads").execute()
