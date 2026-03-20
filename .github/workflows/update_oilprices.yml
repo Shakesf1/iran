@@ -37,6 +37,11 @@ jobs:
           sleep $DELAY
 
       - name: Run Oil Price Monitor
+        env:
+          # This maps your GitHub Secrets to the script's environment
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      
         run: |
           # Executes getoilprices.py which imports update_persistent_json from iran.py
           python -u getoilprices.py
