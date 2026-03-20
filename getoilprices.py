@@ -455,11 +455,14 @@ def get_multiple_historical_intraday_data(symbols_list=["DB", "QA", "OQ"], commo
 def export_spreads_to_json(filename="oil_prices_spread.json"):
     try:
         # 1. Call the RPC function we created in Step 1
-        response = supabase.rpc("get_oil_spreads").execute()
+        if filename == "oil_prices_spread.json":
+            response = supabase.rpc("get_historical_spreads").execute()
+        else:
+            response = supabase.rpc("get_oil_spreads").execute()
         
         # 2. Extract the data
         data = response.data # This is already a list of dictionaries
-        print(pd.DataFrame(data).head())
+        print(pd.DataFrame(data).tail())
         if not data:
             print("⚠️ No synchronized data found for Murban and Brent.")
             return
@@ -484,8 +487,10 @@ def export_spreads_to_json(filename="oil_prices_spread.json"):
 
 
 if __name__ == "__main__":
+    print("First eod")
     get_multiple_historical_data() # Get end of day prices 
-    export_spreads_to_json(filename='oil_prices_spread_intraday.json') # Save to json from supabase
+    export_spreads_to_json(filename='oil_prices_spread.json') # Save to json from supabase
     #print(HistoricalData)
+    print("Then intraday")
     get_multiple_historical_intraday_data() # Get itnraday prices 
-    export_spreads_to_json(filename='oil_prices_spread.json') # Save to json
+    export_spreads_to_json(filename='oil_prices_spread_intraday.json') # Save to json
