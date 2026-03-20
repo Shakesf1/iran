@@ -459,6 +459,7 @@ def export_spreads_to_json(filename="oil_prices_spread.json"):
         
         # 2. Extract the data
         data = response.data # This is already a list of dictionaries
+        print(pd.DataFrame(data).head())
         if not data:
             print("⚠️ No synchronized data found for Murban and Brent.")
             return
@@ -480,43 +481,11 @@ def export_spreads_to_json(filename="oil_prices_spread.json"):
     except Exception as e:
         print(f"❌ Error: {e}")
 
-def export_historical_spreads_encrypted(filename="oil_prices_spread.json"):
-    try:
-        # 1. Execute the SQL via RPC
-        # This returns the pivoted data with spreads already calculated
-        response = supabase.rpc("get_historical_spreads").execute()
-        
-        if not response.data:
-            print("⚠️ No historical data returned from Supabase.")
-            return
-
-        # 2. Load into DataFrame
-        df = pd.DataFrame(response.data)
-
-        # 3. Handle Overwrite Logic
-        # If you want a clean overwrite every time, delete the file if it exists
-        if os.path.exists(filename):
-            os.remove(filename)
-            print(f"🗑️ Cleaned old {filename} for fresh overwrite.")
-
-        # 4. Save using your persistent encryption function
-        # We use keys=['date'] to ensure uniqueness if the file were to persist
-        update_persistent_json(
-            new_df=df, 
-            filename=filename, 
-            keys=['date'], 
-            rolling_days=0
-        )
-        
-        print(f"✅ Historical spreads encrypted and saved to {filename}")
-
-    except Exception as e:
-        print(f"❌ Failed to export historical spreads: {e}")
 
 
 if __name__ == "__main__":
     get_multiple_historical_data() # Get end of day prices 
-    export_historical_spreads_encrypted() # Save to json from supabase
+    export_spreads_to_json(filename='oil_prices_spread_intraday.json') # Save to json from supabase
     #print(HistoricalData)
     get_multiple_historical_intraday_data() # Get itnraday prices 
-    export_spreads_to_json() # Save to json
+    export_spreads_to_json(filename='oil_prices_spread.json') # Save to json
