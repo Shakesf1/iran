@@ -124,6 +124,8 @@ def calculate_history():
         # --- 3. ENERGY (Oil Spread) ---
         # Only look at oil data available up to today
         df_oil = df_oil.rename(columns={'datetime': 'date'})
+        df_oil['spread_murban_brent'] = df_oil['murban_price'] - df_oil['brent_price']
+
         current_oil = df_oil[df_oil['date'] <= d_str]['spread_murban_brent'].ffill()
         val_s = current_oil.iloc[-1] if not current_oil.empty else 0.0
         
