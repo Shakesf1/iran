@@ -666,14 +666,17 @@ function filterOil(range) {
     let filtered = [];
 
     if (range === '1M') {
-        const monthAgo = new Date().setMonth(now.getMonth() - 1);
-        filtered = fullOilData.filter(d => new Date(d.date) >= monthAgo);
+        const monthAgo = new Date();
+        monthAgo.setMonth(now.getMonth() - 1);
+        filtered = fullOilData.filter(d => new Date(d.date).getTime() >= monthAgo.getTime());
     } else if (range === '3M') {
-        const threeMonthsAgo = new Date().setMonth(now.getMonth() - 3);
-        filtered = fullOilData.filter(d => new Date(d.date) >= threeMonthsAgo);
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(now.getMonth() - 3);
+        filtered = fullOilData.filter(d => new Date(d.date).getTime() >= threeMonthsAgo.getTime());
     } else if (range === '1Y') {
-        const yearAgo = new Date().setFullYear(now.getFullYear() - 1);
-        filtered = fullOilData.filter(d => new Date(d.date) >= yearAgo);
+        const yearAgo = new Date();
+        yearAgo.setFullYear(now.getFullYear() - 1);
+        filtered = fullOilData.filter(d => new Date(d.date).getTime() >= yearAgo.getTime());
     } else {
         filtered = fullOilData;
     }
@@ -722,7 +725,7 @@ function filterOil(range) {
         },
         // FIX: Explicitly define 'yaxis' (the primary axis for Oman Price)
         yaxis: { 
-            title: 'Oman Price ($)', 
+            title: 'Murban Price ($)', 
             tickprefix: '$',
             tickformat: '.2f',
             gridcolor: '#f1f5f9',
