@@ -456,13 +456,25 @@ def export_spreads_to_json(filename="oil_prices_spread.json"):
     try:
         # 1. Call the RPC function we created in Step 1
         if filename == "oil_prices_spread.json":
-            response = supabase.rpc("get_historical_spreads").execute()
+            print("Fetching historical spreads for Murban and Brent...")
+            response = (
+                supabase.rpc("get_historical_spreads")
+                .select("*")
+                .range(0, 4999) 
+                .execute()
+            )
         else:
+            print("Fetching intraday spreads for Murban and Brent...")
             response = supabase.rpc("get_oil_spreads").execute()
         
+        print(filename)
+
         # 2. Extract the data
         data = response.data # This is already a list of dictionaries
-        print(pd.DataFrame(data).tail())
+
+        df = pd.DataFrame(response.data)
+  
+        print(df.tail())
         if not data:
             print("⚠️ No synchronized data found for Murban and Brent.")
             return
