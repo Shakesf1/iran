@@ -27,7 +27,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pandas curl_cffi datetime numpy supabase
+          pip install pandas curl_cffi datetime numpy supabase python-dotenv
 
       - name: Random Start Delay (Jitter)
         run: |
