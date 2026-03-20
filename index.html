@@ -215,31 +215,21 @@
 <section class="mb-8">
 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">
-        Summary of March 18th (Day 19)
+        Summary of March 19th (Day 20)
     </h2>
     <div class="text-slate-600 leading-relaxed space-y-4">
         <p>
-            March 18th marked a transition into bombing of the energy infrastructure. As Israel  targeted <strong>major gas installations and energy infrastructure</strong>.
-            Israel also liquidated <strong>Iranian Intelligence Minister Esmaeil Khatib</strong> in Tehran. This follows the assassination of several other high profile leaders in previous days (Larijani & Soleimani) signaling a policy of 				complete command-structure dissolution.   	
-
+            March 19th was a further escalation in terms of Energy markets. The strikes on Iran's gas fields and their reactions had a huge impact. Most importantly, a lot of production capacity in UAE is offline for a long period. The question now remains whether energy fields will remain a target or whether it were one-off strikes. Since Iran manages to strike back when their Energy production is attacked this is a threat hanging over the market. 
         </p>
         
         <p>
-
-            Iran’s retaliation was immediate and multi-vector. Main retaliation was on Qatar, hitting Ras Lafan (important for Gas industry in Qatar). Indicating they intend to pay back in kind. Strikes from Iran were slightly up from the previous days as a result. Our Strategic Escalation score remains above 0, showing we still can't talk of de-escalation. 
-
+            In shipping not much has changed. Roughly the same, low, amount of ships pass the Strait. However, diplomatically perhaps the most telling was <strong>Iran's statement that they are considering levying transit fees on ship in Hormuz</strong>. The Indian ships that passed earlier through the week probably paid such a fee and this could be a pragmatic way for Iran to monetize their blocking of the Strait. Perhaps we will see an uptick in ships passing, especially through India as they are desperate for the energies. 
         </p>
-        <p>
+	<p>We changed the spread to instead monitor the spread between Murban and Brent. They trade in similar hours - and have more trading to begin with - and as such provide more reliable spread estimates. This replaces the Oman - Murban spread in the graph on this page.</p>
 
-            We still see very little shipping in the Strait. Hormuz is Iran's strongest weapon and they are actively using it. In case Trump really wants to "win", rather than launching air-strikes he should ensure shipping can happen in Hormuz. If not, geopolitically America will be perceived as losing.  
-
-        </p>
-        <p>
-            The economic picture turned dire this morning with the <strong>February PPI "Inflation Surprise."</strong> Wholesale prices rose 0.7%, double what was forecasted, and this was <em>before</em> the full "Iran Effect" hit the supply chain. The Iran effect still has to be priced in which will be inflationary so the wallets of people were already under pressure before and it won't get better for the update covering March. 
-        </p>
 
         <p class="bg-slate-50 p-4 rounded-lg border-l-4 border-red-400 italic text-sm">
-            <strong>Strategic Note:</strong> The US/Israeli strategy assumes that killing leaders and hitting gas plants will force a collapse. However, it might just result in the hydra effect. We already see hardening in Iran so the outcome of this strategy is highly uncertain. 
+            <strong>Strategic Note:</strong> The assumption that infrastructure destruction leads to surrender is failing. By targeting Iranian and Qatari gas, the conflict has moved from a contained war to a <strong>global inflationary shock</strong>. We are entering a phase where the politics in the West might become as tumultuous as the war itself. As various countries struggle to deal with higher energy prices for their voting base. 
         </p>
     </div>
 </div>
@@ -412,7 +402,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-800">Hormuz: Oil spread</h2>
-                    <p class="text-slate-500 text-sm italic">The Oman–Murban spread reflects relative demand for Gulf crude grades. Sharp changes can signal rising tanker risk and geopolitical stress as markets price in potential disruption around the Strait of Hormuz.</p>
+                    <p class="text-slate-500 text-sm italic">The Murban-Brent spread reflects the geopolitical risk of the Gulf. Sharp changes can signal rising tanker risk and geopolitical stress as markets price in potential disruption around the Strait of Hormuz.</p>
                 </div>
                 <div class="flex bg-slate-100 p-1 rounded-lg self-start">
                     <button onclick="filterOil('1M')" id="btn-oil-1M" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1M</button>
@@ -690,8 +680,8 @@ function filterOil(range) {
     const traces = [
         {
             x: filtered.map(d => d.date),
-            y: filtered.map(d => d.Oman), // Matches your JSON key 'Oman'
-            name: 'Oman Price ($)',
+            y: filtered.map(d => d.Murban), // Matches your JSON key 'Murban'
+            name: 'Murban Price ($)',
             type: 'scattergl', 
             mode: 'lines',
             line: { color: '#0f172a', width: 2 },
@@ -699,8 +689,8 @@ function filterOil(range) {
         },
         {
             x: filtered.map(d => d.date),
-            y: filtered.map(d => d.spread_oman_murban),
-            name: 'Oman-Murban Spread',
+            y: filtered.map(d => d.spread_murban_brent),
+            name: 'Murban-Brent Spread',
             type: 'scattergl', 
             mode: 'lines',
             fill: 'tozeroy',

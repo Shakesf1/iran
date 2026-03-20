@@ -9,12 +9,22 @@ import json
 import time
 import random
 from iran import update_persistent_json
-from datetime import datetime
+from datetime import datetime, timedelta
+from supabase import create_client, Client
+from dotenv import load_dotenv
 
+load_dotenv()    
+ # Supabase
+url: str = os.environ.get("SUPABASE_URL")
+key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
+
+
+supabase: Client = create_client(url, key)
 # Endpoints
 API_URL = "https://oilprice.com/freewidgets/json_get_oilprices"
 BARCHART_API = "https://www.barchart.com/proxies/core-api/v1/quotes/get"
 BARCHART_CSV_URL = "https://www.barchart.com/proxies/timeseries/historical/queryeod.ashx"
+BARCHART_API_HIST = "https://www.barchart.com/proxies/core-api/v1/historical/get"
 
 # We use *0 (Nearby) for both to ensure a proper "rolled" comparison
 SYMBOL_MURBAN = "DB*1"
@@ -96,7 +106,7 @@ def update_intraday_oil():
             update_persistent_json(
                 entry_df, 
                 "oil_individual_status.json", 
-                keys=['name', 'source_time'], 
+                keys=['name', 'source_time', 'date', 'price'], 
                 rolling_days=0
             )
         
@@ -130,7 +140,7 @@ def get_barchart_data(symbol):
 
     params = {
         "symbol": symbol,
-        "data": "dailycontinue",
+        "data": "dailyNearest",
         "maxrecords": "10000",
         "volume": "contract",
         "order": "asc",
@@ -232,7 +242,7 @@ def get_today_oman():
     except: pass
     return None
 
-def get_multiple_historical_data(symbols_list=["DB", "QA", "OQ"]):
+def get_multiple_historical_data(symbols_list=["DB", "QA", "OQ"], commodity_name=["Murban", "Brent", "Oman"]):
     """Fetches and merges historical data for multiple symbols into one DataFrame."""
     session = requests.Session()
     headers = {"User-Agent": get_random_user_agent()}
@@ -243,20 +253,23 @@ def get_multiple_historical_data(symbols_list=["DB", "QA", "OQ"]):
     
     combined_df = None
 
-    for symbol in symbols_list:
-        print(f"Fetching history for: {symbol}...")
+    for symbol, name in zip(symbols_list, commodity_name):
+        print(f"Fetching history for: {name} (Ticker: {symbol})...")
+
         
         # Note: Using *1 or similar nearby suffix is often required for historical continuation
         ticker = f"{symbol}*1" 
         
         params = {
-            "symbol": ticker,
-            "data": "dailycontinue",
-            "maxrecords": "50", # Adjust as needed for history length
-            "volume": "contract",
-            "order": "asc",
-            "contractroll": "combined"
-        }
+        "symbol": ticker,
+        "data": "dailyNearest",     # This tells the API to switch contracts automatically
+        "maxrecords": "30", # Increase if we need more history. Now we keep it short to 30 days. 
+        "volume": "contract",
+        "order": "asc",
+        "backadjust": "false",      # Set to "false" to get unadjusted front-month prices
+        "daystoexpiration": "3",    # Critical: Tells it when to "roll" to the next month
+        "contractroll": "combined", # Ensures it stitches different months into one CSV
+    }
         
         api_headers = {
             **headers,
@@ -271,12 +284,40 @@ def get_multiple_historical_data(symbols_list=["DB", "QA", "OQ"]):
             # Parse CSV: Symbol, Date, Open, High, Low, Close, Volume, OI
             temp_df = pd.read_csv(io.StringIO(response.text), header=None, 
                                  names=['ticker', 'date', 'open', 'high', 'low', 'price', 'volume', 'oi'])
-            
+            temp_df['commodity']= name
             # Clean data
-            temp_df['date'] = pd.to_datetime(temp_df['date']).dt.date
-            temp_df = temp_df[['date', 'price']].rename(columns={'price': symbol.lower()})
-            temp_df[symbol.lower()] = pd.to_numeric(temp_df[symbol.lower()], errors='coerce')
+            temp_df['date'] = pd.to_datetime(temp_df['date'])
 
+            max_date = temp_df['date'].max()
+            two_days_ago = (max_date - timedelta(days=2)).strftime('%Y-%m-%d')
+            print(f"Cleaning {name} records from {two_days_ago} onwards...")
+
+            supabase.table("oilprices") \
+                    .delete() \
+                    .eq("commodity", name) \
+                    .gte("date", two_days_ago) \
+                    .execute()
+            
+
+            records_df = temp_df[['ticker', 'date', 'price', 'commodity']].copy()
+            records_df['date'] = records_df['date'].dt.strftime('%Y-%m-%d')
+
+            # 5. Convert to dict and upload
+            records = records_df.to_dict(orient='records')
+            supabase.table("oilprices").upsert(
+                records, 
+                on_conflict="ticker,date", # Matches your unique constraint columns
+                ignore_duplicates=True      # Skips the row if it already exists
+            ).execute()
+
+
+            
+
+            temp_df['date'] = temp_df['date'].dt.date
+            temp_df = temp_df[['date', 'price']].rename(columns={'price': symbol.lower()})
+            temp_df = temp_df.sort_values('date').drop_duplicates(subset=['date'], keep='last')
+            temp_df[symbol.lower()] = pd.to_numeric(temp_df[symbol.lower()], errors='coerce')
+            
             # Merge into the main DataFrame
             if combined_df is None:
                 combined_df = temp_df
@@ -297,18 +338,185 @@ def get_multiple_historical_data(symbols_list=["DB", "QA", "OQ"]):
             'qa': 'Brent',
             'oq': 'Oman'
         })    
+        
         return combined_df
     
 
 
     return pd.DataFrame()
 
+def get_multiple_historical_intraday_data(symbols_list=["DB", "QA", "OQ"], commodity_name=["Murban", "Brent", "Oman"]):
+    session = requests.Session()
+    headers = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:148.0) Gecko/20100101 Firefox/148.0"}
+    
+    # Handshake
+    session.get("https://www.barchart.com/", headers=headers, impersonate="firefox144")
+    xsrf_token = unquote(session.cookies.get("XSRF-TOKEN", ""))
+
+    all_data = []
+
+    # The NEW URL you discovered
+    ASHX_URL = "https://www.barchart.com/proxies/timeseries/historical/queryminutes.ashx"
+
+    for symbol, name in zip(symbols_list, commodity_name):
+        # Using the front month (or root symbol with nearby suffix)
+        try:
+            res = supabase.table("oilprices") \
+                .select("ticker") \
+                .eq("commodity", name) \
+                .order("date", desc=True) \
+                .limit(1) \
+                .execute()
+            
+            if res.data and len(res.data) > 0:
+                ticker = res.data[0]['ticker']
+                print(f"🔍 Found latest ticker for {name} in DB: {ticker}")
+            else:
+                
+                print(f"⚠️ No ticker in DB for {name}. Skipping {name}.")
+                continue
+        except Exception as e:
+            
+            print(f"❌ Supabase lookup failed: {e}. Skipping {name}.")
+            continue
+
+        params = {
+            "symbol": ticker,
+            "interval": "5",          # 5-minute bars
+            "maxrecords": "500",      # Last 500 minutes
+            "volume": "contract",
+            "order": "asc",
+            "daystoexpiration": "1",
+            "contractroll": "combined"
+        }
+        
+        api_headers = {
+            **headers,
+            "x-xsrf-token": xsrf_token,
+            "Referer": f"https://www.barchart.com/futures/quotes/{ticker}/overview"
+        }
+
+        response = session.get(ASHX_URL, params=params, headers=api_headers, impersonate="firefox144")
+
+        if response.status_code == 200 and response.text:
+            # The .ashx endpoint returns text/plain CSV data
+            # Format is usually: Symbol, Timestamp, Open, High, Low, Close, Volume
+            from io import StringIO
+            
+            # Use read_csv but handle the fact it has no header
+            try:
+
+                df = pd.read_csv(
+                        StringIO(response.text), 
+                        header=None, 
+                        names=['raw_time', 'day_num', 'open', 'high', 'low', 'price', 'volume']
+                    )
+                    
+                # 2. Fix the Index shift
+                # If the date string is stuck in the index, move it to 'date_string'
+                if not isinstance(df.index, pd.RangeIndex):
+                    df = df.reset_index()
+                    df.rename(columns={df.columns[0]: 'date_string'}, inplace=True)
+                else:
+                    df['date_string'] = df['raw_time']
+
+                # 3. CONVERT THE CORRECT COLUMN
+                # We use the 'date_string' column which has "2026-02-03 20:55"
+                df['formatted_date'] = pd.to_datetime(df['date_string']).dt.strftime('%Y-%m-%d %H:%M:%S')
+                
+                # 4. Final selection with the correct 'name' variable from your loop
+                records_df = pd.DataFrame()
+                records_df['ticker'] = [ticker] * len(df)
+                records_df['datetime'] = df['formatted_date']
+                records_df['price'] = df['price']
+                records_df['commodity'] = name # This 'name' comes from your for-loop zip
+                
+
+                # 5. Convert to dict and upload
+                records = records_df.to_dict(orient='records')
+                #print(records)
+
+                supabase.table("oilprices_intraday").upsert(
+                    records, 
+                    on_conflict="ticker,datetime", # Matches your unique constraint columns
+                    ignore_duplicates=True      # Skips the row if it already exists
+                ).execute()
+
+
+                print(records_df)
+     
+                #print(f"✅ Retrieved {len(records)} CSV rows for {name}")
+                
+            except Exception as e:
+                print(f"⚠️ Parsing error for {name}: {e}. Response was: {response.text[:50]}")
+
+    return pd.DataFrame(all_data)
+
+def export_spreads_to_json(filename="oil_spreads_intraday.json"):
+    try:
+        # 1. Call the RPC function we created in Step 1
+        response = supabase.rpc("get_oil_spreads").execute()
+        
+        # 2. Extract the data
+        data = response.data # This is already a list of dictionaries
+        if not data:
+            print("⚠️ No synchronized data found for Murban and Brent.")
+            return
+
+        new_df = pd.DataFrame(data)
+        keys_to_track = ['datetime']
+        if os.path.exists(filename):
+            os.remove(filename)
+
+        update_persistent_json(
+                    new_df=new_df, 
+                    filename=filename, 
+                    keys=keys_to_track, 
+                    rolling_days=0
+                )
+            
+        print(f"✅ Successfully saved {len(data)} rows to {filename}")
+
+    except Exception as e:
+        print(f"❌ Error: {e}")
+
+def export_historical_spreads_encrypted(filename="oil_prices_spread.json"):
+    try:
+        # 1. Execute the SQL via RPC
+        # This returns the pivoted data with spreads already calculated
+        response = supabase.rpc("get_historical_spreads").execute()
+        
+        if not response.data:
+            print("⚠️ No historical data returned from Supabase.")
+            return
+
+        # 2. Load into DataFrame
+        df = pd.DataFrame(response.data)
+
+        # 3. Handle Overwrite Logic
+        # If you want a clean overwrite every time, delete the file if it exists
+        if os.path.exists(filename):
+            os.remove(filename)
+            print(f"🗑️ Cleaned old {filename} for fresh overwrite.")
+
+        # 4. Save using your persistent encryption function
+        # We use keys=['date'] to ensure uniqueness if the file were to persist
+        update_persistent_json(
+            new_df=df, 
+            filename=filename, 
+            keys=['date'], 
+            rolling_days=0
+        )
+        
+        print(f"✅ Historical spreads encrypted and saved to {filename}")
+
+    except Exception as e:
+        print(f"❌ Failed to export historical spreads: {e}")
 
 
 if __name__ == "__main__":
-    HistoricalData = get_multiple_historical_data()
-    if not HistoricalData.empty:
-        # Update the persistent JSON file
-        update_persistent_json(HistoricalData, "oil_prices_spread.json", keys=['date'], rolling_days=3)
-    print(HistoricalData)
-    update_intraday_oil()
+    get_multiple_historical_data() # Get end of day prices 
+    export_historical_spreads_encrypted() # Save to json from supabase
+    #print(HistoricalData)
+    get_multiple_historical_intraday_data() # Get itnraday prices 
+    export_spreads_to_json() # Save to json
