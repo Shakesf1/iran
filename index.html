@@ -652,9 +652,6 @@ async function renderOilSpread() {
         // Use the same descramble logic as BDTI
         fullOilData = descramble(encrypted.payload); 
 
-        console.log("DEBUG: Unencrypted Data (First 2 rows):", fullOilData?.slice(0, 2));
-        console.log("DEBUG: Total rows unencrypted:", fullOilData?.length);
-
         fullOilData.sort((a, b) => new Date(a.date) - new Date(b.date));
         
         // Default to 3M view to match BDTI default
