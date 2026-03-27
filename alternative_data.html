@@ -1,236 +1,718 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://warescalation.com/">
+    <meta property="og:title" content="Iran War: Escalation Monitor - Real-Time Conflict Tracking">
+    <meta property="og:description" content="Monitoring who is actually winning the Iran War through real-time data on regional defense cost-asymmetry and maritime risk.">
+    <meta property="og:image" content="https://warescalation.com/preview_thumbnail.png">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://warescalation.com/">
+    <meta property="twitter:title" content="Iran War: Escalation Monitor - Real-Time Conflict Tracking">
+    <meta property="twitter:description" content="Monitoring who is actually winning the Iran War through real-time data on regional defense cost-asymmetry and maritime risk.">
+    <meta property="twitter:image" content="https://warescalation.com/preview_thumbnail.png">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intelligence & Markets Dashboard</title>
-    <script src="https://cdn.plot.ly/plotly-basic-2.27.0.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="monitor_core.js"></script>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>Iran War: Escalation Monitor - Real-Time Conflict Tracking</title>
+    
     <style>
-        .pulse { animation: pulse-animation 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
         @keyframes pulse-animation {
             0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.7); }
             100% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
         }
-        /* Fix to ensure charts match container widths */
-        .js-plotly-plot { width: 100% !important; }
+
+        .signup-container {
+            background: linear-gradient(145deg, #1a1a1c, #111);
+            border: 1px solid #333;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .monitor-tag {
+            font-size: 10px;
+            color: #e63946;
+            border: 1px solid #e63946;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        h2 { color: #fff; margin-bottom: 10px; font-weight: 700; }
+        p { color: #888; font-size: 0.9rem; margin-bottom: 25px; }
+
+        .input-stack { display: flex; flex-direction: column; gap: 15px; }
+
+        input {
+            width: 100%;
+            background: #000;
+            border: 1px solid #444;
+            padding: 14px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #e63946;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+
+        button:hover { background: #ff4d5a; transform: scale(1.02); }
+        .status-msg { margin-top: 15px; font-size: 0.8rem; height: 1rem; }
+
+        /* Background overlay */
+        .modal {
+        display: none; 
+        position: fixed; 
+        z-index: 1000; 
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.6); /* Dimmed background */
+        }
+
+        /* Modal Box */
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto; 
+            padding: 40px;          /* This creates the inner "breathing room" */
+            border-radius: 8px;
+            width: 90%;             /* Use a percentage for responsiveness */
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            
+            /* CRITICAL FIXES */
+            text-align: left !important; 
+            display: block !important; 
+        }
+
+        .modal-content section {
+            text-align: left !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+        }
+
+        /* Close Button */
+        .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        }
+
+        .close:hover { color: #000; }        
+
+        .styled-link {
+            color: #1a0dab; /* Blue color for links */
+            text-decoration: underline; /* Underline to mimic a link */
+            cursor: pointer; /* Pointer cursor on hover */
+        }
+        .styled-link:hover {
+            color: #551a8b; /* Change color on hover */
+        }
+        
     </style>
 </head>
+
+    <script src="https://cdn.plot.ly/plotly-basic-2.27.0.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>    
+<script src="monitor_core.js"></script>
+
+
 <body class="bg-slate-50 text-slate-900 p-4 md:p-8">
+
+
+
+
     <div class="max-w-6xl mx-auto">
+<header class="mb-12 border-b border-slate-200 pb-8">
+
+    <div class="flex flex-col md:flex-row justify-between items-start gap-6">
         
-        <header class="mb-12 border-b border-slate-200 pb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-4xl font-extrabold tracking-tight text-slate-800 italic">INTEL OPS</h1>
-                <p class="text-slate-500 font-mono text-xs mt-2 uppercase tracking-widest">Global Chokepoint & Market Monitor</p>
-            </div>
-            <div class="text-right font-mono text-[10px] text-slate-400">
-                LAST SYNC: <span id="last-update" class="text-slate-800 font-bold">--:--</span>
-            </div>
-        </header>
 
-        <section class="mb-16">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <p class="text-[10px] font-bold uppercase text-slate-400 mb-4 tracking-widest">24H Bab-el-Mandeb (vs Prev 24H)</p>
-                    <div class="space-y-6">
-                        <div>
-                            <div class="flex justify-between items-end mb-1">
-                                <span class="text-xs font-bold text-slate-500">NORTHBOUND</span>
-                                <span class="text-emerald-500 text-[10px]">▲</span>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <span class="text-[9px] text-slate-400 uppercase font-bold">VLCC</span>
-                                    <div class="flex items-baseline gap-1">
-                                        <span id="n-vlcc" class="text-2xl font-black text-slate-800">0</span>
-                                        <span id="n-vlcc-delta" class="text-[10px] text-slate-400">(0)</span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <span class="text-[9px] text-slate-400 uppercase font-bold">Cargo</span>
-                                    <div class="flex items-baseline gap-1">
-                                        <span id="n-cargo" class="text-2xl font-black text-slate-800">0</span>
-                                        <span id="n-cargo-delta" class="text-[10px] text-slate-400">(0)</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pt-4 border-t border-slate-100">
-                            <div class="flex justify-between items-end mb-1">
-                                <span class="text-xs font-bold text-slate-500">SOUTHBOUND</span>
-                                <span class="text-red-500 text-[10px]">▼</span>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <span class="text-[9px] text-slate-400 uppercase font-bold">VLCC</span>
-                                    <div class="flex items-baseline gap-1">
-                                        <span id="s-vlcc" class="text-2xl font-black text-slate-800">0</span>
-                                        <span id="s-vlcc-delta" class="text-[10px] text-slate-400">(0)</span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <span class="text-[9px] text-slate-400 uppercase font-bold">Cargo</span>
-                                    <div class="flex items-baseline gap-1">
-                                        <span id="s-cargo" class="text-2xl font-black text-slate-800">0</span>
-                                        <span id="s-cargo-delta" class="text-[10px] text-slate-400">(0)</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <p class="text-[10px] font-bold uppercase text-slate-400 mb-4 tracking-widest">Daily Crossing Volume</p>
-                    <div id="bab-history-chart" class="h-48 w-full"></div>
-                </div>
+        <div class="max-w-3xl">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-1">
+                <h1 class="text-4xl font-extrabold tracking-tight text-slate-800">War Escalation: Polymarket and Bab Al-Mandeb</h1>
+                <nav class="flex gap-3 text-sm font-semibold">
+                    <a href="index.html" class="text-slate-900 border-b-2 border-red-500 pb-0.5">Main Page</a>
+                    <a href="alternative_data.html" class="text-slate-500 hover:text-slate-800 transition-colors">Polymarket & Bab Al-Mandeb</a>
+                    <a href="articles.html" class="text-slate-500 hover:text-slate-800 transition-colors">Articles</a>
+                </nav>
             </div>
-        </section>
+            <p class="text-slate-600 text-lg leading-relaxed">
+                This page provides a deep dive into the alternative data sources we use to track the Iran War escalation. We cover our Polymarket tracking methodology, which captures real-time market sentiment on key conflict outcomes, as well as our analysis of maritime traffic through the Bab Al-Mandeb strait, a critical chokepoint for global energy supplies. By monitoring these unconventional indicators, we aim to provide a more nuanced and timely picture of the conflict dynamics beyond traditional news reporting.
+            </p>
+        </div>
 
-        <section>
-            <h2 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-3">
-                <span class="bg-blue-600 text-white px-3 py-1 rounded text-lg italic">POLY</span>
-                MARKET INTELLIGENCE
-            </h2>
-            <div id="poly-events-container" class="space-y-12">
-                </div>
-        </section>
+        <div class="bg-white border border-slate-200 rounded-lg px-4 py-2 shadow-sm text-sm min-w-[220px] md:mt-2">
+            <div class="flex items-center gap-2 mb-1">
+                <span id="status-dot" class="h-2 w-2 rounded-full bg-emerald-500 pulse"></span>
+                <span id="status-text" class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live:</span>
+            </div>
+            
+            <p class="text-slate-500 text-[11px]">
+                <span class="border-b border-dotted border-slate-300">Polymarket</span>: 
+                <span id="poly_update" class="font-medium text-slate-800">Loading...</span>
+            </p>
+            
+            <p class="text-slate-500 text-[11px]">
+                <span class="border-b border-dotted border-slate-300">Shipping Data</span>: 
+                <span id="ais-last-update" class="font-medium text-slate-800">Loading...</span>
+            </p>
+
+            <span id="aboutBtn" style="
+                color: #666; 
+                cursor: pointer; 
+                font-size: 0.85em; 
+                text-decoration: underline; 
+                margin-left: 0px;
+                display: inline-block;
+                transition: none !important;
+                transform: none !important;
+                font-family: inherit;
+            ">About, Methodology & Sources  </span>
+
+        </div>
+    </div>
+</header>
+
+
+<div class="bg-white backdrop-blur-md rounded-xl p-6 mb-6">
+    <h3 class="text-blue-500 text-lg font-semibold mb-4">
+        NEWSLETTER
+    </h3>
+    <p>Sign-up for the Warescalation Newsletter! Irregular frequency, only for important updates. No spam, we promise.</p><br/>
+    
+    <div class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
+            <input type="email" id="subEmail" placeholder="Email Address" required 
+                class="bg-gray-100 border-none rounded-lg p-3 text-gray-900 text-sm placeholder-gray-500 focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+
+        <button onclick="handleSubscribe()" id="subBtn" 
+            class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-colors duration-200 uppercase tracking-wider text-xs">
+            Submit
+        </button>
+
+        <p id="subStatus" class="text-center text-xs mt-2 min-h-[1rem]"></p>
+    </div>
+</div>
+
+
+<div id="maritime-summary" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 text-center md:text-left">VLCC Transits (Last 24h)</h3>
+        <div class="flex justify-around items-center">
+            <div class="text-center">
+                <span id="vlcc-north" class="block text-2xl font-black text-emerald-600">0</span>
+                <span class="text-[10px] uppercase text-slate-500">Northbound</span>
+            </div>
+            <div class="h-8 border-l border-slate-200"></div>
+            <div class="text-center">
+                <span id="vlcc-south" class="block text-2xl font-black text-red-600">0</span>
+                <span class="text-[10px] uppercase text-slate-500">Southbound</span>
+            </div>
+        </div>
     </div>
 
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 text-center md:text-left">General Cargo Transits (Last 24h)</h3>
+        <div class="flex justify-around items-center">
+            <div class="text-center">
+                <span id="cargo-north" class="block text-2xl font-black text-emerald-600">0</span>
+                <span class="text-[10px] uppercase text-slate-500">Northbound</span>
+            </div>
+            <div class="h-8 border-l border-slate-200"></div>
+            <div class="text-center">
+                <span id="cargo-south" class="block text-2xl font-black text-red-600">0</span>
+                <span class="text-[10px] uppercase text-slate-500">Southbound</span>
+            </div>
+        </div>
+    </div>
+</div>
+<p class="text-[10px] text-slate-400 italic px-1 -mt-2 mb-8">Value in brackets is the difference vs. the previous 24-hour window.</p>
+
+
+<section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+    <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Bab Al-Mandeb Gate: VLCC/VLGC Transits (Crude Oil)</h2>
+    <p class="text-slate-500 text-sm italic">Vessel transit estimates are derived from AIS position snapshots. A vessel is counted as a chokepoint transit when sequential positions are observed on opposite sides of a defined geofence surrounding the Bab Al-Mandeb Strait. Erroneous data is filtered out based on geo data. </p>
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
+        <div>
+            <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
+            <div id="vlccDailyChart" class="w-full h-[350px]"></div>
+        </div>
+    </div>
+</section>
+
+<section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+    <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Bab Al-Mandeb Gate: General Cargo Transits</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
+        <div>
+            <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
+            <div id="cargoDailyChart" class="w-full h-[350px]"></div>
+        </div>
+    </div>
+</section>
+
+    </div>
+
+
+<script>
+// This function waits for the full page to load before running
+window.onload = function() {
+    const modal = document.getElementById("aboutModal");
+    const btn = document.getElementById("aboutBtn"); // This now finds the <span>
+    const span = document.getElementsByClassName("close")[0];
+
+    if (btn) {
+        btn.onclick = function() { 
+            modal.style.display = "block"; 
+        }
+    }
+
+    if (span) {
+        span.onclick = function() { 
+            modal.style.display = "none"; 
+        }
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+};
+</script>
+
+
     <script>
-        async function initDashboard() {
-            try {
-                const response = await fetch('dashboard_stats.json');
-                const encryptedData = await response.json();
-                const stats = descramble(encryptedData.payload); 
-                
-                document.getElementById('last-update').innerText = new Date(stats.calculated_at).toLocaleTimeString();
 
-                renderShipping(stats.bab_crossings);
-                await renderPolymarket();
-            } catch (err) { console.error(err); }
-        }
 
-        function renderShipping(crossings) {
-            const now = new Date();
-            const msInDay = 24 * 60 * 60 * 1000;
-            
-            const window1 = crossings.filter(c => (now - new Date(c.time)) <= msInDay);
-            const window2 = crossings.filter(c => {
-                const age = now - new Date(c.time);
-                return age > msInDay && age <= (msInDay * 2);
-            });
 
-            const getCounts = (arr) => ({
-                nv: arr.filter(c => c.dir === 'NORTHBOUND' && c.ship_type === 'VLCC').length,
-                nc: arr.filter(c => c.dir === 'NORTHBOUND' && c.ship_type !== 'VLCC').length,
-                sv: arr.filter(c => c.dir === 'SOUTHBOUND' && c.ship_type === 'VLCC').length,
-                sc: arr.filter(c => c.dir === 'SOUTHBOUND' && c.ship_type !== 'VLCC').length,
-            });
 
-            const cur = getCounts(window1);
-            const pre = getCounts(window2);
+const layoutBase = {
+    margin: { t: 10, r: 10, b: 40, l: 40 },
+    dragmode: false,
+    hovermode: 'x unified',
+    hoverdistance: 100,
+    font: { family: 'Inter, sans-serif' },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    xaxis: { 
+        gridcolor: '#f1f5f9', 
+        zeroline: false, 
+        fixedrange: true,
+        tickangle: -45,   // Slant dates to prevent overlap
+        automargin: true  // Give space for the slanted dates
+    },
+    yaxis: { gridcolor: '#f1f5f9' , fixedRange: true  },
+    // WATERMARK ADDITION
+    annotations: [{
+        text: 'WARESCALATION.COM',
+        xref: 'paper',
+        yref: 'paper',
+        x: 0.5,
+        y: 0.5,
+        showarrow: false,
+        font: {
+            size: 30,
+            color: 'rgba(150, 150, 150, 0.1)' // Very faint transparent watermark
+        },
+        textangle: -30
+    }]
+};
 
-            document.getElementById('n-vlcc').innerText = cur.nv;
-            document.getElementById('n-vlcc-delta').innerText = `(${pre.nv})`;
-            document.getElementById('n-cargo').innerText = cur.nc;
-            document.getElementById('n-cargo-delta').innerText = `(${pre.nc})`;
-            document.getElementById('s-vlcc').innerText = cur.sv;
-            document.getElementById('s-vlcc-delta').innerText = `(${pre.sv})`;
-            document.getElementById('s-cargo').innerText = cur.sc;
-            document.getElementById('s-cargo-delta').innerText = `(${pre.sc})`;
 
-            // Daily History Chart
-            const grouped = {};
-            crossings.forEach(c => {
-                const day = c.time.split('T')[0];
-                if (!grouped[day]) grouped[day] = { n: [], s: [] };
-                c.dir === 'NORTHBOUND' ? grouped[day].n.push(c.name) : grouped[day].s.push(c.name);
-            });
+function groupTransitsByDay(crossings) {
+    if (!crossings || crossings.length === 0) return { days: [], data: {} };
 
-            const days = Object.keys(grouped).sort();
-            const traceN = {
-                x: days, y: days.map(d => grouped[d].n.length),
-                text: days.map(d => grouped[d].n.join(', ')),
-                name: 'NORTH', type: 'bar', marker: {color: '#10b981'}
+    const dailyGroups = {};
+    
+    // Initialize groups for the last 30 days or available range
+    crossings.forEach(c => {
+        if (!c.time) console.warn("Missing transit_time in:", c);
+        const dStr = c.time.split(' ')[0]; // Extract YYYY-MM-DD
+        if (!dailyGroups[dStr]) {
+            dailyGroups[dStr] = { 
+                NORTHBOUND: 0, 
+                SOUTHBOUND: 0, 
+                northShips: [], 
+                southShips: [] 
             };
-            const traceS = {
-                x: days, y: days.map(d => grouped[d].s.length),
-                text: days.map(d => grouped[d].s.join(', ')),
-                name: 'SOUTH', type: 'bar', marker: {color: '#ef4444'}
-            };
-
-            Plotly.newPlot('bab-history-chart', [traceN, traceS], {
-                barmode: 'group',
-                margin: { t: 5, r: 5, b: 25, l: 25 },
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                showlegend: false,
-                xaxis: { tickfont: {size: 9}, gridcolor: '#f1f5f9' },
-                yaxis: { tickfont: {size: 9}, gridcolor: '#f1f5f9' }
-            }, {responsive: true, displayModeBar: false});
         }
+        
+        const timeOnly = c.time.split(' ')[1]; // Extract HH:MM
+        dailyGroups[dStr][c.dir]++;
+        
+        // Save the ship details for the hover
+        const shipDetail = `${c.name} (${timeOnly})`;
+        if (c.dir === 'NORTHBOUND') dailyGroups[dStr].northShips.push(shipDetail);
+        else dailyGroups[dStr].southShips.push(shipDetail);
+    });
 
-        async function renderPolymarket() {
-            const [metaRes, seriesRes] = await Promise.all([fetch('poly_metadata.json'), fetch('poly_series.json')]);
-            const meta = await metaRes.json();
-            const series = await seriesRes.json();
-            const container = document.getElementById('poly-events-container');
+    return { days: Object.keys(dailyGroups).sort(), data: dailyGroups };
+}
 
-            // Group Markets by Event
-            const events = {};
-            meta.events.forEach(e => {
-                events[e.id] = { title: e.title, markets: [] };
-            });
-            meta.markets.forEach(m => {
-                if (events[m.event_id]) events[m.event_id].markets.push(m);
-            });
 
-            container.innerHTML = '';
+const SUPABASE_URL = 'https://tyktxwlekvvdjftkexzd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_1MjwD_-NQUnW7M3obTljwA_b8yIfI2x';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function handleSubscribe() {
+    const name = null;
+    const email = document.getElementById('subEmail').value.trim();
+    const btn = document.getElementById('subBtn');
+    const status = document.getElementById('subStatus');
+
+    if (!email) {
+        status.innerText = "Email is required.";
+        status.className = "text-center text-xs mt-2 text-red-400";
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "SENDING...";
+
+    try {
+        const { error } = await _supabase
+            .from('subscribers')
+            .insert([{ email: email, name: name || null }]);
+
+        if (error) {
+            if (error.code === '23505') {
+                status.innerText = "Already subscribed.";
+                status.className = "text-center text-sm mt-2 text-blue-400";
+            } else {
+                throw error;
+            }
+        } else {
+            status.innerText = "Success! Thank you for subscribing.";
+            status.className = "text-center text-sm mt-2 text-blue-400";
+ 
+            document.getElementById('subEmail').value = "";
+        }
+    } catch (err) {
+        status.innerText = "Error. Try again.";
+        status.className = "text-center text-xs mt-2 text-red-400";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "SUBMIT";
+    }
+}
+
+function updateStatus(msg, color) {
+    const status = document.getElementById('subStatus');
+    status.innerText = msg;
+    status.style.color = color;
+}
+
+
+function renderDailyTransitChart(crossings, targetId) {
+    const { days, data } = groupTransitsByDay(crossings);
+    
+    const directions = [
+        { key: 'NORTHBOUND', shipKey: 'northShips', color: '#f43f5e', name: 'Northbound' },
+        { key: 'SOUTHBOUND', shipKey: 'southShips', color: '#10b981', name: 'Southbound' }
+    ];
+
+const traces = directions.map(d => ({
+    x: days,
+    y: days.map(day => data[day][d.key]),
+    name: d.name,
+    type: 'bar',
+    marker: { color: d.color },
+    
+    // GENERATE ALIGNED TEXT COLUMNS
+    customdata: days.map(day => {
+        const ships = data[day][d.shipKey];
+        if (!ships || ships.length === 0) return "";
+        
+        let columnText = "";
+        const COLUMN_WIDTH = 20; // Adjust based on longest ship name
+
+        for (let i = 0; i < ships.length; i += 2) {
+            let col1 = "• " + ships[i];
+            let col2 = ships[i+1] ? "• " + ships[i+1] : "";
             
-            Object.values(events).forEach(event => {
-                if (event.markets.length === 0) return;
+            // Pad col1 with non-breaking spaces to create a column effect
+            let padding = "";
+            if (col1.length < COLUMN_WIDTH) {
+                padding = "&nbsp;".repeat(COLUMN_WIDTH - col1.length);
+            }
+            
+            columnText += col1 + padding + col2 + "<br>";
+        }
+        return columnText;
+    }),
 
-                const eventDiv = document.createElement('div');
-                eventDiv.className = "bg-white p-8 rounded-2xl border border-slate-200 shadow-sm";
-                eventDiv.innerHTML = `<h3 class="text-xl font-black text-slate-800 mb-6 uppercase tracking-tight border-l-4 border-blue-600 pl-4">${event.title}</h3>
-                                      <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="event-grid-${event.title.replace(/\s+/g, '')}"></div>`;
-                container.appendChild(eventDiv);
+    hoverlabel: {
+        namelength: -1,
+        bgcolor: "#FFF",
+        // MONOSPACE IS CRITICAL FOR ALIGNMENT
+        font: { size: 8, family: 'monospace', color: '#334155' },
+        align: 'left'
+    },
+    
+    hovertemplate: 
+        `<b>%{y} ${d.name}</b><br><br>` +
+        `%{customdata}<extra></extra>`
+}));
 
-                const grid = eventDiv.querySelector('div');
+    const layout = {
+        ...layoutBase,
+        barmode: 'stack',
+        legend: { orientation: "h", y: -0.2, x: 0.5, xanchor: 'center' },
+        xaxis: { type: 'date', gridcolor: '#f1f5f9', fixedrange: true, tickformat: '%d %b' },
+        yaxis: { gridcolor: '#f1f5f9', fixedrange: true} // dtick 1 for clearer small counts
+    };
 
-                // Sort markets by label (chronologically if dates are in labels)
-                event.markets.sort((a, b) => a.label.localeCompare(b.label, undefined, {numeric: true}));
+    Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
+}
 
-                event.markets.forEach(market => {
-                    const mData = series.filter(s => s.market_id === market.market_id).sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
-                    if (mData.length < 2) return;
 
-                    const mDiv = document.createElement('div');
-                    mDiv.innerHTML = `<p class="text-[10px] font-bold text-slate-400 uppercase mb-2">${market.label}</p>
-                                      <div id="chart-${market.market_id}" class="h-32 w-full"></div>`;
-                    grid.appendChild(mDiv);
+function renderTransitChart(crossings, targetId, labelPrefix) {
+    if (!crossings || crossings.length === 0) return;
 
-                    Plotly.newPlot(`chart-${market.market_id}`, [{
-                        x: mData.map(d => d.created_at),
-                        y: mData.map(d => d.probability),
-                        type: 'scatter', mode: 'lines',
-                        line: { color: '#3b82f6', width: 2, shape: 'hv' },
-                        fill: 'tozeroy', fillcolor: 'rgba(59, 130, 246, 0.05)'
-                    }], {
-                        margin: { t: 5, r: 5, b: 20, l: 30 },
-                        xaxis: { showgrid: false, tickfont: {size: 8} },
-                        yaxis: { gridcolor: '#f8fafc', ticksuffix: '%', tickfont: {size: 8} },
-                        paper_bgcolor: 'rgba(0,0,0,0)',
-                        plot_bgcolor: 'rgba(0,0,0,0)'
-                    }, {responsive: true, displayModeBar: false});
-                });
+    // 1. Find the time bounds
+    const times = crossings.map(c => new Date(c.time));
+    let current = new Date(Math.min(...times));
+    current.setMinutes(0, 0, 0); // Round down to start of the hour
+    const end = new Date(); // Go up to the current real-world hour
+    end.setMinutes(0, 0, 0);
+
+    // 2. Generate the full hourly spine
+    const hourlyGroups = {};
+    while (current <= end) {
+        const hourStr = current.toISOString().split('T')[0] + " " + 
+                        current.getHours().toString().padStart(2, '0') + ":00";
+        hourlyGroups[hourStr] = { NORTHBOUND: [], SOUTHBOUND: [] };
+        current.setHours(current.getHours() + 1);
+    }
+
+    // 3. Map actual data into the spine
+    crossings.forEach(c => {
+        const hourStr = c.time.split(':')[0] + ":00";
+        if (hourlyGroups[hourStr]) {
+            hourlyGroups[hourStr][c.dir].push(c.name);
+        }
+    });
+
+    const sortedHours = Object.keys(hourlyGroups).sort();
+    const directions = [
+        { key: 'NORTHBOUND', color: '#f43f5e', name: 'Northbound' },
+        { key: 'SOUTHBOUND', color: '#10b981', name: 'Southbound' }
+    ];
+
+    const traces = directions.map(d => ({
+        x: sortedHours,
+        y: sortedHours.map(h => hourlyGroups[h][d.key].length),
+        name: d.name,
+        type: 'bar',
+        marker: { color: d.color },
+        customdata: sortedHours.map(h => hourlyGroups[h][d.key].join('<br>') || "No Transits"),
+        hovertemplate: `<b>%{y} ${labelPrefix}</b><br>%{customdata}<extra></extra>`
+    }));
+
+const layout = {
+        barmode: 'stack',
+        margin: { t: 10, r: 10, b: 60, l: 40 },
+        hovermode: 'x unified',
+        font: { family: 'Inter, sans-serif' },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        legend: { orientation: "h", y: -0.3, x: 0.5, xanchor: 'center' }, // MOVE TO BOTTOM
+        annotations: layoutBase.annotations,
+        xaxis: { 
+            gridcolor: '#f1f5f9',
+            tickformat: '%d %b\n%H:%M',
+            tickangle: 0,
+            automargin: true,
+            fixedrange: true 
+        },
+        yaxis: { gridcolor: '#f1f5f9', dtick: 1, fixedrange: true }
+    };
+
+    Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
+}
+
+async function loadCharts() {
+    try {
+
+        const shippingRes = await fetch('./dashboard_stats.json');
+
+        const shippingData = descramble((await shippingRes.json()).payload);
+            
+
+
+        const vlccData = shippingData.bab_crossings.filter(c => c.ship_type === 'VLCC');
+        const cargoData = shippingData.bab_crossings.filter(c => c.ship_type === 'Cargo');
+
+        // Render the Daily Maritime Charts
+        renderDailyTransitChart(vlccData, 'vlccDailyChart');
+        renderDailyTransitChart(cargoData, 'cargoDailyChart');
+
+        // Update the 24h Summary numbers at the top
+        const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const prev24h = new Date(Date.now() - 48 * 60 * 60 * 1000);
+
+
+        const get24hCount = (data, direction) => data.filter(c => 
+            new Date(c.time) >= last24h && c.dir === direction
+        ).length;
+        const getPrev24hCount = (data, direction) => data.filter(c => 
+            new Date(c.time) >= prev24h && new Date(c.time) < last24h && c.dir === direction
+        ).length;
+
+        const formatDelta = (current, previous) => {
+            const delta = current - previous;
+            if (delta > 0) return `<span style="font-size:0.65em; font-weight:700; color:#16a34a">(+${delta})</span>`;
+            if (delta < 0) return `<span style="font-size:0.65em; font-weight:700; color:#dc2626">(${delta})</span>`;
+            return `<span style="font-size:0.65em; font-weight:600; color:#94a3b8">(±0)</span>`;
+        };
+
+        const setCount = (id, current, prev) => {
+            document.getElementById(id).innerHTML = `${current} ${formatDelta(current, prev)}`;
+        };
+
+
+
+
+        setCount('vlcc-north',  get24hCount(vlccData, 'NORTHBOUND'),  getPrev24hCount(vlccData, 'NORTHBOUND'));
+        setCount('vlcc-south',  get24hCount(vlccData, 'SOUTHBOUND'),  getPrev24hCount(vlccData, 'SOUTHBOUND'));
+        setCount('cargo-north', get24hCount(cargoData, 'NORTHBOUND'), getPrev24hCount(cargoData, 'NORTHBOUND'));
+        setCount('cargo-south', get24hCount(cargoData, 'SOUTHBOUND'), getPrev24hCount(cargoData, 'SOUTHBOUND'));
+
+        // Update timestamps
+        const rawTime = shippingData.latest_ais || shippingData.calculated_at;
+
+        if (rawTime) {
+            // Ensure the string has a 'Z' or ISO format so the browser knows it's UTC
+            // Replace space with 'T' and add 'Z' if not present
+            const isoTime = rawTime.includes('T') ? rawTime : rawTime.replace(' ', 'T') + 'Z';
+            
+            const dateObj = new Date(isoTime);
+            
+            document.getElementById('ais-last-update').innerText = dateObj.toLocaleString([], {
+                dateStyle: 'medium', 
+                timeStyle: 'short'
             });
         }
 
-        document.addEventListener('DOMContentLoaded', initDashboard);
+
+
+
+
+        const layout = { 
+            barmode: 'stack', 
+            margin: { t: 20, r: 20, b: 80, l: 40 }, 
+            hovermode: 'x unified', 
+            font: { family: 'Inter, sans-serif' },
+            paper_bgcolor: 'rgba(0,0,0,0)', 
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            legend: { orientation: "h", yanchor: "bottom", y: -0.4, xanchor: "center", x: 0.5 },
+            xaxis: { fixedrange: true },
+            yaxis: { fixedrange: true }
+        };
+
+
+    } catch (err) {
+        console.error("Error loading data:", err);
+        document.getElementById('status-text').innerText = "Sync Error";
+        document.getElementById('status-dot').className = "h-2 w-2 rounded-full bg-red-600";
+    }
+}
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadCharts();
+});
+
+// Refresh the entire page every 300 seconds
+setTimeout(function(){
+   window.location.reload();
+}, 300000); // 300,000 milliseconds = 300 seconds
+
     </script>
+
+
+
+
+<div id="aboutModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    
+    <header style="border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 20px;">
+        <h2>Strategic Pulse: Methodology</h2>
+        <p style="font-size: 1.2em; color: #666; font-weight: bold;">Quantitative metrics on Iran War</p>
+    </header>
+
+    <section>
+        <h3 style="font-weight: bold;">Author: Stan Verhoeven</h3>
+        <p>I started this page out of pure interest to get real-time insights into the Iran War and its impact on global markets (for investing purposes). On this dashboard I plot useful time-series data to gain a different perspective on the war and its impact on markets ahead.<br/><br/> I have a long track record in managing systematic portfolios across asset classes and specifically commodities. Lastly at Goldman Sachs.</p>
+        <br/>
+        <a href="https://www.linkedin.com/in/stanverhoeven/" target="_blank" style="color: #0077b5; text-decoration: none; font-weight: bold;">Professional credentials: LinkedIn.</a>
+    </section>
+
+    <section style="margin-top: 25px;">
+        <h3  style="font-weight: bold;">Signal Logic</h3>
+        <p>The <strong>Escalation Score</strong> utilizes an <strong>Expanding Window with Exponential Decay (EWMA)</strong> applying a <code>0.97 decay factor</code> on daily data (last day uses intraday update). Starting generally at beginning of the war, except for market metrics which start earlier to get a proper baseline. </p>
+        <p><br/>
+            <strong>Kinetic:</strong> Tracks strikes of Iran and its proxies. Initial baseline assumed at 0 prior to conflict. <br/>
+            <strong>Maritime:</strong> Monitors VLCC transits through Hormuz (Pre-war mean: 10).<br/>
+            <strong>Energy:</strong> Analyzes Murban-Brent spread as a localized risk premium indicator.<br/>
+            <strong>Shipping:</strong> Tracks BDTI log returns, incorporating insurance and freight volatility.<br/>
+        </p>
+        
+    </section>
+    
+    <section>
+        <br/>
+        <h3 class="text-lg font-bold text-slate-800 mb-4">Methodology & Data Sources</h3>
+        <div class="space-y-4 text-xs">
+            <p>
+                <strong>Multi-Source OSINT:</strong> Aggregated real-time intelligence from Telegram channels, Israeli Home Office Command alerts, and regional news wires. It tracks launch tempos and theater spread.
+            </p>
+            <p>
+                <strong>Baltic Exchange Data:</strong> Reflects daily cost fluctuations in crude shipping (BDTI). This captures the market's "Risk Premium," including insurance and security surcharges.
+            </p>
+            <p>
+                <strong>Shipping AIS (VLCC Tracking):</strong> Proprietary scraping of satellite/terrestrial AIS networks. This monitors VLCC movements through the Strait of Hormuz, a critical chokepoint for global oil supply. It provides near real-time insights into maritime activity and potential disruptions.
+            </p>
+        </div>
+    </section>
+
+  </div>
+</div>
+
+
+    <script data-goatcounter="https://shakes.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+
+
+
 </body>
 </html>
