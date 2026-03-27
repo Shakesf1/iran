@@ -260,6 +260,22 @@ def export_stats():
             "ship_type": r['out_ship_type']
         } for r in crossings_res.data
     ]
+
+    # 2. NEW: Fetch Bab el-Mandeb Crossings
+        # No parameters needed as the limits are hardcoded in the SQL function
+    bab_res = supabase.rpc('get_bab_el_mandeb_transits').execute()
+
+    bab_crossings = [
+        {
+            "time": r['transit_time'], 
+            "mmsi": r['ship_id'], 
+            "name": r['vessel_name'], 
+            "dir": r['transit_direction'],
+            "ship_type": r['vessel_class']
+        } for r in bab_res.data
+    ]
+
+
     
     # 2. Fetch Dormant Vessels via RPC
     dormant_res = supabase.rpc('get_dormant_vessels').execute()
@@ -286,6 +302,7 @@ def export_stats():
     raw_data = {
         "dormant": dormant, 
         "crossings": crossings,
+        "bab_crossings": bab_crossings,
         "calculated_at": datetime.now().isoformat(),
         "latest_ais": latest_ais
     }
