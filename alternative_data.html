@@ -290,6 +290,11 @@
         Market-implied probabilities. For multi-date events, we deduct earlier date probabilities to show the specific risk window for each period. Which means that if it is 10.5% for March 31, 11% for April 7th, then probability it ends before April 7th is 21.5% (since if it ends before March 31st it also ends before April 7th)
     </p>
     
+
+<div id="poly-summary-table" class="mb-8 overflow-x-auto bg-white rounded-lg border border-slate-200 shadow-sm">
+    </div>
+
+
     <div id="poly-charts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
 </section>
 
@@ -663,6 +668,27 @@ const [metaRes, polySeriesRes] = await Promise.all([
 const meta = await metaRes.json();
 const polySeries = await polySeriesRes.json();
 
+
+if (polySeries && polySeries.length > 0) {
+    // 1. Find the latest timestamp (assuming the first element or sorting)
+    // If polySeries is already sorted by date descending, use polySeries[0]
+    // Otherwise, find the max:
+    const latestPolyTime = polySeries.reduce((max, s) => 
+        new Date(s.created_at) > new Date(max) ? s.created_at : max, 
+        polySeries[0].created_at
+    );
+
+    if (latestPolyTime) {
+        const polyDateObj = new Date(latestPolyTime);
+        
+        // 2. Update the 'poly_update' span
+        document.getElementById('poly_update').innerText = polyDateObj.toLocaleString([], {
+            dateStyle: 'medium', 
+            timeStyle: 'short'
+        });
+    }
+}
+
 const grid = document.getElementById('poly-charts-grid');
 grid.innerHTML = ''; 
 
@@ -682,6 +708,103 @@ polySeries.forEach(s => {
     if (!eventData[eid][mid]) eventData[eid][mid] = [];
     eventData[eid][mid].push(s);
 });
+
+
+const summaryContainer = document.getElementById('poly-summary-table');
+const now = new Date();
+const twentyFourHoursAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+
+const marketChanges = [];
+const processedIds = new Set(); // FIX: Prevents double dates/entries
+
+// 1. Group series data by market for delta calculations
+const marketGroups = {};
+polySeries.forEach(s => {
+    if (!marketGroups[s.market_id]) marketGroups[s.market_id] = [];
+    marketGroups[s.market_id].push(s);
+});
+
+// 2. Loop through METADATA only (Single Pass)
+meta.markets.forEach(m => {
+    const mId = String(m.market_id);
+    if (processedIds.has(mId)) return;
+    processedIds.add(mId);
+
+    const history = marketGroups[mId];
+    if (!history || history.length === 0) return;
+
+    const latest = history[0];
+    const oldRecord = history.find(s => new Date(s.created_at) <= twentyFourHoursAgo) || history[history.length - 1];
+    
+    const eventMetaObj = meta.events.find(e => String(e.id) === String(m.event_id));
+    const change = latest.probability - oldRecord.probability;
+    const eventTitle = eventMetaObj ? eventMetaObj.title : 'General';
+
+    marketChanges.push({
+        event: eventTitle,
+        market: m.label,
+        current: latest.probability,
+        change: change,
+        isLeader: eventTitle.toLowerCase().includes('leader') // Flag for filtering
+    });
+});
+
+// 3. SMART SORT: Event -> (Date Sort or Probability DESC)
+marketChanges.sort((a, b) => {
+    if (a.event !== b.event) return a.event.localeCompare(b.event);
+    
+    // Attempt Date Sort (fixes March/April alphabetical issue)
+    const dA = Date.parse(a.market + " 2026"), dB = Date.parse(b.market + " 2026");
+    if (!isNaN(dA) && !isNaN(dB)) return dA - dB;
+    
+    // Fallback: Sort by Probability (Top Candidates first)
+    return b.current - a.current; 
+});
+
+// 4. Render HTML with Top 5 Filter
+let tableHTML = `<table class="min-w-full divide-y divide-slate-200 text-sm">
+    <thead class="bg-slate-50">
+        <tr>
+            <th class="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Event</th>
+            <th class="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Market</th>
+            <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Prob</th>
+            <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">24h Change</th>
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100 bg-white">`;
+
+let lastEvent = "";
+let leaderRank = 0;
+
+marketChanges.forEach(row => {
+    // Reset rank for new events
+    if (row.event !== lastEvent) { leaderRank = 0; }
+    
+    // TOP 5 LIMIT: Skip if it's a leader event and we already have 5
+    if (row.isLeader) {
+        leaderRank++;
+        if (leaderRank > 5) return;
+    }
+
+    const changeClass = row.change > 0 ? 'text-emerald-600' : row.change < 0 ? 'text-rose-600' : 'text-slate-400';
+    const displayEvent = row.event === lastEvent ? "" : row.event;
+    const borderClass = displayEvent !== "" ? "border-t-2 border-slate-100" : "";
+    lastEvent = row.event;
+
+    tableHTML += `
+        <tr class="${borderClass} hover:bg-slate-50 transition-colors">
+            <td class="px-4 py-2 font-bold text-slate-800 text-[10px] uppercase leading-tight">${displayEvent}</td>
+            <td class="px-4 py-2 text-slate-600 border-l border-slate-50">${row.market}</td>
+            <td class="px-4 py-2 text-right font-mono font-bold">${row.current.toFixed(1)}%</td>
+            <td class="px-4 py-2 text-right font-mono font-bold ${changeClass}">${row.change >= 0 ? '+' : ''}${row.change.toFixed(1)}%</td>
+        </tr>`;
+});
+
+tableHTML += `</tbody></table>`;
+summaryContainer.innerHTML = tableHTML;
+
+
+
 
 // 3. Render Charts
 Object.keys(eventData).forEach(eid => {
