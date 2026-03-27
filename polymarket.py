@@ -113,18 +113,16 @@ def git_push():
         # Move to the script's directory
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
         
-        # 1. Clear the decks: Stash anything not committed
-        os.system('git stash')
-        
+       
         # 2. Stage and commit your new JSON files
         os.system('git add poly_metadata.json poly_series.json')
         # We use a check to see if there's actually anything to commit
         os.system('git commit -m "data: update snapshots [skip ci]"')
-        
+        os.system('git stash')
         # 3. Integrated Pull: Rebase to put your new commit on top of the remote ones
         # --autostash handles any lingering unstaged changes automatically
         print("Pulling latest changes from remote...")
-        os.system('git pull --rebase --autostash origin main')
+        os.system('git pull --rebase origin main')
         
         # 4. Push
         print("Pushing to GitHub...")

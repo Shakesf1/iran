@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligence & Markets Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-basic-2.27.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="monitor_core.js"></script>
+    <style>
+        .pulse { animation: pulse-animation 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.7); }
+            100% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+        }
+        /* Fix to ensure charts match container widths */
+        .js-plotly-plot { width: 100% !important; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        
+        <header class="mb-12 border-b border-slate-200 pb-8 flex justify-between items-end">
+            <div>
+                <h1 class="text-4xl font-extrabold tracking-tight text-slate-800 italic">INTEL OPS</h1>
+                <p class="text-slate-500 font-mono text-xs mt-2 uppercase tracking-widest">Global Chokepoint & Market Monitor</p>
+            </div>
+            <div class="text-right font-mono text-[10px] text-slate-400">
+                LAST SYNC: <span id="last-update" class="text-slate-800 font-bold">--:--</span>
+            </div>
+        </header>
+
+        <section class="mb-16">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-[10px] font-bold uppercase text-slate-400 mb-4 tracking-widest">24H Bab-el-Mandeb (vs Prev 24H)</p>
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between items-end mb-1">
+                                <span class="text-xs font-bold text-slate-500">NORTHBOUND</span>
+                                <span class="text-emerald-500 text-[10px]">▲</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <span class="text-[9px] text-slate-400 uppercase font-bold">VLCC</span>
+                                    <div class="flex items-baseline gap-1">
+                                        <span id="n-vlcc" class="text-2xl font-black text-slate-800">0</span>
+                                        <span id="n-vlcc-delta" class="text-[10px] text-slate-400">(0)</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] text-slate-400 uppercase font-bold">Cargo</span>
+                                    <div class="flex items-baseline gap-1">
+                                        <span id="n-cargo" class="text-2xl font-black text-slate-800">0</span>
+                                        <span id="n-cargo-delta" class="text-[10px] text-slate-400">(0)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-100">
+                            <div class="flex justify-between items-end mb-1">
+                                <span class="text-xs font-bold text-slate-500">SOUTHBOUND</span>
+                                <span class="text-red-500 text-[10px]">▼</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <span class="text-[9px] text-slate-400 uppercase font-bold">VLCC</span>
+                                    <div class="flex items-baseline gap-1">
+                                        <span id="s-vlcc" class="text-2xl font-black text-slate-800">0</span>
+                                        <span id="s-vlcc-delta" class="text-[10px] text-slate-400">(0)</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] text-slate-400 uppercase font-bold">Cargo</span>
+                                    <div class="flex items-baseline gap-1">
+                                        <span id="s-cargo" class="text-2xl font-black text-slate-800">0</span>
+                                        <span id="s-cargo-delta" class="text-[10px] text-slate-400">(0)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-[10px] font-bold uppercase text-slate-400 mb-4 tracking-widest">Daily Crossing Volume</p>
+                    <div id="bab-history-chart" class="h-48 w-full"></div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-3">
+                <span class="bg-blue-600 text-white px-3 py-1 rounded text-lg italic">POLY</span>
+                MARKET INTELLIGENCE
+            </h2>
+            <div id="poly-events-container" class="space-y-12">
+                </div>
+        </section>
+    </div>
+
+    <script>
+        async function initDashboard() {
+            try {
+                const response = await fetch('dashboard_stats.json');
+                const encryptedData = await response.json();
+                const stats = descramble(encryptedData.payload); 
+                
+                document.getElementById('last-update').innerText = new Date(stats.calculated_at).toLocaleTimeString();
+
+                renderShipping(stats.bab_crossings);
+                await renderPolymarket();
+            } catch (err) { console.error(err); }
+        }
+
+        function renderShipping(crossings) {
+            const now = new Date();
+            const msInDay = 24 * 60 * 60 * 1000;
+            
+            const window1 = crossings.filter(c => (now - new Date(c.time)) <= msInDay);
+            const window2 = crossings.filter(c => {
+                const age = now - new Date(c.time);
+                return age > msInDay && age <= (msInDay * 2);
+            });
+
+            const getCounts = (arr) => ({
+                nv: arr.filter(c => c.dir === 'NORTHBOUND' && c.ship_type === 'VLCC').length,
+                nc: arr.filter(c => c.dir === 'NORTHBOUND' && c.ship_type !== 'VLCC').length,
+                sv: arr.filter(c => c.dir === 'SOUTHBOUND' && c.ship_type === 'VLCC').length,
+                sc: arr.filter(c => c.dir === 'SOUTHBOUND' && c.ship_type !== 'VLCC').length,
+            });
+
+            const cur = getCounts(window1);
+            const pre = getCounts(window2);
+
+            document.getElementById('n-vlcc').innerText = cur.nv;
+            document.getElementById('n-vlcc-delta').innerText = `(${pre.nv})`;
+            document.getElementById('n-cargo').innerText = cur.nc;
+            document.getElementById('n-cargo-delta').innerText = `(${pre.nc})`;
+            document.getElementById('s-vlcc').innerText = cur.sv;
+            document.getElementById('s-vlcc-delta').innerText = `(${pre.sv})`;
+            document.getElementById('s-cargo').innerText = cur.sc;
+            document.getElementById('s-cargo-delta').innerText = `(${pre.sc})`;
+
+            // Daily History Chart
+            const grouped = {};
+            crossings.forEach(c => {
+                const day = c.time.split('T')[0];
+                if (!grouped[day]) grouped[day] = { n: [], s: [] };
+                c.dir === 'NORTHBOUND' ? grouped[day].n.push(c.name) : grouped[day].s.push(c.name);
+            });
+
+            const days = Object.keys(grouped).sort();
+            const traceN = {
+                x: days, y: days.map(d => grouped[d].n.length),
+                text: days.map(d => grouped[d].n.join(', ')),
+                name: 'NORTH', type: 'bar', marker: {color: '#10b981'}
+            };
+            const traceS = {
+                x: days, y: days.map(d => grouped[d].s.length),
+                text: days.map(d => grouped[d].s.join(', ')),
+                name: 'SOUTH', type: 'bar', marker: {color: '#ef4444'}
+            };
+
+            Plotly.newPlot('bab-history-chart', [traceN, traceS], {
+                barmode: 'group',
+                margin: { t: 5, r: 5, b: 25, l: 25 },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                showlegend: false,
+                xaxis: { tickfont: {size: 9}, gridcolor: '#f1f5f9' },
+                yaxis: { tickfont: {size: 9}, gridcolor: '#f1f5f9' }
+            }, {responsive: true, displayModeBar: false});
+        }
+
+        async function renderPolymarket() {
+            const [metaRes, seriesRes] = await Promise.all([fetch('poly_metadata.json'), fetch('poly_series.json')]);
+            const meta = await metaRes.json();
+            const series = await seriesRes.json();
+            const container = document.getElementById('poly-events-container');
+
+            // Group Markets by Event
+            const events = {};
+            meta.events.forEach(e => {
+                events[e.id] = { title: e.title, markets: [] };
+            });
+            meta.markets.forEach(m => {
+                if (events[m.event_id]) events[m.event_id].markets.push(m);
+            });
+
+            container.innerHTML = '';
+            
+            Object.values(events).forEach(event => {
+                if (event.markets.length === 0) return;
+
+                const eventDiv = document.createElement('div');
+                eventDiv.className = "bg-white p-8 rounded-2xl border border-slate-200 shadow-sm";
+                eventDiv.innerHTML = `<h3 class="text-xl font-black text-slate-800 mb-6 uppercase tracking-tight border-l-4 border-blue-600 pl-4">${event.title}</h3>
+                                      <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="event-grid-${event.title.replace(/\s+/g, '')}"></div>`;
+                container.appendChild(eventDiv);
+
+                const grid = eventDiv.querySelector('div');
+
+                // Sort markets by label (chronologically if dates are in labels)
+                event.markets.sort((a, b) => a.label.localeCompare(b.label, undefined, {numeric: true}));
+
+                event.markets.forEach(market => {
+                    const mData = series.filter(s => s.market_id === market.market_id).sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+                    if (mData.length < 2) return;
+
+                    const mDiv = document.createElement('div');
+                    mDiv.innerHTML = `<p class="text-[10px] font-bold text-slate-400 uppercase mb-2">${market.label}</p>
+                                      <div id="chart-${market.market_id}" class="h-32 w-full"></div>`;
+                    grid.appendChild(mDiv);
+
+                    Plotly.newPlot(`chart-${market.market_id}`, [{
+                        x: mData.map(d => d.created_at),
+                        y: mData.map(d => d.probability),
+                        type: 'scatter', mode: 'lines',
+                        line: { color: '#3b82f6', width: 2, shape: 'hv' },
+                        fill: 'tozeroy', fillcolor: 'rgba(59, 130, 246, 0.05)'
+                    }], {
+                        margin: { t: 5, r: 5, b: 20, l: 30 },
+                        xaxis: { showgrid: false, tickfont: {size: 8} },
+                        yaxis: { gridcolor: '#f8fafc', ticksuffix: '%', tickfont: {size: 8} },
+                        paper_bgcolor: 'rgba(0,0,0,0)',
+                        plot_bgcolor: 'rgba(0,0,0,0)'
+                    }, {responsive: true, displayModeBar: false});
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
