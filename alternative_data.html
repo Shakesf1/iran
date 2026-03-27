@@ -689,39 +689,37 @@ Object.keys(eventData).forEach(eid => {
     const eventInfo = eventMeta[eid] || { title: `Event ${eid}` };
     const containerId = `poly-event-${eid}`;
     
-    // Create Grid Item
+    // 1. Create Grid Item (Note the added 'min-h' and 'w-full' to prevent collapse)
     const col = document.createElement('div');
-    col.className = "bg-white p-4 rounded-lg border border-slate-100 shadow-sm";
+    col.className = "bg-white p-4 rounded-lg border border-slate-100 shadow-sm min-h-[320px]";
     col.innerHTML = `
         <h3 class="text-[16px] font-bold text-slate-500 mb-4 uppercase text-center border-b pb-1 tracking-tight">
             ${eventInfo.title}
         </h3>
-        <div id="${containerId}" class="h-[250px]"></div>
+        <div id="${containerId}" class="h-[250px] w-full"></div>
     `;
     grid.appendChild(col);
 
     const isLeader = eventInfo.title.toLowerCase().includes('leader');
 
-    // 1. FILTER & SORT: Get the IDs we actually want to show
+    // 2. FILTER & SORT
     let marketIds = Object.keys(marketsInEvent).sort((a, b) => {
         const lastA = marketsInEvent[a].slice(-1)[0].probability;
         const lastB = marketsInEvent[b].slice(-1)[0].probability;
-        return lastA - lastB; // Base sorting for stacks
+        return lastA - lastB; 
     });
 
     if (isLeader) {
-        // For leaders, sort by highest prob and only take Top 5
         marketIds = marketIds
             .sort((a, b) => marketsInEvent[b].slice(-1)[0].probability - marketsInEvent[a].slice(-1)[0].probability)
             .slice(0, 5);
     }
 
-    // 2. TRACES: Apply small text and hover logic
+    // 3. PREPARE TRACES & LAYOUT (Logic remains same as before)
     const traces = marketIds.map((mid, i) => {
         const series = marketsInEvent[mid];
         const prevSeries = (i > 0 && !isLeader) ? marketsInEvent[marketIds[i-1]] : null;
         const label = marketLabels[mid] || `Market ${mid}`;
-
         return {
             x: series.map(s => s.created_at),
             y: series.map((s, idx) => {
@@ -735,41 +733,42 @@ Object.keys(eventData).forEach(eid => {
             line: { width: 0.8 },
             fill: isLeader ? 'none' : 'tonexty',
             stackgroup: isLeader ? null : 'one',
-            // Small text formatting for the hover
             hovertemplate: `%{y:.1f}% <span style="font-size:9px">${label}</span><extra></extra>`
         };
     });
 
-    // 3. LAYOUT: Compact font settings
     const layout = {
         ...layoutBase,
         showlegend: false,
         hovermode: 'x unified',
-        hoverlabel: {
-            bgcolor: 'rgba(255, 255, 255, 0.98)',
-            font: { size: 9 }, // Small global hover text
-            bordercolor: '#e2e8f0',
-            namelength: 0
-        },
-        yaxis: { 
-            range: [0, 100], 
-            ticksuffix: '%', 
-            tickfont: { size: 8 }, // Tiny axis numbers
-            gridcolor: '#f8fafc',
-            fixedrange: true 
-        },
-        xaxis: { 
-            type: 'date', 
-            tickfont: { size: 8 },
-            gridcolor: '#f8fafc',
-            fixedrange: true 
-        },
+        hoverlabel: { bgcolor: 'rgba(255, 255, 255, 0.98)', font: { size: 9 }, namelength: 0 },
+        yaxis: { range: [0, 100], ticksuffix: '%', tickfont: { size: 8 }, fixedrange: true },
+        xaxis: { type: 'date', tickfont: { size: 8 }, fixedrange: true },
         margin: { t: 5, b: 30, l: 30, r: 10 }
     };
 
-    Plotly.newPlot(containerId, traces, layout, { responsive: true, displayModeBar: false });
-});
+    // 4. THE FIX: Intersection Observer
+    // We only call Plotly once the browser says the div is actually "there" and visible.
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const targetDiv = document.getElementById(containerId);
+                if (targetDiv) {
+                    Plotly.newPlot(containerId, traces, layout, { 
+                        responsive: true, 
+                        displayModeBar: false 
+                    }).then(() => {
+                        // Final safety resize to snap to container width
+                        Plotly.Plots.resize(targetDiv);
+                    });
+                }
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
 
+    observer.observe(document.getElementById(containerId));
+});
 
 
     } catch (err) {

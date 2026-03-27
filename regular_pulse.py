@@ -28,7 +28,7 @@ def get_subscribers():
         return []
 
 def send_newsletter():
-    subject = "Strategic Pulse: Day 20 of Iran War"
+    subject = "Warescalation.com - Now with live odds"
     
     # 1. Read the image file as bytes
     try:
@@ -45,73 +45,16 @@ def send_newsletter():
     <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>Dear Reader,</span>
   </p>
   <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
-    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
-      >Today marks the 20th day of the conflict. We are entering the most dangerous phase of any war: </span
-    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'><b>Normalization.</b></span
-    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>
-      As the initial shock fades from the headlines, public attention wavers but the data tells a different story. As impact on global markets will now become real. </span
-    >
+      Today marks is the <b>28th day of the conflict</b>: 
   </p>
-  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
-    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>On </span
-    ><a href="http://www.warescalation.com/?campaign=newsletter" title="http://www.warescalation.com/"
-      ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,238)'><u>warescalation.com</u></span></a>
-      <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
-      >, the metrics remain relentless. Despite claims from Washington and Jerusalem that the Iranian command structure
-      is &quot;on its knees&quot; following the liquidation of senior leaders, the reality tells us different. Iran’s
-      launch tempo has not decayed. It has stabilized:</span>
-  </p>
-    <div style="text-align: left; margin: 20px 0;">
-        <img src="cid:pulse-chart" alt="Iran Attacks" width="510" height="270" />
-    </div>
-  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
-    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'>
-      The most critical data point is the </span
-    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'><b>Strait of Hormuz</b></span
-    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
-      >. Total transit volume remains at historic lows. Our AIS tracking shows a striking anomaly: the few ships
-      currently transiting are almost exclusively members of the “Shadow Fleet” or vessels taking non-standard routes
-      under guidance of Iran (Indian ships earlier in the week). This implies a &quot;negotiated&quot; crossing, </span
-    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
-      >Iran is still acting as the gatekeeper.</span
-    >
-  </p>
-  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
-    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
-      >Geopolitically, the implications are binary. The U.S. and Israel can strike the heartland, but if they cannot
-      guarantee some ships to pass through Hormuz they are losing the strategic war. This mirrors the </span
-    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'><b>Tanker Wars of the 1980s</b></span
-    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
-      >, but with a modern twist: Iran doesn&#39;t need to physically block the Strait; they only need to keep insurance
-      premiums high enough to make it a &quot;no-go&quot; zone for Western capital. To avoid a visible strategic defeat,
-      the U.S. will need to escalate and institute navy convoys through the Strait.
-    </span>
-  </p>
-  <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
-    <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
-      >Secondly, for global markets it’s all about inflation. PPI yesterday printed significantly higher than expected
-      and that was pre-Iran War (February). </span
-    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
-      >Interesting research was done by the FED in 2024 (last updated): “</span
-    ><a
-      href="https://www.federalreserve.gov/econres/notes/feds-notes/oil-price-shocks-and-inflation-in-a-dsge-model-of-the-global-economy-20240802.html"
-      title="FED Research: Oil Price Shocks and Inflation in a DSGE Model for the Global Economy"
-      ><span style='font-family:"Arial";font-size:11pt;color:rgb(5,99,193)'
-        ><u>Oil Price Shocks and Inflation in a DSGE Model for the Global Economy</u></span
-      ></a
-    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
-      >”. This links Oil Price Shocks to inflation. Oil impacts food prices, wages (due to cost of living) and
-      expectations. The impac</span
-    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
-      >t is larger when the cause is not transitory but long lasting. Central Banks are in a bind. They can fight
-      inflation (higher rates) which hurts growth or support economic growth (which boosts inflation). Rate cuts are
-      less likely (increases more, Polymarke</span
-    ><span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
-      >t assigns 40+% probability to ECB hiking rates) and policy will become reactive. Long story short, the real
-      economic impact worsens the longer the war continues. Impacting global growth and inflation, effectively making
-      stagflation more likely by the day.
-    </span>
-  </p>
+  <p>
+  A lot has happened since the last newsletter. I promised not to spam your inbox, but I also want to share the latest updates and insights with you. So here we are. 
+  For the loyal newsletter readers you get the first view: <br/>
+  1) Data on ships crossing through Bab Al-Mandeb Strait, unaffected for now but under constant threat by the Houthis and another weapon in arsenal of Iran(s proxies).<br/>
+  2) Data from Polymarket on relevant bets regarding the war<br/>
+        </p>
+<p><img src="cid:polymarket" alt="Polymarket" /></p>
+
   <p style="margin-top:0pt;margin-bottom:10pt;border:medium">
     <span style='font-family:"Arial";font-size:10pt;color:rgb(0,0,0)'
       >If you find it interesting, please share the site – </span
