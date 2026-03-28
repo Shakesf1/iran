@@ -81,7 +81,8 @@ def read_encrypted_df(filename):
     
 def update_persistent_json(new_df, filename, keys, rolling_days=5):
     SECRET_KEY = "pay_homage_to_stan_4ever"
-    
+    print(new_df)
+    print(keys)
     if os.path.exists(filename):
         try:
             existing_df = read_encrypted_df(filename)
@@ -128,7 +129,7 @@ def process_casualties_csv():
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
 
     # 2. Force Clean Date Strings (Do not let them become Timestamps)
-    df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
+    df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%y')
     
     # 3. Aggregate
     df['bloc'] = df['Country'].apply(lambda x: 'Iran-Led Bloc' if x in iran_led else 'US-Israel Bloc')
@@ -137,7 +138,7 @@ def process_casualties_csv():
 
     # 4. DIRECT SAVE (Skip the update_persistent_json function)
     # This prevents duplicates and date corruption
-    raw_json_str = daily_bloc.to_json(orient='records')
+    raw_json_str = daily_bloc.to_json(orient='records', date_format='iso')
     encrypted_payload = encrypt_data(raw_json_str)
     
     with open('casualties_history.json', 'w') as f:
@@ -213,7 +214,7 @@ if __name__ == "__main__":
                 hourly_df['total_attacks'] = hourly.sum(axis=1).values
                             
                 # 3. Persistence now finds 'timestamp' and succeeds
-                print(hourly_df.head())  # Debug: Check the structure before saving
+                
                 update_persistent_json(hourly_df, 'hourly_data.json', ['timestamp'])
 
                 # --- DAILY DATA ---
@@ -245,6 +246,7 @@ if __name__ == "__main__":
                         daily_df.loc[daily_df['day'] == today_str, 'Extrapolation'] = round(avg_remaining if not pd.isna(avg_remaining) else 0)
 
                 daily_df['total_attacks'] = daily.sum(axis=1).values
+                daily_df = daily_df[daily_df['day'] >= '2026-02-28']
                 update_persistent_json(daily_df, 'daily_data.json', ['day'])
 
                 # --- EXTRAPOLATION & SIGNALS ---
