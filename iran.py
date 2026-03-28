@@ -205,7 +205,7 @@ if __name__ == "__main__":
                 # 1. Group incidents by hour and location
                 # Use 'h' instead of 'H' to avoid the FutureWarning
                 df_incidents['timestamp'] = df_incidents['timestamp'].dt.floor('h') 
-                
+                df_incidents = df_incidents[pd.to_datetime(df_incidents['timestamp'], utc=True) >= pd.Timestamp('2026-02-28', tz='UTC')]
                 hourly = df_incidents.groupby(['timestamp', 'location']).size().unstack(fill_value=0)
                 hourly_df = hourly.reset_index()
                 
