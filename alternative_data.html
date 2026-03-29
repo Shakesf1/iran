@@ -741,15 +741,51 @@ meta.markets.forEach(m => {
     const oldRecord = history.find(s => new Date(s.created_at) <= twentyFourHoursAgo) || history[history.length - 1];
     
     const eventMetaObj = meta.events.find(e => String(e.id) === String(m.event_id));
-    const change = latest.probability - oldRecord.probability;
     const eventTitle = eventMetaObj ? eventMetaObj.title : 'General';
+    const isLeader = eventTitle.toLowerCase().includes('leader');
+
+    // --- DEDUCTION LOGIC START ---
+    let displayProb = latest.probability;
+    let displayChange = latest.probability - oldRecord.probability;
+
+    // Only deduct if it's a date-based event (not a 'Leader' selection)
+    if (!isLeader) {
+        // Find all markets for THIS event
+        const siblingMarkets = meta.markets.filter(sm => String(sm.event_id) === String(m.event_id));
+        
+        // Sort siblings by date to find the one immediately before this one
+        const sortedSiblings = siblingMarkets.sort((a, b) => {
+            const dA = Date.parse(a.label + " 2026"), dB = Date.parse(b.label + " 2026");
+            return dA - dB;
+        });
+
+        const currentIndex = sortedSiblings.findIndex(sm => String(sm.market_id) === mId);
+
+        if (currentIndex > 0) {
+            const prevMarketId = String(sortedSiblings[currentIndex - 1].market_id);
+            const prevHistory = marketGroups[prevMarketId];
+            
+            if (prevHistory && prevHistory.length > 0) {
+                const prevLatest = prevHistory[0];
+                const prevOld = prevHistory.find(s => new Date(s.created_at) <= twentyFourHoursAgo) || prevHistory[prevHistory.length - 1];
+
+                // Deduct previous probabilities from current
+                displayProb = Math.max(0, latest.probability - prevLatest.probability);
+                
+                // Calculate change based on the deducted values
+                const prevDeductedProb = Math.max(0, oldRecord.probability - prevOld.probability);
+                displayChange = displayProb - prevDeductedProb;
+            }
+        }
+    }
+    // --- DEDUCTION LOGIC END ---
 
     marketChanges.push({
         event: eventTitle,
         market: m.label,
-        current: latest.probability,
-        change: change,
-        isLeader: eventTitle.toLowerCase().includes('leader') // Flag for filtering
+        current: displayProb,
+        change: displayChange,
+        isLeader: isLeader
     });
 });
 
