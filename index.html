@@ -156,7 +156,8 @@
             <div class="flex flex-wrap items-center justify-between gap-3 mb-1">
                 <h1 class="text-4xl font-extrabold tracking-tight text-slate-800">Iran War: Escalation/Hormuz Monitor</h1>
                 <nav class="flex gap-3 text-sm font-semibold">
-                    <a href="index.html" class="text-slate-900 border-b-2 border-red-500 pb-0.5">Monitor</a>
+                    <a href="index.html" class="text-slate-900 border-b-2 border-red-500 pb-0.5">Main Monitor</a>
+                    <a href="alternative_data.html" class="text-slate-500 hover:text-slate-800 transition-colors">Polymarket &amp; Bab</a>
                     <a href="articles.html" class="text-slate-500 hover:text-slate-800 transition-colors">Articles</a>
                 </nav>
             </div>
@@ -360,10 +361,29 @@
 </div>
 <p class="text-[10px] text-slate-400 italic px-1 -mt-2 mb-8">Value in brackets is the difference vs. the previous 24-hour window.</p>
 
-        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <section class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-2 text-slate-800">Daily Escalation Trend</h2>
             <p class="text-sm text-slate-500 mb-4">Strikes originating from Iran (or its allies) on a daily basis, also when origin is not confirmed. All hits are assumed to be by Iran.</p>
             <div id="dailyChart" class="w-full h-[500px]"></div>
+        </section>
+
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xl font-bold text-slate-800">Polymarket: Key Risk Probabilities</h2>
+                <a href="alternative_data.html" class="text-blue-500 text-xs hover:underline font-semibold">Full Alt Data →</a>
+            </div>
+            <p class="text-slate-500 text-xs italic mb-4">Market-implied probabilities for key conflict outcomes (deducted per window). 24h change shown. <a href="alternative_data.html" class="text-blue-500 hover:underline">See full Polymarket data →</a></p>
+            <div id="poly-mini-table" class="mb-6 overflow-x-auto rounded-lg border border-slate-200 shadow-sm"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-500 mb-2 uppercase text-center tracking-widest">Bab el-Mandeb Strait: Closure Probability</h3>
+                    <div id="poly-bab-chart" class="h-[250px] w-full"></div>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-slate-500 mb-2 uppercase text-center tracking-widest">Iran × Israel/US Conflict Ends Probability</h3>
+                    <div id="poly-conflict-chart" class="h-[250px] w-full"></div>
+                </div>
+            </div>
         </section>
 
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
@@ -1294,6 +1314,153 @@ async function loadCharts() {
         };
 
         Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, { displaylogo: false, responsive: true, displayModeBar: false });
+
+        // --- POLYMARKET MINI INTEGRATION ---
+        try {
+            const [polyMetaRes, polySeriesRes] = await Promise.all([
+                fetch('./poly_metadata.json'),
+                fetch('./poly_series.json')
+            ]);
+            const polyMeta = await polyMetaRes.json();
+            const polySeries = await polySeriesRes.json();
+
+            // Target event IDs
+            const BAB_EVENT_ID = '276527';
+            const CONFLICT_EVENT_ID = '236884';
+
+            // Market-level history map: market_id -> series[]
+            const polyMarketGroups = {};
+            polySeries.forEach(s => {
+                const mid = String(s.market_id);
+                if (!polyMarketGroups[mid]) polyMarketGroups[mid] = [];
+                polyMarketGroups[mid].push(s);
+            });
+
+            // Event-level data map: event_id -> market_id -> series[]
+            const polyEventData = {};
+            polySeries.forEach(s => {
+                const eid = String(s.event_id);
+                const mid = String(s.market_id);
+                if (!polyEventData[eid]) polyEventData[eid] = {};
+                if (!polyEventData[eid][mid]) polyEventData[eid][mid] = [];
+                polyEventData[eid][mid].push(s);
+            });
+
+            const polyMarketLabels = {};
+            polyMeta.markets.forEach(m => { polyMarketLabels[String(m.market_id)] = m.label; });
+
+            const polyNow = new Date();
+            const poly24hAgo = new Date(polyNow.getTime() - 24 * 60 * 60 * 1000);
+
+            // Compute deducted probability rows for a given event
+            function calcPolyRows(eventId) {
+                const eventMarkets = polyMeta.markets.filter(m => String(m.event_id) === eventId);
+                const sorted = [...eventMarkets].sort((a, b) => Date.parse(a.label + " 2026") - Date.parse(b.label + " 2026"));
+                return sorted.map((m, idx) => {
+                    const mid = String(m.market_id);
+                    const history = polyMarketGroups[mid];
+                    if (!history || history.length === 0) return null;
+                    const latest = history[0];
+                    const oldRecord = history.find(s => new Date(s.created_at) <= poly24hAgo) || history[history.length - 1];
+                    let displayProb = latest.probability;
+                    let displayChange = latest.probability - oldRecord.probability;
+                    if (idx > 0) {
+                        const prevMid = String(sorted[idx - 1].market_id);
+                        const prevHistory = polyMarketGroups[prevMid];
+                        if (prevHistory && prevHistory.length > 0) {
+                            const prevLatest = prevHistory[0];
+                            const prevOld = prevHistory.find(s => new Date(s.created_at) <= poly24hAgo) || prevHistory[prevHistory.length - 1];
+                            displayProb = Math.max(0, latest.probability - prevLatest.probability);
+                            const prevDeductedProb = Math.max(0, oldRecord.probability - prevOld.probability);
+                            displayChange = displayProb - prevDeductedProb;
+                        }
+                    }
+                    return { label: m.label, prob: displayProb, change: displayChange };
+                }).filter(Boolean);
+            }
+
+            const babRows = calcPolyRows(BAB_EVENT_ID);
+            const conflictRows = calcPolyRows(CONFLICT_EVENT_ID);
+
+            // Render mini table
+            const miniTableContainer = document.getElementById('poly-mini-table');
+            let miniHTML = `<table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Event</th>
+                        <th class="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Deadline</th>
+                        <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Prob</th>
+                        <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">24h Δ</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white">`;
+            [
+                { title: 'Bab el-Mandeb Strait effectively closed by...?', rows: babRows },
+                { title: 'Iran × Israel/US conflict ends by...?', rows: conflictRows }
+            ].forEach(({ title, rows }) => {
+                rows.forEach((row, i) => {
+                    const changeClass = row.change > 0 ? 'text-emerald-600' : row.change < 0 ? 'text-rose-600' : 'text-slate-400';
+                    const borderClass = i === 0 ? 'border-t-2 border-slate-200' : '';
+                    miniHTML += `<tr class="${borderClass} hover:bg-slate-50 transition-colors">
+                        <td class="px-4 py-2 font-bold text-slate-800 text-[10px] uppercase leading-tight">${i === 0 ? title : ''}</td>
+                        <td class="px-4 py-2 text-slate-600 border-l border-slate-50">${row.label}</td>
+                        <td class="px-4 py-2 text-right font-mono font-bold">${row.prob.toFixed(1)}%</td>
+                        <td class="px-4 py-2 text-right font-mono font-bold ${changeClass}">${row.change >= 0 ? '+' : ''}${row.change.toFixed(1)}%</td>
+                    </tr>`;
+                });
+            });
+            miniHTML += `</tbody></table>`;
+            miniTableContainer.innerHTML = miniHTML;
+
+            // Render a Polymarket chart for a given event
+            function renderPolyMiniChart(eventId, containerId) {
+                const marketsInEvent = polyEventData[eventId];
+                if (!marketsInEvent) return;
+                const eventMarkets = polyMeta.markets.filter(m => String(m.event_id) === eventId);
+                const sortedMarketIds = [...eventMarkets]
+                    .sort((a, b) => Date.parse(a.label + " 2026") - Date.parse(b.label + " 2026"))
+                    .map(m => String(m.market_id));
+
+                const traces = sortedMarketIds.map((mid, i) => {
+                    const series = marketsInEvent[mid];
+                    if (!series) return null;
+                    const prevMid = i > 0 ? sortedMarketIds[i - 1] : null;
+                    const prevSeries = prevMid ? marketsInEvent[prevMid] : null;
+                    const label = polyMarketLabels[mid] || `Market ${mid}`;
+                    return {
+                        x: series.map(s => s.created_at),
+                        y: series.map((s, idx) => {
+                            const prevProb = (prevSeries && prevSeries[idx]) ? prevSeries[idx].probability : 0;
+                            return Math.max(0, s.probability - prevProb);
+                        }),
+                        name: label,
+                        type: 'scatter',
+                        mode: 'lines',
+                        line: { width: 0.8 },
+                        fill: 'tonexty',
+                        stackgroup: 'one',
+                        hovertemplate: `%{y:.1f}% <span style="font-size:9px">${label}</span><extra></extra>`
+                    };
+                }).filter(Boolean);
+
+                const chartLayout = {
+                    ...layoutBase,
+                    showlegend: false,
+                    hovermode: 'x unified',
+                    hoverlabel: { bgcolor: 'rgba(255, 255, 255, 0.98)', font: { size: 9 }, namelength: 0 },
+                    yaxis: { range: [0, 100], ticksuffix: '%', tickfont: { size: 8 }, fixedrange: true },
+                    xaxis: { type: 'date', tickfont: { size: 8 }, fixedrange: true },
+                    margin: { t: 5, b: 30, l: 30, r: 10 }
+                };
+                Plotly.newPlot(containerId, traces, chartLayout, { responsive: true, displayModeBar: false });
+            }
+
+            renderPolyMiniChart(BAB_EVENT_ID, 'poly-bab-chart');
+            renderPolyMiniChart(CONFLICT_EVENT_ID, 'poly-conflict-chart');
+        } catch (polyErr) {
+            console.error('Polymarket mini load error:', polyErr);
+        }
+        // --- END POLYMARKET MINI INTEGRATION ---
 
     } catch (err) {
         console.error("Error loading data:", err);
