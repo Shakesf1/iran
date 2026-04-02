@@ -32542,3 +32542,401 @@ postgrest.exceptions.APIError: {'message': 'JSON could not be generated', 'code'
  1 file changed, 6146 insertions(+), 6160 deletions(-)
 [main 8122b36] data: update snapshots [skip ci]
  2 files changed, 6236 insertions(+), 6194 deletions(-)
+[main 17b0815] data: update snapshots [skip ci]
+ 1 file changed, 6529 insertions(+), 6179 deletions(-)
+[main 989d38e] data: update snapshots [skip ci]
+ 1 file changed, 6378 insertions(+), 6588 deletions(-)
+[main db8cea5] data: update snapshots [skip ci]
+ 2 files changed, 2176 insertions(+), 2197 deletions(-)
+[main 15a57cb] data: update snapshots [skip ci]
+ 2 files changed, 6669 insertions(+), 6949 deletions(-)
+[main 0d9f942] data: update snapshots [skip ci]
+ 1 file changed, 6341 insertions(+), 6362 deletions(-)
+[main 239852e] data: update snapshots [skip ci]
+ 1 file changed, 6198 insertions(+), 6219 deletions(-)
+[main 9b8627c] data: update snapshots [skip ci]
+ 1 file changed, 1787 insertions(+), 1801 deletions(-)
+[main 89db087] data: update snapshots [skip ci]
+ 1 file changed, 6524 insertions(+), 6790 deletions(-)
+[main 3b683e2] data: update snapshots [skip ci]
+ 1 file changed, 6175 insertions(+), 5930 deletions(-)
+[main 7806fc3] data: update snapshots [skip ci]
+ 2 files changed, 6020 insertions(+), 6034 deletions(-)
+[main bf61be7] data: update snapshots [skip ci]
+ 2 files changed, 6171 insertions(+), 6185 deletions(-)
+[main 9b5bbfe] data: update snapshots [skip ci]
+ 1 file changed, 6925 insertions(+), 6701 deletions(-)
+[main a72d43c] data: update snapshots [skip ci]
+ 1 file changed, 2987 insertions(+), 3001 deletions(-)
+[main ad2c051] data: update snapshots [skip ci]
+ 1 file changed, 3306 insertions(+), 3313 deletions(-)
+[main 85e4ca9] data: update snapshots [skip ci]
+ 1 file changed, 6558 insertions(+), 6565 deletions(-)
+[main f2530d9] data: update snapshots [skip ci]
+ 2 files changed, 6868 insertions(+), 7120 deletions(-)
+[main 9219368] data: update snapshots [skip ci]
+ 2 files changed, 2517 insertions(+), 2524 deletions(-)
+[main 9b1ca30] data: update snapshots [skip ci]
+ 1 file changed, 6330 insertions(+), 6337 deletions(-)
+[main 994b9c1] data: update snapshots [skip ci]
+ 1 file changed, 2699 insertions(+), 2706 deletions(-)
+[main 0e43669] data: update snapshots [skip ci]
+ 1 file changed, 6142 insertions(+), 6401 deletions(-)
+[main 6ef4b9c] data: update snapshots [skip ci]
+ 1 file changed, 6194 insertions(+), 5956 deletions(-)
+[main 876518b] data: update snapshots [skip ci]
+ 2 files changed, 2472 insertions(+), 2479 deletions(-)
+[main 608fa7f] data: update snapshots [skip ci]
+ 2 files changed, 6340 insertions(+), 6347 deletions(-)
+[main b214b2a] data: update snapshots [skip ci]
+ 1 file changed, 2181 insertions(+), 2188 deletions(-)
+[main aa3ff89] data: update snapshots [skip ci]
+ 1 file changed, 6194 insertions(+), 6201 deletions(-)
+[main 34d2827] data: update snapshots [skip ci]
+ 1 file changed, 1813 insertions(+), 1813 deletions(-)
+[main cfee17d] data: update snapshots [skip ci]
+ 1 file changed, 6319 insertions(+), 6550 deletions(-)
+[main 1d8b8c1] data: update snapshots [skip ci]
+ 2 files changed, 6825 insertions(+), 6587 deletions(-)
+[main 980e5a5] data: update snapshots [skip ci]
+ 2 files changed, 1967 insertions(+), 1967 deletions(-)
+[main 05134e9] data: update snapshots [skip ci]
+ 1 file changed, 1783 insertions(+), 1783 deletions(-)
+[main 2adc38a] data: update snapshots [skip ci]
+ 1 file changed, 6493 insertions(+), 6374 deletions(-)
+[main e98def1] data: update snapshots [skip ci]
+ 1 file changed, 6345 insertions(+), 6667 deletions(-)
+[main 2a1f595] data: update snapshots [skip ci]
+ 1 file changed, 6412 insertions(+), 6223 deletions(-)
+[main c761f22] data: update snapshots [skip ci]
+ 1 file changed, 2130 insertions(+), 2130 deletions(-)
+[main d8bea25] data: update snapshots [skip ci]
+ 2 files changed, 2149 insertions(+), 2149 deletions(-)
+[main e54f9c8] data: update snapshots [skip ci]
+ 2 files changed, 1823 insertions(+), 1823 deletions(-)
+[main 07a34c8] data: update snapshots [skip ci]
+ 1 file changed, 1806 insertions(+), 1806 deletions(-)
+[main 068c0a4] data: update snapshots [skip ci]
+ 1 file changed, 6166 insertions(+), 6404 deletions(-)
+[main 38c56a9] data: update snapshots [skip ci]
+ 1 file changed, 2702 insertions(+), 2702 deletions(-)
+[main b577bb0] data: update snapshots [skip ci]
+ 1 file changed, 6615 insertions(+), 6377 deletions(-)
+[main 5bd75bb] data: update snapshots [skip ci]
+ 2 files changed, 6590 insertions(+), 6513 deletions(-)
+[main ff3af3e] data: update snapshots [skip ci]
+ 2 files changed, 6459 insertions(+), 6536 deletions(-)
+[main a3f6ddf] data: update snapshots [skip ci]
+ 1 file changed, 1804 insertions(+), 1804 deletions(-)
+[main 7a60b35] data: update snapshots [skip ci]
+ 1 file changed, 6376 insertions(+), 6628 deletions(-)
+[main acef8d4] data: update snapshots [skip ci]
+ 1 file changed, 6560 insertions(+), 6322 deletions(-)
+[main 9dd69b1] data: update snapshots [skip ci]
+ 1 file changed, 6392 insertions(+), 6392 deletions(-)
+[main 396869e] data: update snapshots [skip ci]
+ 1 file changed, 6290 insertions(+), 6248 deletions(-)
+[main 614fcfe] data: update snapshots [skip ci]
+ 2 files changed, 6340 insertions(+), 6382 deletions(-)
+[main 5bb5a37] data: update snapshots [skip ci]
+ 2 files changed, 6301 insertions(+), 6259 deletions(-)
+[main 3be6d50] data: update snapshots [skip ci]
+ 1 file changed, 6343 insertions(+), 6385 deletions(-)
+[main e3a01ea] data: update snapshots [skip ci]
+ 1 file changed, 8698 insertions(+), 8656 deletions(-)
+[main 6222a04] data: update snapshots [skip ci]
+ 1 file changed, 6340 insertions(+), 6382 deletions(-)
+[main 462d257] data: update snapshots [skip ci]
+ 1 file changed, 1821 insertions(+), 1821 deletions(-)
+[main 18383c2] data: update snapshots [skip ci]
+ 2 files changed, 1829 insertions(+), 1829 deletions(-)
+[main 7fb3f24] data: update snapshots [skip ci]
+ 2 files changed, 6439 insertions(+), 6334 deletions(-)
+[main c5c8f19] data: update snapshots [skip ci]
+ 1 file changed, 6232 insertions(+), 6589 deletions(-)
+[main c2504ac] data: update snapshots [skip ci]
+ 1 file changed, 6152 insertions(+), 5914 deletions(-)
+[main 0061bad] data: update snapshots [skip ci]
+ 1 file changed, 6909 insertions(+), 6832 deletions(-)
+[main e3b5577] data: update snapshots [skip ci]
+ 1 file changed, 6503 insertions(+), 6580 deletions(-)
+[main 9a67d69] data: update snapshots [skip ci]
+ 2 files changed, 1906 insertions(+), 1906 deletions(-)
+[main 4529716] data: update snapshots [skip ci]
+ 2 files changed, 2301 insertions(+), 2301 deletions(-)
+[main ea529c7] data: update snapshots [skip ci]
+ 1 file changed, 6305 insertions(+), 6256 deletions(-)
+[main fa40add] data: update snapshots [skip ci]
+ 1 file changed, 6612 insertions(+), 6556 deletions(-)
+[main a334204] data: update snapshots [skip ci]
+ 1 file changed, 6582 insertions(+), 6687 deletions(-)
+[main 04f1267] data: update snapshots [skip ci]
+ 1 file changed, 1877 insertions(+), 1877 deletions(-)
+[main 95fdb34] data: update snapshots [skip ci]
+ 2 files changed, 6545 insertions(+), 6468 deletions(-)
+[main fac6db7] data: update snapshots [skip ci]
+ 2 files changed, 6731 insertions(+), 6703 deletions(-)
+[main 1412f3b] data: update snapshots [skip ci]
+ 1 file changed, 6185 insertions(+), 6185 deletions(-)
+[main 3894a55] data: update snapshots [skip ci]
+ 1 file changed, 6454 insertions(+), 6573 deletions(-)
+[main 225a8d8] data: update snapshots [skip ci]
+ 1 file changed, 6302 insertions(+), 6260 deletions(-)
+[main 875373b] data: update snapshots [skip ci]
+ 1 file changed, 2624 insertions(+), 2617 deletions(-)
+[main 8d4393d] data: update snapshots [skip ci]
+ 1 file changed, 6332 insertions(+), 6619 deletions(-)
+[main 9561166] data: update snapshots [skip ci]
+ 1 file changed, 6974 insertions(+), 6631 deletions(-)
+[main edcd4e0] data: update snapshots [skip ci]
+ 1 file changed, 6573 insertions(+), 6678 deletions(-)
+[main bd8462e] data: update snapshots [skip ci]
+ 1 file changed, 2171 insertions(+), 2171 deletions(-)
+[main 26e8788] data: update snapshots [skip ci]
+ 1 file changed, 2808 insertions(+), 2808 deletions(-)
+[main ed0b1b0] data: update snapshots [skip ci]
+ 1 file changed, 2809 insertions(+), 2809 deletions(-)
+[main 185ffa4] data: update snapshots [skip ci]
+ 1 file changed, 6309 insertions(+), 6232 deletions(-)
+[main edcc4d9] data: update snapshots [skip ci]
+ 2 files changed, 6271 insertions(+), 6306 deletions(-)
+[main 8d1dd60] data: update snapshots [skip ci]
+ 2 files changed, 6584 insertions(+), 6682 deletions(-)
+[main 4fdb297] data: update snapshots [skip ci]
+ 1 file changed, 6542 insertions(+), 6500 deletions(-)
+[main 9cc127f] data: update snapshots [skip ci]
+ 1 file changed, 6548 insertions(+), 6380 deletions(-)
+[main ce6f389] data: update snapshots [skip ci]
+ 1 file changed, 6575 insertions(+), 6743 deletions(-)
+[main 96c7fc4] data: update snapshots [skip ci]
+ 1 file changed, 6893 insertions(+), 6487 deletions(-)
+[main ee8f34b] data: update snapshots [skip ci]
+ 2 files changed, 6773 insertions(+), 6899 deletions(-)
+[main 22d931b] data: update snapshots [skip ci]
+ 2 files changed, 2240 insertions(+), 2240 deletions(-)
+[main 8a0ec91] data: update snapshots [skip ci]
+ 1 file changed, 6202 insertions(+), 6244 deletions(-)
+[main 8bd2956] data: update snapshots [skip ci]
+ 1 file changed, 6457 insertions(+), 6695 deletions(-)
+[main a1f907f] data: update snapshots [skip ci]
+ 1 file changed, 2795 insertions(+), 2795 deletions(-)
+[main ab1c866] data: update snapshots [skip ci]
+ 1 file changed, 2799 insertions(+), 2799 deletions(-)
+[main 2b2a05b] data: update snapshots [skip ci]
+ 1 file changed, 6249 insertions(+), 6207 deletions(-)
+[main 22243f8] data: update snapshots [skip ci]
+ 2 files changed, 6633 insertions(+), 6927 deletions(-)
+[main 0650e3a] data: update snapshots [skip ci]
+ 2 files changed, 6418 insertions(+), 6180 deletions(-)
+[main fd1b767] data: update snapshots [skip ci]
+ 1 file changed, 1901 insertions(+), 1901 deletions(-)
+[main 6468e50] data: update snapshots [skip ci]
+ 1 file changed, 6278 insertions(+), 6201 deletions(-)
+[main 719a33f] data: update snapshots [skip ci]
+ 1 file changed, 2576 insertions(+), 2576 deletions(-)
+[main 0b903c4] data: update snapshots [skip ci]
+ 1 file changed, 6262 insertions(+), 6339 deletions(-)
+[main 03a4229] data: update snapshots [skip ci]
+ 1 file changed, 7002 insertions(+), 6764 deletions(-)
+[main 27f2193] data: update snapshots [skip ci]
+ 1 file changed, 6437 insertions(+), 6388 deletions(-)
+[main dfeec7e] data: update snapshots [skip ci]
+ 1 file changed, 6318 insertions(+), 6486 deletions(-)
+[main a3edde1] data: update snapshots [skip ci]
+ 1 file changed, 6517 insertions(+), 6636 deletions(-)
+[main c0a37ef] data: update snapshots [skip ci]
+ 1 file changed, 2813 insertions(+), 2813 deletions(-)
+[main ecd086f] data: update snapshots [skip ci]
+ 1 file changed, 2822 insertions(+), 2822 deletions(-)
+[main 9436118] data: update snapshots [skip ci]
+ 2 files changed, 6303 insertions(+), 6513 deletions(-)
+[main 65ed22b] data: update snapshots [skip ci]
+ 2 files changed, 6385 insertions(+), 6189 deletions(-)
+[main 7347b85] data: update snapshots [skip ci]
+ 1 file changed, 6237 insertions(+), 6188 deletions(-)
+[main 59603ea] data: update snapshots [skip ci]
+ 1 file changed, 6265 insertions(+), 6314 deletions(-)
+[main c36196c] data: update snapshots [skip ci]
+ 1 file changed, 7004 insertions(+), 6766 deletions(-)
+[main a116b12] data: update snapshots [skip ci]
+ 1 file changed, 2109 insertions(+), 2109 deletions(-)
+[main 3edea85] data: update snapshots [skip ci]
+ 2 files changed, 2117 insertions(+), 2117 deletions(-)
+[main 128ae08] data: update snapshots [skip ci]
+ 2 files changed, 6471 insertions(+), 6709 deletions(-)
+[main 08a5c5b] data: update snapshots [skip ci]
+ 1 file changed, 2810 insertions(+), 2810 deletions(-)
+[main 932a3b3] data: update snapshots [skip ci]
+ 1 file changed, 6335 insertions(+), 6258 deletions(-)
+[main c39cb4e] data: update snapshots [skip ci]
+ 1 file changed, 6251 insertions(+), 6328 deletions(-)
+[main 6b80f87] data: update snapshots [skip ci]
+ 1 file changed, 2812 insertions(+), 2812 deletions(-)
+[main 5df9d64] data: update snapshots [skip ci]
+ 1 file changed, 6555 insertions(+), 6807 deletions(-)
+[main 3c70057] data: update snapshots [skip ci]
+ 2 files changed, 6407 insertions(+), 6169 deletions(-)
+[main 980ca65] data: update snapshots [skip ci]
+ 2 files changed, 2833 insertions(+), 2833 deletions(-)
+[main 15c4fbf] data: update snapshots [skip ci]
+ 1 file changed, 6288 insertions(+), 6246 deletions(-)
+[main 8fc4d06] data: update snapshots [skip ci]
+ 1 file changed, 7035 insertions(+), 6797 deletions(-)
+[main d071911] data: update snapshots [skip ci]
+ 1 file changed, 6414 insertions(+), 6589 deletions(-)
+[main d322e57] data: update snapshots [skip ci]
+ 1 file changed, 6431 insertions(+), 6536 deletions(-)
+[main 8d4a0f3] data: update snapshots [skip ci]
+ 2 files changed, 2830 insertions(+), 2830 deletions(-)
+[main 2c7a023] data: update snapshots [skip ci]
+ 2 files changed, 2823 insertions(+), 2823 deletions(-)
+[main e6cef0f] data: update snapshots [skip ci]
+ 1 file changed, 2816 insertions(+), 2816 deletions(-)
+[main 5cd3f4e] data: update snapshots [skip ci]
+ 1 file changed, 6256 insertions(+), 6207 deletions(-)
+[main 615ee99] data: update snapshots [skip ci]
+ 1 file changed, 2829 insertions(+), 2829 deletions(-)
+[main c2714db] data: update snapshots [skip ci]
+ 1 file changed, 6507 insertions(+), 6808 deletions(-)
+[main 0bd00d9] data: update snapshots [skip ci]
+ 1 file changed, 6700 insertions(+), 6462 deletions(-)
+[main 8769c09] data: update snapshots [skip ci]
+ 2 files changed, 6555 insertions(+), 6506 deletions(-)
+[main fbd4672] data: update snapshots [skip ci]
+ 2 files changed, 6233 insertions(+), 6282 deletions(-)
+[main f0b0f22] data: update snapshots [skip ci]
+ 1 file changed, 6827 insertions(+), 6547 deletions(-)
+[main 3d9d9b7] data: update snapshots [skip ci]
+ 1 file changed, 6434 insertions(+), 6714 deletions(-)
+[main dc82bee] data: update snapshots [skip ci]
+ 1 file changed, 2846 insertions(+), 2846 deletions(-)
+[main 66f5f39] data: update snapshots [skip ci]
+ 2 files changed, 6238 insertions(+), 6196 deletions(-)
+[main 67e481e] data: update snapshots [skip ci]
+ 2 files changed, 2991 insertions(+), 2991 deletions(-)
+[main 5eab716] data: update snapshots [skip ci]
+ 1 file changed, 6293 insertions(+), 6335 deletions(-)
+[main fa1b143] data: update snapshots [skip ci]
+ 1 file changed, 2839 insertions(+), 2839 deletions(-)
+[main 0834a9b] data: update snapshots [skip ci]
+ 1 file changed, 2839 insertions(+), 2839 deletions(-)
+[main 2df970a] data: update snapshots [skip ci]
+ 1 file changed, 6279 insertions(+), 6244 deletions(-)
+[main bea30bc] data: update snapshots [skip ci]
+ 1 file changed, 6320 insertions(+), 6369 deletions(-)
+[main 0d998b7] data: update snapshots [skip ci]
+ 2 files changed, 2851 insertions(+), 2851 deletions(-)
+[main 8ad9504] data: update snapshots [skip ci]
+ 2 files changed, 2856 insertions(+), 2856 deletions(-)
+[main 9994f90] data: update snapshots [skip ci]
+ 1 file changed, 3035 insertions(+), 3035 deletions(-)
+[main c72bc00] data: update snapshots [skip ci]
+ 1 file changed, 6200 insertions(+), 6151 deletions(-)
+[main 7631823] data: update snapshots [skip ci]
+ 1 file changed, 6231 insertions(+), 6280 deletions(-)
+[main 4e7d4d6] data: update snapshots [skip ci]
+ 1 file changed, 6200 insertions(+), 6151 deletions(-)
+[main bb60a4f] data: update snapshots [skip ci]
+ 2 files changed, 6241 insertions(+), 6290 deletions(-)
+[main 11501e2] data: update snapshots [skip ci]
+ 2 files changed, 6215 insertions(+), 6166 deletions(-)
+[main d9da4de] data: update snapshots [skip ci]
+ 1 file changed, 2829 insertions(+), 2829 deletions(-)
+[main 0ca6882] data: update snapshots [skip ci]
+ 1 file changed, 6230 insertions(+), 6279 deletions(-)
+[main 1d4854a] data: update snapshots [skip ci]
+ 1 file changed, 6466 insertions(+), 6718 deletions(-)
+[main 1d86ed7] data: update snapshots [skip ci]
+ 1 file changed, 6376 insertions(+), 5886 deletions(-)
+[main 6272129] data: update snapshots [skip ci]
+ 1 file changed, 6380 insertions(+), 6380 deletions(-)
+--- Iran Intelligence Snapshot | 2026-04-02 02:10 ---
+
+Iran leader end of 2026? (Top 10 Candidates)
+  - Mojtaba Khamenei       :  67.2%
+  - Reza Pahlavi           :  10.5%
+  - Mohammad-Bagher Ghalibaf :   4.5%
+  - Hassan Rouhani         :   4.0%
+  - No Head of State       :   3.1%
+  - Hassan Khomeini        :   2.7%
+  - Abbas Araghchi         :   1.6%
+  - Sadegh Larijani        :   1.2%
+  - Alireza Arafi          :   1.2%
+  - Masoud Pezeshkian      :   1.1%
+
+Iran x Israel/US conflict ends by...?
+  - March 31               :   0.1%
+  - April 15               :  17.5%
+  - April 7                :   5.2%
+  - April 30               :  37.5%
+  - May 15                 :  51.5%
+  - June 30                :  69.5%
+  - December 31            :  87.0%
+
+Bab el-Mandeb Strait effectively closed by...?
+  - March 31               :   0.2%
+  - April 30               :  11.5%
+
+Kharg Island no longer under Iranian control by...?
+  - April 15               :   9.5%
+  - April 30               :  18.5%
+  - May 31                 :  24.5%
+  - June 30                :  28.0%
+
+Trump announces end of military operations against Iran by ...?
+  - April 7                :  12.5%
+  - April 15               :  26.5%
+  - April 30               :  57.5%
+  - June 30                :  80.5%
+
+Strait of Hormuz traffic returns to normal by end of April?
+  - Strait of Hormuz traffic returns to normal by end of April? :  17.5%
+
+US x Iran ceasefire by...?
+  - April 7                :   8.5%
+  - April 15               :  18.5%
+  - April 30               :  38.5%
+  - May 31                 :  55.5%
+  - June 30                :  62.5%
+  - December 31            :  73.5%
+
+--- Exporting Optimized Data ---
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/postgrest/_sync/request_builder.py", line 81, in execute
+    json_obj = model_validate_json(APIErrorFromJSON, r.content)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/postgrest/utils.py", line 56, in model_validate_json
+    return model.model_validate_json(contents)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/pydantic/main.py", line 766, in model_validate_json
+    return cls.__pydantic_validator__.validate_json(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for APIErrorFromJSON
+  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value=b'<!DOCTYPE html>\n<!--[i.../div>\n</body>\n</html>', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 144, in <module>
+    export_data()
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 97, in export_data
+    series_res = supabase.rpc("get_optimized_polymarket_series").execute()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/postgrest/_sync/request_builder.py", line 84, in execute
+    raise APIError(generate_default_error_message(r))
+postgrest.exceptions.APIError: {'message': 'JSON could not be generated', 'code': 502, 'hint': 'Refer to full message for details', 'details': 'b\'<!DOCTYPE html>\\n<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en-US"> <![endif]-->\\n<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en-US"> <![endif]-->\\n<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en-US"> <![endif]-->\\n<!--[if gt IE 8]><!--> <html class="no-js" lang="en-US"> <!--<![endif]-->\\n<head>\\n\\n<title> | 502: Bad gateway</title>\\n<meta charset="UTF-8" />\\n<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\\n<meta http-equiv="X-UA-Compatible" content="IE=Edge" />\\n<meta name="robots" content="noindex, nofollow" />\\n<meta name="viewport" content="width=device-width,initial-scale=1" />\\n<link rel="stylesheet" id="cf_styles-css" href="/cdn-cgi/styles/main.css" />\\n</head>\\n<body>\\n<div id="cf-wrapper">\\n    <div id="cf-error-details" class="p-0">\\n        <header class="mx-auto pt-10 lg:pt-6 lg:px-8 w-240 lg:w-full mb-8">\\n            <h1 class="inline-block sm:block sm:mb-2 font-light text-60 lg:text-4xl text-black-dark leading-tight mr-2">\\n                <span class="inline-block">Bad gateway</span>\\n                <span class="code-label">Error code 502</span>\\n            </h1>\\n            <div>\\n                Visit <a href="https://www.cloudflare.com/5xx-error-landing?utm_source=errorcode_502&utm_campaign=tyktxwlekvvdjftkexzd.supabase.co" target="_blank" rel="noopener noreferrer">cloudflare.com</a> for more information.\\n            </div>\\n            <div class="mt-3">2026-04-02 00:10:05 UTC</div>\\n        </header>\\n        <div class="my-8 bg-gradient-gray">\\n            <div class="w-240 lg:w-full mx-auto">\\n                <div class="clearfix md:px-8">\\n                    <div id="cf-browser-status" class=" relative w-1/3 md:w-full py-15 md:p-0 md:py-8 md:text-left md:border-solid md:border-0 md:border-b md:border-gray-400 overflow-hidden float-left md:float-none text-center">\\n  <div class="relative mb-10 md:m-0">\\n    \\n    <span class="cf-icon-browser block md:hidden h-20 bg-center bg-no-repeat"></span>\\n    <span class="cf-icon-ok w-12 h-12 absolute left-1/2 md:left-auto md:right-0 md:top-0 -ml-6 -bottom-4"></span>\\n    \\n  </div>\\n  <span class="md:block w-full truncate">You</span>\\n  <h3 class="md:inline-block mt-3 md:mt-0 text-2xl text-gray-600 font-light leading-1.3">\\n  \\n    Browser\\n  \\n  </h3>\\n  \\n  <span class="leading-1.3 text-2xl text-green-success">Working</span>\\n  \\n</div>\\n                    <div id="cf-cloudflare-status" class=" relative w-1/3 md:w-full py-15 md:p-0 md:py-8 md:text-left md:border-solid md:border-0 md:border-b md:border-gray-400 overflow-hidden float-left md:float-none text-center">\\n  <div class="relative mb-10 md:m-0">\\n    <a href="https://www.cloudflare.com/5xx-error-landing?utm_source=errorcode_502&#38;utm_campaign=tyktxwlekvvdjftkexzd.supabase.co" target="_blank" rel="noopener noreferrer">\\n    <span class="cf-icon-cloud block md:hidden h-20 bg-center bg-no-repeat"></span>\\n    <span class="cf-icon-ok w-12 h-12 absolute left-1/2 md:left-auto md:right-0 md:top-0 -ml-6 -bottom-4"></span>\\n    </a>\\n  </div>\\n  <span class="md:block w-full truncate">Amsterdam</span>\\n  <h3 class="md:inline-block mt-3 md:mt-0 text-2xl text-gray-600 font-light leading-1.3">\\n  <a href="https://www.cloudflare.com/5xx-error-landing?utm_source=errorcode_502&utm_campaign=tyktxwlekvvdjftkexzd.supabase.co" target="_blank" rel="noopener noreferrer">\\n    Cloudflare\\n  </a>\\n  </h3>\\n  \\n  <span class="leading-1.3 text-2xl text-green-success">Working</span>\\n  \\n</div>\\n                    <div id="cf-host-status" class="cf-error-source relative w-1/3 md:w-full py-15 md:p-0 md:py-8 md:text-left md:border-solid md:border-0 md:border-b md:border-gray-400 overflow-hidden float-left md:float-none text-center">\\n  <div class="relative mb-10 md:m-0">\\n    \\n    <span class="cf-icon-server block md:hidden h-20 bg-center bg-no-repeat"></span>\\n    <span class="cf-icon-error w-12 h-12 absolute left-1/2 md:left-auto md:right-0 md:top-0 -ml-6 -bottom-4"></span>\\n    \\n  </div>\\n  <span class="md:block w-full truncate">tyktxwlekvvdjftkexzd.supabase.co</span>\\n  <h3 class="md:inline-block mt-3 md:mt-0 text-2xl text-gray-600 font-light leading-1.3">\\n  \\n    Host\\n  \\n  </h3>\\n  \\n  <span class="leading-1.3 text-2xl text-red-error">Error</span>\\n  \\n</div>\\n                </div>\\n            </div>\\n        </div>\\n\\n        <div class="w-240 lg:w-full mx-auto mb-8 lg:px-8">\\n            <div class="clearfix">\\n                <div class="w-1/2 md:w-full float-left pr-6 md:pb-10 md:pr-0 leading-relaxed">\\n                    <h2 class="text-3xl font-normal leading-1.3 mb-4">What happened?</h2>\\n                    <p>The web server reported a bad gateway error.</p>\\n                </div>\\n                <div class="w-1/2 md:w-full float-left leading-relaxed">\\n                    <h2 class="text-3xl font-normal leading-1.3 mb-4">What can I do?</h2>\\n                    <p class="mb-6">Please try again in a few minutes.</p>\\n                </div>\\n            </div>\\n        </div>\\n\\n        <div class="cf-error-footer cf-wrapper w-240 lg:w-full py-10 sm:py-4 sm:px-8 mx-auto text-center sm:text-left border-solid border-0 border-t border-gray-300">\\n    <p class="text-13">\\n      <span class="cf-footer-item sm:block sm:mb-1">Cloudflare Ray ID: <strong class="font-semibold">9e5b9bc58927df76</strong></span>\\n      <span class="cf-footer-separator sm:hidden">&bull;</span>\\n      <span id="cf-footer-item-ip" class="cf-footer-item hidden sm:block sm:mb-1">\\n        Your IP:\\n        <button type="button" id="cf-footer-ip-reveal" class="cf-footer-ip-reveal-btn">Click to reveal</button>\\n        <span class="hidden" id="cf-footer-ip">77.163.190.101</span>\\n        <span class="cf-footer-separator sm:hidden">&bull;</span>\\n      </span>\\n      <span class="cf-footer-item sm:block sm:mb-1"><span>Performance &amp; security by</span> <a rel="noopener noreferrer" href="https://www.cloudflare.com/5xx-error-landing?utm_source=errorcode_502&#38;utm_campaign=tyktxwlekvvdjftkexzd.supabase.co" id="brand_link" target="_blank">Cloudflare</a></span>\\n      \\n    </p>\\n    <script>(function(){function d(){var b=a.getElementById("cf-footer-item-ip"),c=a.getElementById("cf-footer-ip-reveal");b&&"classList"in b&&(b.classList.remove("hidden"),c.addEventListener("click",function(){c.classList.add("hidden");a.getElementById("cf-footer-ip").classList.remove("hidden")}))}var a=document;document.addEventListener&&a.addEventListener("DOMContentLoaded",d)})();</script>\\n  </div><!-- /.error-footer -->\\n\\n    </div>\\n</div>\\n</body>\\n</html>\''}
+[main 85fcef8] data: update snapshots [skip ci]
+ 1 file changed, 9134 insertions(+), 8896 deletions(-)
+[main 6651583] data: update snapshots [skip ci]
+ 1 file changed, 1642 insertions(+), 1642 deletions(-)
+[main 3f2c35e] data: update snapshots [skip ci]
+ 1 file changed, 7499 insertions(+), 22101 deletions(-)
+[main e3b2563] data: update snapshots [skip ci]
+ 1 file changed, 4565 insertions(+), 4579 deletions(-)
+[main e69f399] data: update snapshots [skip ci]
+ 2 files changed, 4567 insertions(+), 4315 deletions(-)
+[main a71577b] data: update snapshots [skip ci]
+ 1 file changed, 4661 insertions(+), 4423 deletions(-)
+[main bef9ff6] data: update snapshots [skip ci]
+ 1 file changed, 4779 insertions(+), 4541 deletions(-)
