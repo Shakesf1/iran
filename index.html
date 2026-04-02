@@ -451,17 +451,10 @@
             <div id="bdtiChart" class="w-full h-[400px]"></div>
         </section>
 
-        <section class="mb-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                <h2 class="text-xl font-bold text-slate-800">Launch Tempo</h2>
-                <p class="text-sm text-slate-500 mb-4">Measures attack frequency. 
-                    <span class="text-red-500 font-bold">Red bars</span> indicate the 6h surge is exceeding the 24h baseline (High Intensity).</p>
-                <div id="tempoChart" class="h-[300px]"></div>
-            </div>
-
+        <section class="mb-16">
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
                 <h2 class="text-xl font-bold text-slate-800">Theater Spread</h2>
-                <p class="text-sm text-slate-500 mb-4">Unique countries/territories targeted per hour. A spike here indicates conflict horizontal expansion.</p>
+                <p class="text-sm text-slate-500 mb-4">Max unique countries/territories targeted per day. A spike here indicates conflict horizontal expansion.</p>
                 <div id="spreadChart" class="h-[300px]"></div>
             </div>
         </section>
@@ -885,42 +878,20 @@ async function renderEscalationCharts() {
     const res = await fetch('./escalation_signals.json');
     const signals = descramble((await res.json()).payload);
     
-    const x = signals.map(s => s.timestamp);
-    const scores = signals.map(s => s.escalation_score); // Added definition
-    const threshold = 2.0; // Added const
-
-    const tempoLayout = {
-        ...layoutBase, // This keeps all your existing layoutBase settings
-        legend: { 
-            orientation: "h",   // Horizontal legend
-            yanchor: "bottom", 
-            y: -0.4,            // Positions it below the x-axis
-            xanchor: "center", 
-            x: 0.5              // Centers it
-        },
-        margin: { t: 20, r: 20, b: 80, l: 40 } // Ensure there is enough bottom margin (b)
-    };
-
-    // Chart 1: Tempo with 24h Avg & Conditional Coloring
-    Plotly.newPlot('tempoChart', [
-        { 
-            x: x, y: signals.map(s => s.attacks), 
-            name: 'Raw Attacks', type: 'bar', 
-            marker: { color: signals.map(s => s.bar_color) } 
-        },
-        { 
-            x: x, y: signals.map(s => s.rolling_6h), 
-            name: '6h Trend', type: 'scattergl', line: { color: 'black', width: 2 } 
-        },
-        { 
-            x: x, y: signals.map(s => s.rolling_24h), 
-            name: '24h Baseline', type: 'scattergl', line: { color: '#3b82f6', dash: 'dot', width: 2 } 
+    // Theater Spread: aggregate hourly data to daily (max countries_hit per day)
+    const dailySpread = {};
+    signals.forEach(s => {
+        const date = (s.timestamp || '').substring(0, 10);
+        const val = s.countries_hit || 0;
+        if (!dailySpread[date] || val > dailySpread[date]) {
+            dailySpread[date] = val;
         }
-    ], tempoLayout, { displaylogo: false, responsive: true, displayModeBar: false });
+    });
+    const spreadDates = Object.keys(dailySpread).sort();
+    const spreadValues = spreadDates.map(d => dailySpread[d]);
 
-    // Chart 2: Theater Spread (Simplified)
     Plotly.newPlot('spreadChart', [{
-        x: x, y: signals.map(s => s.countries_hit),
+        x: spreadDates, y: spreadValues,
         type: 'bar', marker: { color: '#8b5cf6' }
     }], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
@@ -1514,7 +1485,7 @@ setTimeout(function(){
         <h3 class="text-lg font-bold text-slate-800 mb-4">Methodology & Data Sources</h3>
         <div class="space-y-4 text-xs">
             <p>
-                <strong>Multi-Source OSINT:</strong> Aggregated real-time intelligence from Telegram channels, Israeli Home Office Command alerts, and regional news wires. It tracks launch tempos and theater spread.
+                <strong>Multi-Source OSINT:</strong> Aggregated real-time intelligence from Telegram channels, Israeli Home Office Command alerts, and regional news wires. It tracks theater spread across conflict zones.
             </p>
             <p>
                 <strong>Baltic Exchange Data:</strong> Reflects daily cost fluctuations in crude shipping (BDTI). This captures the market's "Risk Premium," including insurance and security surcharges.
