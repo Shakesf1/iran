@@ -890,10 +890,19 @@ async function renderEscalationCharts() {
     const spreadDates = Object.keys(dailySpread).sort();
     const spreadValues = spreadDates.map(d => dailySpread[d]);
 
+    const spreadLayout = {
+        ...layoutBase,
+        hoverlabel: {
+            bgcolor: '#1e293b',
+            bordercolor: '#1e293b',
+            font: { color: '#ffffff', size: 13 }
+        }
+    };
+
     Plotly.newPlot('spreadChart', [{
         x: spreadDates, y: spreadValues,
         type: 'bar', marker: { color: '#8b5cf6' }
-    }], layoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
+    }], spreadLayout, { displaylogo: false, responsive: true, displayModeBar: false });
 
 
 }
