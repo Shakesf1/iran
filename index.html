@@ -603,7 +603,7 @@ async function loadEscalationChart() {
             }]
         };
 
-        Plotly.newPlot('escalationChart', traces, layout, { displayModeBar: false, responsive: true });
+        Plotly.newPlot('escalationChart', traces, layout, { displayModeBar: false, responsive: false });
     } catch (err) {
         console.error("Escalation Data Error:", err);
     }
@@ -709,6 +709,7 @@ function filterOil(range) {
 
     const layout = {
         ...layoutBase,
+        height: 450,
         showlegend: true,
         legend: { orientation: "h", y: -0.2, x: 0.5, xanchor: 'center' },
         margin: { t: 40, r: 80, b: 80, l: 60 },
@@ -738,7 +739,7 @@ function filterOil(range) {
         }
     };
 
-    Plotly.newPlot('oilSpreadChart', traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
+    Plotly.newPlot('oilSpreadChart', traces, layout, { displaylogo: false, responsive: false, displayModeBar: false });
 }
 
 async function renderBDTI() {
@@ -797,6 +798,7 @@ function filterBDTI(range) {
 
     const bdtiLayout = {
         ...layoutBase,
+        height: 400,
         xaxis: {
             ...layoutBase.xaxis,
             type: 'date',
@@ -819,7 +821,7 @@ function filterBDTI(range) {
         hovertemplate: '<b>BDTI</b>: %{y}<extra></extra>'
     };
 
-    Plotly.newPlot('bdtiChart', [trace], bdtiLayout, { displaylogo: false, responsive: true, displayModeBar: false });
+    Plotly.newPlot('bdtiChart', [trace], bdtiLayout, { displaylogo: false, responsive: false, displayModeBar: false });
 }
 
 
@@ -893,6 +895,7 @@ async function renderEscalationCharts() {
 
     const spreadLayout = {
         ...layoutBase,
+        height: 300,
         hoverlabel: {
             bgcolor: '#1e293b',
             bordercolor: '#1e293b',
@@ -903,7 +906,7 @@ async function renderEscalationCharts() {
     Plotly.newPlot('spreadChart', [{
         x: spreadDates, y: spreadValues,
         type: 'bar', marker: { color: '#8b5cf6' }
-    }], spreadLayout, { displaylogo: false, responsive: true, displayModeBar: false });
+    }], spreadLayout, { displaylogo: false, responsive: false, displayModeBar: false });
 
 
 }
@@ -933,13 +936,14 @@ function renderDailyTransitChart(crossings, targetId) {
 
     const layout = {
         ...layoutBase,
+        height: 350,
         barmode: 'stack',
         legend: { orientation: "h", y: -0.2, x: 0.5, xanchor: 'center' },
         xaxis: { gridcolor: '#f1f5f9', fixedrange: true, tickformat: '%d %b' },
         yaxis: { gridcolor: '#f1f5f9', fixedrange: true, dtick: 1 } // dtick 1 for clearer small counts
     };
 
-    Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
+    Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: false, displayModeBar: false });
 }
 
 async function renderCasualties() {
@@ -1066,6 +1070,7 @@ function renderCasualtyChart(blocName, elementId, data, label) {
 
     const layout = {
         ...layoutBase,
+        height: 320,
         title: { text: `<b>${blocName}</b>: ${label}<br><span style="font-size:12px; color:#64748b; font-weight:normal;">Bars: Daily / Line: Cumulative (RHS)</span>`, x: 0.05, y:0.95 },
         barmode: 'stack',
         showlegend: true,
@@ -1076,7 +1081,7 @@ function renderCasualtyChart(blocName, elementId, data, label) {
         yaxis2: { title: `Total ${label}`, overlaying: 'y', side: 'right', fixedrange: true, showgrid: false }
     };
 
-    Plotly.newPlot(elementId, traces, layout, { responsive: true, displayModeBar: false });
+    Plotly.newPlot(elementId, traces, layout, { responsive: false, displayModeBar: false });
 }
 
 function updateStatsCards() {
@@ -1162,11 +1167,13 @@ const layout = {
 
 async function loadCharts() {
     try {
-        await renderOilSpread();
-        await renderBDTI();
-        await renderEscalationCharts();
-        await renderCasualties();
-        await loadEscalationChart();
+        await Promise.all([
+            renderOilSpread(),
+            renderBDTI(),
+            renderEscalationCharts(),
+            renderCasualties(),
+            loadEscalationChart()
+        ]);
         const [dailyRes, hourlyRes, summaryRes, shippingRes] = await Promise.all([
             fetch('./daily_data.json'),
             fetch('./hourly_data.json'),
@@ -1279,7 +1286,8 @@ async function loadCharts() {
         }
 
         const layout = { 
-            barmode: 'stack', 
+            barmode: 'stack',
+            height: 500,
             margin: { t: 20, r: 20, b: 80, l: 40 }, 
             hovermode: 'x unified', 
             font: { family: 'Inter, sans-serif' },
@@ -1290,7 +1298,7 @@ async function loadCharts() {
             yaxis: { fixedrange: true }
         };
 
-        Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, { displaylogo: false, responsive: true, displayModeBar: false });
+        Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, { displaylogo: false, responsive: false, displayModeBar: false });
 
         // --- POLYMARKET MINI INTEGRATION ---
         try {
@@ -1433,6 +1441,7 @@ async function loadCharts() {
 
                 const chartLayout = {
                     ...layoutBase,
+                    height: 250,
                     showlegend: false,
                     hovermode: 'x unified',
                     hoverlabel: { bgcolor: 'rgba(255, 255, 255, 0.98)', font: { size: 9 }, namelength: 0 },
@@ -1440,7 +1449,7 @@ async function loadCharts() {
                     xaxis: { type: 'date', tickfont: { size: 8 }, fixedrange: true },
                     margin: { t: 5, b: 30, l: 30, r: 10 }
                 };
-                Plotly.newPlot(containerId, traces, chartLayout, { responsive: true, displayModeBar: false });
+                Plotly.newPlot(containerId, traces, chartLayout, { responsive: false, displayModeBar: false });
             }
 
             renderPolyMiniChart(BAB_EVENT_ID, 'poly-bab-chart');
@@ -1467,6 +1476,25 @@ document.addEventListener('DOMContentLoaded', () => {
 setTimeout(function(){
    window.location.reload();
 }, 300000); // 300,000 milliseconds = 300 seconds
+
+// Manual resize handler — charts use responsive:false so they render once and never blank out.
+// This restores auto-width on window resize instead.
+const _chartIds = [
+    'escalationChart', 'oilSpreadChart', 'bdtiChart', 'spreadChart',
+    'dailyChart', 'vlccDailyChart', 'cargoDailyChart',
+    'chart-iran-cas', 'chart-us-cas', 'chart-iran-inj', 'chart-us-inj',
+    'poly-bab-chart', 'poly-conflict-chart'
+];
+let _resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(() => {
+        _chartIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.data) Plotly.Plots.resize(el);
+        });
+    }, 150);
+});
 
     </script>
 
