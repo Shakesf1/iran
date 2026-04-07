@@ -297,7 +297,7 @@
         <span class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Live Market Probability</span>
     </div>
     <p class="text-slate-500 text-sm italic mb-8">
-        Market-implied probabilities. For multi-date events, we deduct earlier date probabilities to show the specific risk window for each period. Which means that if it is 10.5% for March 31, 11% for April 7th, then probability it ends before April 7th is 21.5% (since if it ends before March 31st it also ends before April 7th)
+        Market-implied probabilities. <strong class="not-italic text-slate-600">Raw Prob</strong> shows the market price as-is. <strong class="not-italic text-slate-600">Adj. Prob</strong> deducts earlier date probabilities for multi-date events to show the specific risk window per period (e.g. if March 31 is 10.5% and April 7 is 11%, the adjusted April 7 probability is 21.5% cumulative; only dates not yet passed are shown).
     </p>
     
 
@@ -683,24 +683,20 @@ const meta = await metaRes.json();
 const polySeries = await polySeriesRes.json();
 
 
-if (polySeries && polySeries.length > 0) {
-    // 1. Find the latest timestamp (assuming the first element or sorting)
-    // If polySeries is already sorted by date descending, use polySeries[0]
-    // Otherwise, find the max:
-    const latestPolyTime = polySeries.reduce((max, s) => 
+// Find the latest timestamp across all series data
+const latestPolyTime = polySeries && polySeries.length > 0
+    ? polySeries.reduce((max, s) => 
         new Date(s.created_at) > new Date(max) ? s.created_at : max, 
-        polySeries[0].created_at
-    );
+        polySeries[0].created_at)
+    : null;
+const latestPolyDate = latestPolyTime ? latestPolyTime.split('T')[0] : null;
 
-    if (latestPolyTime) {
-        const polyDateObj = new Date(latestPolyTime);
-        
-        // 2. Update the 'poly_update' span
-        document.getElementById('poly_update').innerText = polyDateObj.toLocaleString([], {
-            dateStyle: 'medium', 
-            timeStyle: 'short'
-        });
-    }
+if (latestPolyTime) {
+    const polyDateObj = new Date(latestPolyTime);
+    document.getElementById('poly_update').innerText = polyDateObj.toLocaleString([], {
+        dateStyle: 'medium', 
+        timeStyle: 'short'
+    });
 }
 
 const grid = document.getElementById('poly-charts-grid');
@@ -746,6 +742,9 @@ meta.markets.forEach(m => {
 
     const history = marketGroups[mId];
     if (!history || history.length === 0) return;
+
+    // Skip markets that have not been updated in the latest data pull
+    if (latestPolyDate && history[0].created_at.split('T')[0] < latestPolyDate) return;
 
     const latest = history[0];
     const oldRecord = history.find(s => new Date(s.created_at) <= twentyFourHoursAgo) || history[history.length - 1];
@@ -793,6 +792,7 @@ meta.markets.forEach(m => {
     marketChanges.push({
         event: eventTitle,
         market: m.label,
+        rawProb: latest.probability,
         current: displayProb,
         change: displayChange,
         isLeader: isLeader
@@ -817,7 +817,8 @@ let tableHTML = `<table class="min-w-full divide-y divide-slate-200 text-sm">
         <tr>
             <th class="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Event</th>
             <th class="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Market</th>
-            <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Prob</th>
+            <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Raw Prob</th>
+            <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Adj. Prob</th>
             <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">24h Change</th>
         </tr>
     </thead>
@@ -845,6 +846,7 @@ marketChanges.forEach(row => {
         <tr class="${borderClass} hover:bg-slate-50 transition-colors">
             <td class="px-4 py-2 font-bold text-slate-800 text-[10px] uppercase leading-tight">${displayEvent}</td>
             <td class="px-4 py-2 text-slate-600 border-l border-slate-50">${row.market}</td>
+            <td class="px-4 py-2 text-right font-mono text-slate-400">${row.rawProb.toFixed(1)}%</td>
             <td class="px-4 py-2 text-right font-mono font-bold">${row.current.toFixed(1)}%</td>
             <td class="px-4 py-2 text-right font-mono font-bold ${changeClass}">${row.change >= 0 ? '+' : ''}${row.change.toFixed(1)}%</td>
         </tr>`;
