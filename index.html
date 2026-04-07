@@ -1329,6 +1329,11 @@ async function loadCharts() {
             const polyNow = new Date();
             const poly24hAgo = new Date(polyNow.getTime() - 24 * 60 * 60 * 1000);
 
+            // Find the global latest date across all series data
+            const polyLatestDate = polySeries.reduce((max, s) =>
+                s.created_at > max ? s.created_at : max, polySeries[0].created_at
+            ).split('T')[0];
+
             // Compute deducted probability rows for a given event
             function calcPolyRows(eventId) {
                 const eventMarkets = polyMeta.markets.filter(m => String(m.event_id) === eventId);
@@ -1337,22 +1342,25 @@ async function loadCharts() {
                     const mid = String(m.market_id);
                     const history = polyMarketGroups[mid];
                     if (!history || history.length === 0) return null;
+                    // Skip markets not present in the latest snapshot
+                    if (history[0].created_at.split('T')[0] < polyLatestDate) return null;
                     const latest = history[0];
                     const oldRecord = history.find(s => new Date(s.created_at) <= poly24hAgo) || history[history.length - 1];
-                    let displayProb = latest.probability;
-                    let displayChange = latest.probability - oldRecord.probability;
+                    const rawProb = latest.probability;
+                    let displayProb = rawProb;
+                    let displayChange = rawProb - oldRecord.probability;
                     if (idx > 0) {
                         const prevMid = String(sorted[idx - 1].market_id);
                         const prevHistory = polyMarketGroups[prevMid];
                         if (prevHistory && prevHistory.length > 0) {
                             const prevLatest = prevHistory[0];
                             const prevOld = prevHistory.find(s => new Date(s.created_at) <= poly24hAgo) || prevHistory[prevHistory.length - 1];
-                            displayProb = Math.max(0, latest.probability - prevLatest.probability);
+                            displayProb = Math.max(0, rawProb - prevLatest.probability);
                             const prevDeductedProb = Math.max(0, oldRecord.probability - prevOld.probability);
                             displayChange = displayProb - prevDeductedProb;
                         }
                     }
-                    return { label: m.label, prob: displayProb, change: displayChange };
+                    return { label: m.label, rawProb: rawProb, prob: displayProb, change: displayChange };
                 }).filter(Boolean);
             }
 
@@ -1366,7 +1374,8 @@ async function loadCharts() {
                     <tr>
                         <th class="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Event</th>
                         <th class="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Deadline</th>
-                        <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Prob</th>
+                        <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Raw Prob</th>
+                        <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Adj. Prob</th>
                         <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">24h Δ</th>
                     </tr>
                 </thead>
@@ -1381,9 +1390,11 @@ async function loadCharts() {
                     miniHTML += `<tr class="${borderClass} hover:bg-slate-50 transition-colors">
                         <td class="px-4 py-2 font-bold text-slate-800 text-[10px] uppercase leading-tight">${i === 0 ? title : ''}</td>
                         <td class="px-4 py-2 text-slate-600 border-l border-slate-50">${row.label}</td>
+                        <td class="px-4 py-2 text-right font-mono text-slate-400">${row.rawProb.toFixed(1)}%</td>
                         <td class="px-4 py-2 text-right font-mono font-bold">${row.prob.toFixed(1)}%</td>
                         <td class="px-4 py-2 text-right font-mono font-bold ${changeClass}">${row.change >= 0 ? '+' : ''}${row.change.toFixed(1)}%</td>
                     </tr>`;
+
                 });
             });
             miniHTML += `</tbody></table>`;
