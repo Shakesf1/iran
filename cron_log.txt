@@ -32940,6 +32940,7 @@ postgrest.exceptions.APIError: {'message': 'JSON could not be generated', 'code'
  1 file changed, 4661 insertions(+), 4423 deletions(-)
 [main bef9ff6] data: update snapshots [skip ci]
  1 file changed, 4779 insertions(+), 4541 deletions(-)
+<<<<<<< Updated upstream
 [main ebd4cd8] data: update snapshots [skip ci]
  4 files changed, 5126 insertions(+), 4492 deletions(-)
 [main 9167641] data: update snapshots [skip ci]
@@ -35824,3 +35825,147 @@ See "git help gc" for manual housekeeping.
  3 files changed, 2619 insertions(+), 2571 deletions(-)
 [main ce24056e] data: update snapshots [skip ci]
  2 files changed, 6503 insertions(+), 6412 deletions(-)
+=======
+>>>>>>> Stashed changes
+error: Committing is not possible because you have unmerged files.
+hint: Fix them up in the work tree, and then use 'git add/rm <file>'
+hint: as appropriate to mark resolution and make a commit.
+fatal: Exiting because of an unresolved conflict.
+U	cron_log.txt
+U	index.html
+cron_log.txt: needs merge
+index.html: needs merge
+error: Pulling is not possible because you have unmerged files.
+hint: Fix them up in the work tree, and then use 'git add/rm <file>'
+hint: as appropriate to mark resolution and make a commit.
+fatal: Exiting because of an unresolved conflict.
+Everything up-to-date
+cron_log.txt: needs merge
+index.html: needs merge
+The stash entry is kept in case you need it again.
+--- Iran Intelligence Snapshot | 2026-04-07 08:30 ---
+
+Iran leader end of 2026? (Top 10 Candidates)
+  - Mojtaba Khamenei       :  50.9%
+  - Hassan Rouhani         :  11.1%
+  - Reza Pahlavi           :   9.0%
+  - No Head of State       :   3.2%
+  - Mohammad-Bagher Ghalibaf :   2.9%
+  - Sadegh Larijani        :   1.8%
+  - Masoud Pezeshkian      :   1.8%
+  - Mahmoud Ahmadinejad    :   1.1%
+  - Abbas Araghchi         :   1.1%
+  - Hassan Khomeini        :   0.9%
+
+Iran x Israel/US conflict ends by...?
+  - April 15               :   6.3%
+  - April 7                :   0.8%
+  - April 30               :  17.5%
+  - May 15                 :  32.5%
+  - June 30                :  61.5%
+  - December 31            :  84.5%
+
+Bab el-Mandeb Strait effectively closed by...?
+  - March 31               :   0.3%
+  - April 30               :  28.5%
+
+Kharg Island no longer under Iranian control by...?
+  - April 15               :   5.5%
+  - April 30               :  14.5%
+  - May 31                 :  21.5%
+  - June 30                :  29.5%
+
+Trump announces end of military operations against Iran by ...?
+  - April 7                :   2.1%
+  - April 15               :  14.5%
+  - April 30               :  30.5%
+  - May 31                 :  61.5%
+  - June 30                :  71.5%
+
+Strait of Hormuz traffic returns to normal by end of April?
+  - Strait of Hormuz traffic returns to normal by end of April? :  14.5%
+
+US x Iran ceasefire by...?
+  - April 7                :   2.7%
+  - April 15               :  13.5%
+  - April 30               :  26.5%
+  - May 15                 :  41.5%
+  - May 31                 :  46.5%
+  - June 30                :  56.5%
+  - December 31            :  74.5%
+
+--- Exporting Optimized Data ---
+Pulling latest changes from remote...
+Pushing to GitHub...
+Successfully pushed to GitHub.
+error: Committing is not possible because you have unmerged files.
+hint: Fix them up in the work tree, and then use 'git add/rm <file>'
+hint: as appropriate to mark resolution and make a commit.
+fatal: Exiting because of an unresolved conflict.
+U	cron_log.txt
+U	index.html
+cron_log.txt: needs merge
+index.html: needs merge
+error: Pulling is not possible because you have unmerged files.
+hint: Fix them up in the work tree, and then use 'git add/rm <file>'
+hint: as appropriate to mark resolution and make a commit.
+fatal: Exiting because of an unresolved conflict.
+Everything up-to-date
+cron_log.txt: needs merge
+index.html: needs merge
+The stash entry is kept in case you need it again.
+--- Iran Intelligence Snapshot | 2026-04-07 08:35 ---
+
+Iran leader end of 2026? (Top 10 Candidates)
+  - Mojtaba Khamenei       :  51.4%
+  - Hassan Rouhani         :  11.1%
+  - Reza Pahlavi           :   9.0%
+  - No Head of State       :   3.2%
+  - Mohammad-Bagher Ghalibaf :   2.9%
+  - Sadegh Larijani        :   1.8%
+  - Masoud Pezeshkian      :   1.8%
+  - Mahmoud Ahmadinejad    :   1.1%
+  - Abbas Araghchi         :   1.1%
+  - Hassan Khomeini        :   0.9%
+
+Iran x Israel/US conflict ends by...?
+  - April 15               :   6.5%
+  - April 7                :   0.8%
+  - April 30               :  17.5%
+  - May 15                 :  32.5%
+  - June 30                :  61.5%
+  - December 31            :  84.5%
+
+Bab el-Mandeb Strait effectively closed by...?
+  - March 31               :   0.3%
+  - April 30               :  28.5%
+
+Kharg Island no longer under Iranian control by...?
+  - April 15               :   5.5%
+  - April 30               :  14.5%
+  - May 31                 :  21.5%
+  - June 30                :  29.5%
+
+Trump announces end of military operations against Iran by ...?
+  - April 7                :   2.2%
+  - April 15               :  14.5%
+  - April 30               :  30.5%
+  - May 31                 :  61.5%
+  - June 30                :  71.5%
+
+Strait of Hormuz traffic returns to normal by end of April?
+  - Strait of Hormuz traffic returns to normal by end of April? :  14.5%
+
+US x Iran ceasefire by...?
+  - April 7                :   2.7%
+  - April 15               :  13.5%
+  - April 30               :  26.5%
+  - May 15                 :  41.5%
+  - May 31                 :  46.5%
+  - June 30                :  56.5%
+  - December 31            :  74.5%
+
+--- Exporting Optimized Data ---
+Pulling latest changes from remote...
+Pushing to GitHub...
+Successfully pushed to GitHub.
