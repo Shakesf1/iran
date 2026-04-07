@@ -229,7 +229,7 @@
         This hybrid Z-score approach balances physical battlefield tempo with global market stress to provide a
         timely indicator of escalation or de-escalation. Most recent observation updates intraday as new data arrives (every 30 minutes)
     </p>
-    <div id="escalationChart" class="h-[350px]"></div>
+    <div id="escalationChart" class="h-[350px]" style="min-height:350px"></div>
 </section>
 
 <section class="mb-8"> 
@@ -361,7 +361,7 @@
         <section class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-2 text-slate-800">Daily Escalation Trend</h2>
             <p class="text-sm text-slate-500 mb-4">Strikes originating from Iran (or its allies) on a daily basis, also when origin is not confirmed. All hits are assumed to be by Iran.</p>
-            <div id="dailyChart" class="w-full h-[500px]"></div>
+            <div id="dailyChart" class="w-full h-[500px]" style="min-height:500px"></div>
         </section>
 
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
@@ -374,11 +374,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                 <div>
                     <h3 class="text-xs font-bold text-slate-500 mb-2 uppercase text-center tracking-widest">Bab el-Mandeb Strait: Closure Probability</h3>
-                    <div id="poly-bab-chart" class="h-[250px] w-full"></div>
+                    <div id="poly-bab-chart" class="h-[250px] w-full" style="min-height:250px"></div>
                 </div>
                 <div>
                     <h3 class="text-xs font-bold text-slate-500 mb-2 uppercase text-center tracking-widest">Iran × Israel/US Conflict Ends Probability</h3>
-                    <div id="poly-conflict-chart" class="h-[250px] w-full"></div>
+                    <div id="poly-conflict-chart" class="h-[250px] w-full" style="min-height:250px"></div>
                 </div>
             </div>
         </section>
@@ -396,7 +396,7 @@
                     <button onclick="filterOil('ALL')" id="btn-oil-ALL" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">ALL</button>
                 </div>
             </div>
-            <div id="oilSpreadChart" class="w-full h-[450px]"></div>
+            <div id="oilSpreadChart" class="w-full h-[450px]" style="min-height:450px"></div>
         </section>
 
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
@@ -405,7 +405,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
                 <div>
                     <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
-                    <div id="vlccDailyChart" class="w-full h-[350px]"></div>
+                    <div id="vlccDailyChart" class="w-full h-[350px]" style="min-height:350px"></div>
                 </div>
             </div>
         </section>
@@ -415,21 +415,21 @@
             <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
                 <div>
                     <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
-                    <div id="cargoDailyChart" class="w-full h-[350px]"></div>
+                    <div id="cargoDailyChart" class="w-full h-[350px]" style="min-height:350px"></div>
                 </div>
             </div>
         </section>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-    <div id="chart-iran-cas" class="bg-white p-4 rounded shadow h-80"></div>
+    <div id="chart-iran-cas" class="bg-white p-4 rounded shadow h-80" style="min-height:320px"></div>
 
-    <div id="chart-us-cas" class="bg-white p-4 rounded shadow h-80"></div>
+    <div id="chart-us-cas" class="bg-white p-4 rounded shadow h-80" style="min-height:320px"></div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-    <div id="chart-iran-inj" class="bg-white p-4 rounded shadow h-80"></div>
-    <div id="chart-us-inj" class="bg-white p-4 rounded shadow h-80"></div>
+    <div id="chart-iran-inj" class="bg-white p-4 rounded shadow h-80" style="min-height:320px"></div>
+    <div id="chart-us-inj" class="bg-white p-4 rounded shadow h-80" style="min-height:320px"></div>
 </div>
 
 <p class="text-[10px] text-slate-400 leading-relaxed mb-8 px-2">
@@ -449,14 +449,14 @@
                     <button onclick="filterBDTI('ALL')" id="btn-ALL" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">ALL</button>
                 </div>
             </div>
-            <div id="bdtiChart" class="w-full h-[400px]"></div>
+            <div id="bdtiChart" class="w-full h-[400px]" style="min-height:400px"></div>
         </section>
 
         <section class="mb-16">
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
                 <h2 class="text-xl font-bold text-slate-800">Theater Spread</h2>
                 <p class="text-sm text-slate-500 mb-4">Max unique countries/territories targeted per day. A spike here indicates conflict horizontal expansion.</p>
-                <div id="spreadChart" class="h-[300px]"></div>
+                <div id="spreadChart" class="h-[300px]" style="min-height:300px"></div>
             </div>
         </section>
 
