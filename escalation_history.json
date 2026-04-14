@@ -441,12 +441,22 @@
     },
     {
         "date": "2026-04-13",
-        "composite": -0.56,
+        "composite": -0.54,
         "components": {
-            "Attacks": -1.02,
+            "Attacks": -0.89,
             "Crossings": -0.0,
             "EnergyMarket": -0.45,
             "BDTI": -0.74
+        }
+    },
+    {
+        "date": "2026-04-14",
+        "composite": -0.27,
+        "components": {
+            "Attacks": -3.06,
+            "Crossings": 2.5,
+            "EnergyMarket": -0.44,
+            "BDTI": -0.08
         }
     }
 ]
