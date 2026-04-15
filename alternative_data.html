@@ -712,6 +712,12 @@ meta.markets.forEach(m => { marketLabels[String(m.market_id)] = m.label; });
 // 2. Group Series by Event ID
 const eventData = {}; 
 polySeries.forEach(s => {
+    // ROUNDING LOGIC START
+    const roundedTime = new Date(s.created_at);
+    roundedTime.setSeconds(0, 0); 
+    s.created_at = roundedTime.toISOString(); 
+    // ROUNDING LOGIC END
+
     const eid = String(s.event_id);
     const mid = String(s.market_id);
     if (!eventData[eid]) eventData[eid] = {};
@@ -730,10 +736,15 @@ const processedIds = new Set(); // FIX: Prevents double dates/entries
 // 1. Group series data by market for delta calculations
 const marketGroups = {};
 polySeries.forEach(s => {
+    // ROUNDING LOGIC START
+    const roundedTime = new Date(s.created_at);
+    roundedTime.setSeconds(0, 0); 
+    s.created_at = roundedTime.toISOString(); 
+    // ROUNDING LOGIC END
+
     if (!marketGroups[s.market_id]) marketGroups[s.market_id] = [];
     marketGroups[s.market_id].push(s);
 });
-
 // 2. Loop through METADATA only (Single Pass)
 meta.markets.forEach(m => {
     const mId = String(m.market_id);
@@ -879,9 +890,10 @@ Object.keys(eventData).forEach(eid => {
 
     // 2. FILTER & SORT
     let marketIds = Object.keys(marketsInEvent).sort((a, b) => {
-        const lastA = marketsInEvent[a].slice(-1)[0].probability;
-        const lastB = marketsInEvent[b].slice(-1)[0].probability;
-        return lastA - lastB; 
+        const labelA = marketLabels[a];
+        const labelB = marketLabels[b];
+        // Convert labels like "March 31" to comparable dates
+        return Date.parse(labelA + " 2026") - Date.parse(labelB + " 2026");
     });
 
     if (isLeader) {
@@ -893,21 +905,16 @@ Object.keys(eventData).forEach(eid => {
     // 3. PREPARE TRACES & LAYOUT (Logic remains same as before)
     const traces = marketIds.map((mid, i) => {
         const series = marketsInEvent[mid];
-        const prevSeries = (i > 0 && !isLeader) ? marketsInEvent[marketIds[i-1]] : null;
         const label = marketLabels[mid] || `Market ${mid}`;
         return {
             x: series.map(s => s.created_at),
-            y: series.map((s, idx) => {
-                if (isLeader) return s.probability;
-                const prevProb = (prevSeries && prevSeries[idx]) ? prevSeries[idx].probability : 0;
-                return Math.max(0, s.probability - prevProb);
-            }),
+            y: series.map(s => s.probability), // Use RAW probability
             name: label,
             type: 'scatter',
             mode: 'lines',
-            line: { width: 0.8 },
+            line: { width: 0.5 }, // Thinner lines look better in stacks
             fill: isLeader ? 'none' : 'tonexty',
-            stackgroup: isLeader ? null : 'one',
+            stackgroup: isLeader ? null : 'one', // Plotly handles the subtraction automatically
             hovertemplate: `%{y:.1f}% <span style="font-size:9px">${label}</span><extra></extra>`
         };
     });
