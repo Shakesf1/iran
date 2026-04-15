@@ -39619,3 +39619,1746 @@ See "git help gc" for manual housekeeping.
  3 files changed, 2270 insertions(+), 2237 deletions(-)
 [main 60a0707c] data: update snapshots [skip ci]
  2 files changed, 4756 insertions(+), 4763 deletions(-)
+[main 4d9cdcaa] data: update snapshots [skip ci]
+ 1 file changed, 5121 insertions(+), 5317 deletions(-)
+[main 8b99a1ad] data: update snapshots [skip ci]
+ 1 file changed, 4807 insertions(+), 4618 deletions(-)
+[main 45f86c12] data: update snapshots [skip ci]
+ 1 file changed, 4749 insertions(+), 4938 deletions(-)
+[main 81aed677] data: update snapshots [skip ci]
+ 1 file changed, 1921 insertions(+), 1921 deletions(-)
+[main 8226fc57] data: update snapshots [skip ci]
+ 1 file changed, 1826 insertions(+), 1826 deletions(-)
+[main 79f4bd10] data: update snapshots [skip ci]
+ 2 files changed, 2081 insertions(+), 2081 deletions(-)
+[main 2c01d797] data: update snapshots [skip ci]
+ 2 files changed, 1979 insertions(+), 1979 deletions(-)
+[main ca497799] data: update snapshots [skip ci]
+ 1 file changed, 1972 insertions(+), 1972 deletions(-)
+[main f5b24142] data: update snapshots [skip ci]
+ 1 file changed, 1900 insertions(+), 1900 deletions(-)
+[main 82a88207] data: update snapshots [skip ci]
+ 1 file changed, 6172 insertions(+), 5941 deletions(-)
+[main 9fccd5c2] data: update snapshots [skip ci]
+ 1 file changed, 1215 insertions(+), 1215 deletions(-)
+[main bd1bbbd7] data: update snapshots [skip ci]
+ 2 files changed, 4773 insertions(+), 4815 deletions(-)
+--- Iran Intelligence Snapshot | 2026-04-13 10:55 ---
+
+Iran leader end of 2026? (Top 10 Candidates)
+  - Mojtaba Khamenei       :  61.6%
+  - Reza Pahlavi           :  13.0%
+  - Mohammad-Bagher Ghalibaf :   8.3%
+  - Hassan Rouhani         :   5.0%
+  - Alireza Arafi          :   3.8%
+  - No Head of State       :   2.6%
+  - Abbas Araghchi         :   1.9%
+  - Hassan Khomeini        :   0.9%
+  - Sadegh Larijani        :   0.9%
+  - Masoud Pezeshkian      :   0.7%
+
+Iran x Israel/US conflict ends by...?
+  - April 7                :  53.8%
+  - April 15               :  54.9%
+  - April 30               :  58.0%
+  - May 15                 :  64.5%
+  - June 30                :  78.0%
+  - December 31            :  93.0%
+
+Bab el-Mandeb Strait effectively closed by...?
+  - April 30               :  22.5%
+
+Kharg Island no longer under Iranian control by...?
+  - April 15               :   1.1%
+  - April 30               :  10.5%
+  - May 31                 :  17.5%
+  - June 30                :  21.0%
+
+Trump announces end of military operations against Iran by ...?
+  - April 15               :   2.9%
+  - April 21               :  11.5%
+  - April 30               :  25.5%
+  - May 31                 :  50.5%
+  - June 30                :  69.5%
+
+Strait of Hormuz traffic returns to normal by end of April?
+  - Strait of Hormuz traffic returns to normal by end of April? :  13.0%
+
+US x Iran ceasefire by...?
+
+--- Exporting Optimized Data ---
+Traceback (most recent call last):
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 144, in <module>
+    export_data()
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 97, in export_data
+    series_res = supabase.rpc("get_optimized_polymarket_series").execute()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/postgrest/_sync/request_builder.py", line 82, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'canceling statement due to statement timeout', 'code': '57014', 'hint': None, 'details': None}
+[main e661b069] data: update snapshots [skip ci]
+ 2 files changed, 8282 insertions(+), 8289 deletions(-)
+[main 50bae4e7] data: update snapshots [skip ci]
+ 1 file changed, 2129 insertions(+), 2129 deletions(-)
+[main 26a9fd4b] data: update snapshots [skip ci]
+ 1 file changed, 5005 insertions(+), 4886 deletions(-)
+[main 7aacb8c8] data: update snapshots [skip ci]
+ 1 file changed, 4355 insertions(+), 4404 deletions(-)
+[main ec6ba6dc] data: update snapshots [skip ci]
+ 1 file changed, 4991 insertions(+), 5061 deletions(-)
+[main b5e40750] data: update snapshots [skip ci]
+ 2 files changed, 1920 insertions(+), 1920 deletions(-)
+[main 7b7b645a] data: update snapshots [skip ci]
+ 2 files changed, 2093 insertions(+), 2093 deletions(-)
+[main 569b91cb] data: update snapshots [skip ci]
+ 1 file changed, 5519 insertions(+), 5330 deletions(-)
+[main bf8dd663] data: update snapshots [skip ci]
+ 1 file changed, 1806 insertions(+), 1806 deletions(-)
+[main 4f89ae06] data: update snapshots [skip ci]
+ 1 file changed, 1670 insertions(+), 1670 deletions(-)
+[main e95998f7] data: update snapshots [skip ci]
+ 2 files changed, 5731 insertions(+), 5892 deletions(-)
+[main e7532cf0] data: update snapshots [skip ci]
+ 2 files changed, 6310 insertions(+), 6499 deletions(-)
+[main 1648d630] data: update snapshots [skip ci]
+ 1 file changed, 4789 insertions(+), 4600 deletions(-)
+[main cd5878ae] data: update snapshots [skip ci]
+ 1 file changed, 4945 insertions(+), 5134 deletions(-)
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+[main e25cd0d2] data: update snapshots [skip ci]
+ 1 file changed, 1973 insertions(+), 1973 deletions(-)
+[main 46931cd5] data: update snapshots [skip ci]
+ 1 file changed, 1980 insertions(+), 1980 deletions(-)
+[main 3428d3a0] data: update snapshots [skip ci]
+ 1 file changed, 1887 insertions(+), 1887 deletions(-)
+[main 91119601] data: update snapshots [skip ci]
+ 2 files changed, 4836 insertions(+), 4794 deletions(-)
+[main 4fe286a8] data: update snapshots [skip ci]
+ 2 files changed, 4872 insertions(+), 4914 deletions(-)
+[main 973e9de7] data: update snapshots [skip ci]
+ 1 file changed, 5199 insertions(+), 5010 deletions(-)
+[main 0a52ece7] data: update snapshots [skip ci]
+ 1 file changed, 1957 insertions(+), 1957 deletions(-)
+[main b084681b] data: update snapshots [skip ci]
+ 1 file changed, 2124 insertions(+), 2124 deletions(-)
+[main bec36d5a] data: update snapshots [skip ci]
+ 1 file changed, 1907 insertions(+), 1907 deletions(-)
+[main 4a5cfd6a] data: update snapshots [skip ci]
+ 2 files changed, 4695 insertions(+), 4884 deletions(-)
+[main bf802e3f] data: update snapshots [skip ci]
+ 2 files changed, 4916 insertions(+), 4727 deletions(-)
+[main 3629f4ab] data: update snapshots [skip ci]
+ 1 file changed, 2044 insertions(+), 2044 deletions(-)
+[main 12a7d0ea] data: update snapshots [skip ci]
+ 1 file changed, 2192 insertions(+), 2192 deletions(-)
+[main 37274d23] data: update snapshots [skip ci]
+ 1 file changed, 2171 insertions(+), 2171 deletions(-)
+[main 2c3a1645] data: update snapshots [skip ci]
+ 1 file changed, 1924 insertions(+), 1924 deletions(-)
+[main b9c067bb] data: update snapshots [skip ci]
+ 1 file changed, 1995 insertions(+), 1995 deletions(-)
+[main 10cea4e4] data: update snapshots [skip ci]
+ 1 file changed, 6905 insertions(+), 6716 deletions(-)
+[main 293149e3] data: update snapshots [skip ci]
+ 1 file changed, 2865 insertions(+), 2865 deletions(-)
+[main 5caaf29f] data: update snapshots [skip ci]
+ 1 file changed, 4850 insertions(+), 4962 deletions(-)
+[main bf4c2ca9] data: update snapshots [skip ci]
+ 1 file changed, 5832 insertions(+), 5930 deletions(-)
+[main e1b23faa] data: update snapshots [skip ci]
+ 1 file changed, 4949 insertions(+), 5068 deletions(-)
+[main dec2f9a3] data: update snapshots [skip ci]
+ 1 file changed, 5560 insertions(+), 5588 deletions(-)
+[main 3dfa36d1] data: update snapshots [skip ci]
+ 2 files changed, 5497 insertions(+), 5350 deletions(-)
+[main 873a6999] data: update snapshots [skip ci]
+ 2 files changed, 4687 insertions(+), 4568 deletions(-)
+[main d11888d4] data: update snapshots [skip ci]
+ 1 file changed, 4914 insertions(+), 5033 deletions(-)
+[main f8cc5c37] data: update snapshots [skip ci]
+ 1 file changed, 1786 insertions(+), 1786 deletions(-)
+[main edcd7147] data: update snapshots [skip ci]
+ 1 file changed, 5035 insertions(+), 4846 deletions(-)
+[main 5ae9e6da] data: update snapshots [skip ci]
+ 1 file changed, 2547 insertions(+), 2547 deletions(-)
+[main 4ef289e6] data: update snapshots [skip ci]
+ 2 files changed, 5186 insertions(+), 5193 deletions(-)
+[main fe7cfb04] data: update snapshots [skip ci]
+ 2 files changed, 4838 insertions(+), 5027 deletions(-)
+[main dd02ca49] data: update snapshots [skip ci]
+ 1 file changed, 2096 insertions(+), 2096 deletions(-)
+[main f87421bc] data: update snapshots [skip ci]
+ 1 file changed, 1993 insertions(+), 1993 deletions(-)
+[main 8eecd4bf] data: update snapshots [skip ci]
+ 1 file changed, 2371 insertions(+), 2371 deletions(-)
+[main a2a59edb] data: update snapshots [skip ci]
+ 1 file changed, 4859 insertions(+), 5048 deletions(-)
+[main 1c85ec9c] data: update snapshots [skip ci]
+ 2 files changed, 4954 insertions(+), 4765 deletions(-)
+[main fff9a4f9] data: update snapshots [skip ci]
+ 2 files changed, 4664 insertions(+), 4664 deletions(-)
+[main df0000f2] data: update snapshots [skip ci]
+ 1 file changed, 1686 insertions(+), 1686 deletions(-)
+[main 9ce20fa3] data: update snapshots [skip ci]
+ 1 file changed, 4779 insertions(+), 4653 deletions(-)
+[main 1563bd30] data: update snapshots [skip ci]
+ 1 file changed, 4856 insertions(+), 4975 deletions(-)
+[main 80a35f19] data: update snapshots [skip ci]
+ 1 file changed, 1823 insertions(+), 1823 deletions(-)
+[main 0920851f] data: update snapshots [skip ci]
+ 1 file changed, 1773 insertions(+), 1773 deletions(-)
+[main 2df48668] data: update snapshots [skip ci]
+ 1 file changed, 5412 insertions(+), 5041 deletions(-)
+[main bd66e076] data: update snapshots [skip ci]
+ 1 file changed, 5015 insertions(+), 5393 deletions(-)
+[main bf41fed8] data: update snapshots [skip ci]
+ 1 file changed, 1850 insertions(+), 1850 deletions(-)
+[main 6564ec1b] data: update snapshots [skip ci]
+ 1 file changed, 1858 insertions(+), 1858 deletions(-)
+[main bbd992af] data: update snapshots [skip ci]
+ 1 file changed, 6730 insertions(+), 6877 deletions(-)
+[main 0084ff33] data: update snapshots [skip ci]
+ 1 file changed, 4729 insertions(+), 4582 deletions(-)
+[main 0c4fc7cf] data: update snapshots [skip ci]
+ 2 files changed, 4699 insertions(+), 4699 deletions(-)
+[main 079f9055] data: update snapshots [skip ci]
+ 2 files changed, 3120 insertions(+), 3113 deletions(-)
+[main 7ee2bd6b] data: update snapshots [skip ci]
+ 1 file changed, 1854 insertions(+), 1854 deletions(-)
+[main 46977155] data: update snapshots [skip ci]
+ 1 file changed, 1874 insertions(+), 1874 deletions(-)
+[main d5e75e9d] data: update snapshots [skip ci]
+ 1 file changed, 1750 insertions(+), 1750 deletions(-)
+[main 27816bf2] data: update snapshots [skip ci]
+ 1 file changed, 1754 insertions(+), 1754 deletions(-)
+[main 2cfa206e] data: update snapshots [skip ci]
+ 2 files changed, 2649 insertions(+), 2649 deletions(-)
+[main 5fc463a0] data: update snapshots [skip ci]
+ 2 files changed, 1960 insertions(+), 1960 deletions(-)
+[main 1e71b83a] data: update snapshots [skip ci]
+ 1 file changed, 1951 insertions(+), 1944 deletions(-)
+[main 58e876c8] data: update snapshots [skip ci]
+ 1 file changed, 4345 insertions(+), 4359 deletions(-)
+[main b3a87449] data: update snapshots [skip ci]
+ 1 file changed, 6766 insertions(+), 6955 deletions(-)
+[main 51037869] data: update snapshots [skip ci]
+ 1 file changed, 4646 insertions(+), 4457 deletions(-)
+[main f41f37bc] data: update snapshots [skip ci]
+ 1 file changed, 1948 insertions(+), 1941 deletions(-)
+[main 34900aed] data: update snapshots [skip ci]
+ 2 files changed, 2026 insertions(+), 2033 deletions(-)
+[main f04103ab] data: update snapshots [skip ci]
+ 2 files changed, 1744 insertions(+), 1744 deletions(-)
+[main 84ea1312] data: update snapshots [skip ci]
+ 1 file changed, 1734 insertions(+), 1734 deletions(-)
+--- Iran Intelligence Snapshot | 2026-04-13 17:25 ---
+
+Iran leader end of 2026? (Top 10 Candidates)
+  - Mojtaba Khamenei       :  61.9%
+  - Reza Pahlavi           :  12.5%
+  - Mohammad-Bagher Ghalibaf :   7.2%
+  - Hassan Rouhani         :   4.5%
+  - Alireza Arafi          :   3.7%
+  - No Head of State       :   2.6%
+  - Abbas Araghchi         :   1.5%
+  - Sadegh Larijani        :   0.9%
+  - Hassan Khomeini        :   0.9%
+  - Mahmoud Ahmadinejad    :   0.7%
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/postgrest/_sync/request_builder.py", line 52, in execute
+    json_obj = model_validate_json(APIErrorFromJSON, r.content)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/postgrest/utils.py", line 56, in model_validate_json
+    return model.model_validate_json(contents)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/pydantic/main.py", line 766, in model_validate_json
+    return cls.__pydantic_validator__.validate_json(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for APIErrorFromJSON
+  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value=b'<html>\r\n<head><title>...n</body>\r\n</html>\r\n', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 143, in <module>
+    run_monitor()
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 53, in run_monitor
+    }).execute()
+       ^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/postgrest/_sync/request_builder.py", line 55, in execute
+    raise APIError(generate_default_error_message(r))
+postgrest.exceptions.APIError: {'message': 'JSON could not be generated', 'code': 502, 'hint': 'Refer to full message for details', 'details': "b'<html>\\r\\n<head><title>502 Bad Gateway</title></head>\\r\\n<body>\\r\\n<center><h1>502 Bad Gateway</h1></center>\\r\\n<hr><center>cloudflare</center>\\r\\n</body>\\r\\n</html>\\r\\n'"}
+[main 3d3bcf48] data: update snapshots [skip ci]
+ 1 file changed, 6477 insertions(+), 6407 deletions(-)
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+[main a0af58fb] data: update snapshots [skip ci]
+ 1 file changed, 4532 insertions(+), 4637 deletions(-)
+[main 9d00046f] data: update snapshots [skip ci]
+ 2 files changed, 4597 insertions(+), 4674 deletions(-)
+[main 521dcd2b] data: update snapshots [skip ci]
+ 2 files changed, 1909 insertions(+), 1909 deletions(-)
+[main 9d4a2262] data: update snapshots [skip ci]
+ 1 file changed, 4537 insertions(+), 4495 deletions(-)
+[main 78afc09c] data: update snapshots [skip ci]
+ 1 file changed, 6662 insertions(+), 6893 deletions(-)
+[main 1090389d] data: update snapshots [skip ci]
+ 1 file changed, 4559 insertions(+), 4370 deletions(-)
+[main cee6c145] data: update snapshots [skip ci]
+ 1 file changed, 4727 insertions(+), 4643 deletions(-)
+[main b8a823d5] data: update snapshots [skip ci]
+ 1 file changed, 4657 insertions(+), 4734 deletions(-)
+[main 7e538d75] data: update snapshots [skip ci]
+ 2 files changed, 1915 insertions(+), 1915 deletions(-)
+[main 53d6511e] data: update snapshots [skip ci]
+ 2 files changed, 1912 insertions(+), 1912 deletions(-)
+[main c15ec0be] data: update snapshots [skip ci]
+ 1 file changed, 4454 insertions(+), 4447 deletions(-)
+[main 82555405] data: update snapshots [skip ci]
+ 1 file changed, 6517 insertions(+), 6482 deletions(-)
+[main 0f73f9cf] data: update snapshots [skip ci]
+ 1 file changed, 4701 insertions(+), 4743 deletions(-)
+[main 158c7f00] data: update snapshots [skip ci]
+ 1 file changed, 1734 insertions(+), 1734 deletions(-)
+[main 6a597219] data: update snapshots [skip ci]
+ 2 files changed, 4687 insertions(+), 4617 deletions(-)
+[main 65878c59] data: update snapshots [skip ci]
+ 2 files changed, 4499 insertions(+), 4569 deletions(-)
+[main 4e0bc129] data: update snapshots [skip ci]
+ 1 file changed, 6224 insertions(+), 6413 deletions(-)
+[main d6a6730a] data: update snapshots [skip ci]
+ 1 file changed, 4607 insertions(+), 4418 deletions(-)
+[main 690b90be] data: update snapshots [skip ci]
+ 1 file changed, 1671 insertions(+), 1671 deletions(-)
+[main 87cecbb6] data: update snapshots [skip ci]
+ 1 file changed, 1682 insertions(+), 1682 deletions(-)
+[main af6e2e09] data: update snapshots [skip ci]
+ 1 file changed, 1690 insertions(+), 1690 deletions(-)
+[main 2c96c9cb] data: update snapshots [skip ci]
+ 2 files changed, 4804 insertions(+), 4993 deletions(-)
+[main 8de85d1c] data: update snapshots [skip ci]
+ 2 files changed, 7083 insertions(+), 6824 deletions(-)
+[main 344ff6cb] data: update snapshots [skip ci]
+ 1 file changed, 4765 insertions(+), 4828 deletions(-)
+[main ef932a75] data: update snapshots [skip ci]
+ 1 file changed, 4691 insertions(+), 4621 deletions(-)
+[main 0d3415be] data: update snapshots [skip ci]
+ 1 file changed, 4479 insertions(+), 4556 deletions(-)
+[main 24fb4b85] data: update snapshots [skip ci]
+ 1 file changed, 1575 insertions(+), 1575 deletions(-)
+[main ed8bc760] data: update snapshots [skip ci]
+ 2 files changed, 1667 insertions(+), 1667 deletions(-)
+[main 0af0fcc2] data: update snapshots [skip ci]
+ 2 files changed, 4550 insertions(+), 4592 deletions(-)
+[main 38882bc1] data: update snapshots [skip ci]
+ 1 file changed, 4592 insertions(+), 4550 deletions(-)
+[main cc00079c] data: update snapshots [skip ci]
+ 1 file changed, 4676 insertions(+), 4676 deletions(-)
+[main e1e3da96] data: update snapshots [skip ci]
+ 1 file changed, 2067 insertions(+), 2067 deletions(-)
+[main a73e4ec6] data: update snapshots [skip ci]
+ 1 file changed, 1812 insertions(+), 1812 deletions(-)
+[main 81e0d17e] data: update snapshots [skip ci]
+ 1 file changed, 4647 insertions(+), 4640 deletions(-)
+[main 25ce9b2b] data: update snapshots [skip ci]
+ 1 file changed, 6212 insertions(+), 6030 deletions(-)
+[main 37330db5] data: update snapshots [skip ci]
+ 1 file changed, 2560 insertions(+), 2553 deletions(-)
+[main 447f7337] data: update snapshots [skip ci]
+ 1 file changed, 4636 insertions(+), 4825 deletions(-)
+[main 0022acf3] data: update snapshots [skip ci]
+ 1 file changed, 4457 insertions(+), 4380 deletions(-)
+[main 5b70ca43] data: update snapshots [skip ci]
+ 1 file changed, 4547 insertions(+), 4624 deletions(-)
+[main 9202e101] data: update snapshots [skip ci]
+ 2 files changed, 1859 insertions(+), 1859 deletions(-)
+[main 465442c1] data: update snapshots [skip ci]
+ 2 files changed, 4952 insertions(+), 5071 deletions(-)
+--- Iran Intelligence Snapshot | 2026-04-13 21:00 ---
+
+Iran leader end of 2026? (Top 10 Candidates)
+  - Mojtaba Khamenei       :  62.8%
+  - Reza Pahlavi           :  12.5%
+  - Mohammad-Bagher Ghalibaf :   8.2%
+  - Hassan Rouhani         :   4.5%
+  - No Head of State       :   2.6%
+  - Abbas Araghchi         :   1.4%
+  - Alireza Arafi          :   1.0%
+  - Hassan Khomeini        :   0.8%
+  - Mahmoud Ahmadinejad    :   0.7%
+  - Maryam Rajavi          :   0.5%
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/postgrest/_sync/request_builder.py", line 52, in execute
+    json_obj = model_validate_json(APIErrorFromJSON, r.content)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/postgrest/utils.py", line 56, in model_validate_json
+    return model.model_validate_json(contents)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/pydantic/main.py", line 766, in model_validate_json
+    return cls.__pydantic_validator__.validate_json(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for APIErrorFromJSON
+  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value=b'<html>\r\n<head><title>...n</body>\r\n</html>\r\n', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 143, in <module>
+    run_monitor()
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 83, in run_monitor
+    supabase.table("poly_market_snapshots").insert(snapshots_to_save).execute()
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/postgrest/_sync/request_builder.py", line 55, in execute
+    raise APIError(generate_default_error_message(r))
+postgrest.exceptions.APIError: {'message': 'JSON could not be generated', 'code': 502, 'hint': 'Refer to full message for details', 'details': "b'<html>\\r\\n<head><title>502 Bad Gateway</title></head>\\r\\n<body>\\r\\n<center><h1>502 Bad Gateway</h1></center>\\r\\n<hr><center>cloudflare</center>\\r\\n</body>\\r\\n</html>\\r\\n'"}
+[main 642debda] data: update snapshots [skip ci]
+ 1 file changed, 5064 insertions(+), 5064 deletions(-)
+[main d46d9066] data: update snapshots [skip ci]
+ 1 file changed, 1471 insertions(+), 1471 deletions(-)
+[main 9cde3fe5] data: update snapshots [skip ci]
+ 1 file changed, 1342 insertions(+), 1342 deletions(-)
+[main d3d20c19] data: update snapshots [skip ci]
+ 1 file changed, 1280 insertions(+), 1280 deletions(-)
+[main c0946427] data: update snapshots [skip ci]
+ 1 file changed, 1442 insertions(+), 1442 deletions(-)
+[main 268da91d] data: update snapshots [skip ci]
+ 1 file changed, 5327 insertions(+), 5138 deletions(-)
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+[main e53feffb] data: update snapshots [skip ci]
+ 1 file changed, 4919 insertions(+), 5038 deletions(-)
+[main 6522e84b] data: update snapshots [skip ci]
+ 1 file changed, 4758 insertions(+), 4828 deletions(-)
+[main 93c3fd1d] data: update snapshots [skip ci]
+ 1 file changed, 1549 insertions(+), 1549 deletions(-)
+[main 3e71e826] data: update snapshots [skip ci]
+ 1 file changed, 1535 insertions(+), 1535 deletions(-)
+[main d38a4cba] data: update snapshots [skip ci]
+ 1 file changed, 4762 insertions(+), 4867 deletions(-)
+[main c462b84a] data: update snapshots [skip ci]
+ 2 files changed, 4947 insertions(+), 4842 deletions(-)
+[main cf2918cf] data: update snapshots [skip ci]
+ 2 files changed, 1343 insertions(+), 1343 deletions(-)
+[main cc10866c] data: update snapshots [skip ci]
+ 1 file changed, 1554 insertions(+), 1554 deletions(-)
+[main 749aae23] data: update snapshots [skip ci]
+ 1 file changed, 1556 insertions(+), 1556 deletions(-)
+[main 7bf2c9f8] data: update snapshots [skip ci]
+ 1 file changed, 5900 insertions(+), 5704 deletions(-)
+[main a4faedd9] data: update snapshots [skip ci]
+ 1 file changed, 4812 insertions(+), 4700 deletions(-)
+[main e078516e] data: update snapshots [skip ci]
+ 2 files changed, 4534 insertions(+), 4723 deletions(-)
+[main a6bbafc8] data: update snapshots [skip ci]
+ 2 files changed, 1707 insertions(+), 1707 deletions(-)
+[main fcbc79e5] data: update snapshots [skip ci]
+ 1 file changed, 4486 insertions(+), 4409 deletions(-)
+[main 0d42c03b] data: update snapshots [skip ci]
+ 1 file changed, 4648 insertions(+), 4718 deletions(-)
+[main e79d8b86] data: update snapshots [skip ci]
+ 1 file changed, 2099 insertions(+), 2106 deletions(-)
+[main bb4a0389] data: update snapshots [skip ci]
+ 1 file changed, 4780 insertions(+), 4850 deletions(-)
+[main 7b0166ef] data: update snapshots [skip ci]
+ 1 file changed, 4545 insertions(+), 4475 deletions(-)
+[main c178f1c0] data: update snapshots [skip ci]
+ 2 files changed, 1822 insertions(+), 1822 deletions(-)
+[main 6e18891b] data: update snapshots [skip ci]
+ 2 files changed, 1691 insertions(+), 1691 deletions(-)
+[main ab5c4c89] data: update snapshots [skip ci]
+ 1 file changed, 4429 insertions(+), 4422 deletions(-)
+[main 55909ff3] data: update snapshots [skip ci]
+ 1 file changed, 6115 insertions(+), 5926 deletions(-)
+[main 8abe7279] data: update snapshots [skip ci]
+ 1 file changed, 4613 insertions(+), 4571 deletions(-)
+[main 4e41b004] data: update snapshots [skip ci]
+ 1 file changed, 4864 insertions(+), 5095 deletions(-)
+[main 06dede89] data: update snapshots [skip ci]
+ 2 files changed, 1864 insertions(+), 1864 deletions(-)
+[main 39905ceb] data: update snapshots [skip ci]
+ 2 files changed, 1935 insertions(+), 1935 deletions(-)
+[main 16a97118] data: update snapshots [skip ci]
+ 1 file changed, 1805 insertions(+), 1805 deletions(-)
+[main 5cd718d8] data: update snapshots [skip ci]
+ 1 file changed, 4608 insertions(+), 4601 deletions(-)
+[main ebd0aa3e] data: update snapshots [skip ci]
+ 1 file changed, 4995 insertions(+), 5191 deletions(-)
+[main 761ca253] data: update snapshots [skip ci]
+ 1 file changed, 4577 insertions(+), 4388 deletions(-)
+[main d00637f1] data: update snapshots [skip ci]
+ 2 files changed, 4630 insertions(+), 4553 deletions(-)
+[main 8aa19dda] data: update snapshots [skip ci]
+ 2 files changed, 4705 insertions(+), 4782 deletions(-)
+[main 8dafe985] data: update snapshots [skip ci]
+ 1 file changed, 6809 insertions(+), 6550 deletions(-)
+[main 770b5d5a] data: update snapshots [skip ci]
+ 1 file changed, 4904 insertions(+), 4974 deletions(-)
+[main 0d6cecc3] data: update snapshots [skip ci]
+ 1 file changed, 4640 insertions(+), 4829 deletions(-)
+[main ed5668aa] data: update snapshots [skip ci]
+ 1 file changed, 1914 insertions(+), 1914 deletions(-)
+[main 46b55a8b] data: update snapshots [skip ci]
+ 2 files changed, 1917 insertions(+), 1917 deletions(-)
+[main fde4afc6] data: update snapshots [skip ci]
+ 2 files changed, 1899 insertions(+), 1899 deletions(-)
+[main 82aa3ebb] data: update snapshots [skip ci]
+ 1 file changed, 4627 insertions(+), 4557 deletions(-)
+[main 53b9ad1a] data: update snapshots [skip ci]
+ 1 file changed, 4661 insertions(+), 4731 deletions(-)
+[main 379e8f16] data: update snapshots [skip ci]
+ 1 file changed, 6706 insertions(+), 6895 deletions(-)
+[main 6da196fb] data: update snapshots [skip ci]
+ 1 file changed, 4554 insertions(+), 4365 deletions(-)
+[main df30c6b2] data: update snapshots [skip ci]
+ 1 file changed, 1745 insertions(+), 1745 deletions(-)
+[main b729817e] data: update snapshots [skip ci]
+ 2 files changed, 4501 insertions(+), 4494 deletions(-)
+[main 84cd6923] data: update snapshots [skip ci]
+ 2 files changed, 5251 insertions(+), 5251 deletions(-)
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+[main 8f2caeab] data: update snapshots [skip ci]
+ 1 file changed, 5006 insertions(+), 4817 deletions(-)
+[main dc5313f2] data: update snapshots [skip ci]
+ 1 file changed, 5209 insertions(+), 5328 deletions(-)
+[main 4de38d09] data: update snapshots [skip ci]
+ 1 file changed, 4755 insertions(+), 4776 deletions(-)
+[main 6d33ba3b] data: update snapshots [skip ci]
+ 1 file changed, 4672 insertions(+), 4721 deletions(-)
+[main d2186003] data: update snapshots [skip ci]
+ 2 files changed, 1784 insertions(+), 1784 deletions(-)
+[main b78217c2] data: update snapshots [skip ci]
+ 2 files changed, 1801 insertions(+), 1801 deletions(-)
+[main 3b00b0fc] data: update snapshots [skip ci]
+ 1 file changed, 4599 insertions(+), 4480 deletions(-)
+[main 432c9352] data: update snapshots [skip ci]
+ 1 file changed, 4429 insertions(+), 4618 deletions(-)
+[main 2b127b91] data: update snapshots [skip ci]
+ 1 file changed, 5654 insertions(+), 5395 deletions(-)
+[main 18a511f9] data: update snapshots [skip ci]
+ 1 file changed, 4485 insertions(+), 4366 deletions(-)
+[main 3834e793] data: update snapshots [skip ci]
+ 1 file changed, 2095 insertions(+), 2095 deletions(-)
+[main e1881f2f] data: update snapshots [skip ci]
+ 2 files changed, 2118 insertions(+), 2118 deletions(-)
+[main 2fde24f3] data: update snapshots [skip ci]
+ 2 files changed, 7238 insertions(+), 7238 deletions(-)
+[main b0bee65e] data: update snapshots [skip ci]
+ 1 file changed, 7353 insertions(+), 7164 deletions(-)
+[main 646e2bf4] data: update snapshots [skip ci]
+ 1 file changed, 8154 insertions(+), 8266 deletions(-)
+[main 3c2204c9] data: update snapshots [skip ci]
+ 1 file changed, 7659 insertions(+), 7736 deletions(-)
+[main 152748c3] data: update snapshots [skip ci]
+ 1 file changed, 7370 insertions(+), 7300 deletions(-)
+[main c0a54a4f] data: update snapshots [skip ci]
+ 2 files changed, 6544 insertions(+), 6614 deletions(-)
+[main 975a5c77] data: update snapshots [skip ci]
+ 2 files changed, 3811 insertions(+), 3811 deletions(-)
+[main ecc8a41b] data: update snapshots [skip ci]
+ 1 file changed, 8482 insertions(+), 8671 deletions(-)
+[main c7405c53] data: update snapshots [skip ci]
+ 1 file changed, 6376 insertions(+), 6187 deletions(-)
+[main a3635a8f] data: update snapshots [skip ci]
+ 1 file changed, 4017 insertions(+), 4017 deletions(-)
+[main 2374d00e] data: update snapshots [skip ci]
+ 1 file changed, 5473 insertions(+), 5473 deletions(-)
+[main 21e199b9] data: update snapshots [skip ci]
+ 2 files changed, 3438 insertions(+), 3438 deletions(-)
+[main 37215bec] data: update snapshots [skip ci]
+ 2 files changed, 7769 insertions(+), 7958 deletions(-)
+[main 623c8f7a] data: update snapshots [skip ci]
+ 1 file changed, 4067 insertions(+), 4067 deletions(-)
+[main a9d83a25] data: update snapshots [skip ci]
+ 1 file changed, 3011 insertions(+), 3011 deletions(-)
+[main b8ec8da7] data: update snapshots [skip ci]
+ 1 file changed, 7320 insertions(+), 7089 deletions(-)
+[main 2286e112] data: update snapshots [skip ci]
+ 1 file changed, 6279 insertions(+), 6321 deletions(-)
+[main c90819de] data: update snapshots [skip ci]
+ 2 files changed, 4359 insertions(+), 4359 deletions(-)
+[main f0b11234] data: update snapshots [skip ci]
+ 2 files changed, 5334 insertions(+), 5334 deletions(-)
+[main 9de442b0] data: update snapshots [skip ci]
+ 1 file changed, 7909 insertions(+), 8098 deletions(-)
+[main 735b0486] data: update snapshots [skip ci]
+ 1 file changed, 6235 insertions(+), 6046 deletions(-)
+[main 57650c82] data: update snapshots [skip ci]
+ 1 file changed, 8001 insertions(+), 7959 deletions(-)
+[main 3372ecb9] data: update snapshots [skip ci]
+ 1 file changed, 6668 insertions(+), 6710 deletions(-)
+[main 0899d4c9] data: update snapshots [skip ci]
+ 1 file changed, 4912 insertions(+), 4912 deletions(-)
+[main 2afd292e] data: update snapshots [skip ci]
+ 2 files changed, 6683 insertions(+), 6865 deletions(-)
+[main e7cd4ab3] data: update snapshots [skip ci]
+ 2 files changed, 7071 insertions(+), 7078 deletions(-)
+[main 15b89bec] data: update snapshots [skip ci]
+ 1 file changed, 3432 insertions(+), 3432 deletions(-)
+[main f1a5d3c2] data: update snapshots [skip ci]
+ 1 file changed, 4181 insertions(+), 4181 deletions(-)
+[main 7eb3cc45] data: update snapshots [skip ci]
+ 1 file changed, 4680 insertions(+), 4680 deletions(-)
+[main fad6b6b6] data: update snapshots [skip ci]
+ 1 file changed, 7319 insertions(+), 7249 deletions(-)
+[main 99497f70] data: update snapshots [skip ci]
+ 1 file changed, 7980 insertions(+), 8050 deletions(-)
+[main 86b3d010] data: update snapshots [skip ci]
+ 2 files changed, 6136 insertions(+), 6136 deletions(-)
+[main ef7b4885] data: update snapshots [skip ci]
+ 2 files changed, 6970 insertions(+), 6970 deletions(-)
+[main ca62e360] data: update snapshots [skip ci]
+ 1 file changed, 8171 insertions(+), 7982 deletions(-)
+[main 892e7ba3] data: update snapshots [skip ci]
+ 1 file changed, 5182 insertions(+), 5182 deletions(-)
+[main 0cd430a7] data: update snapshots [skip ci]
+ 1 file changed, 7900 insertions(+), 8089 deletions(-)
+[main 594d6663] data: update snapshots [skip ci]
+ 1 file changed, 4441 insertions(+), 4441 deletions(-)
+[main 2d3691aa] data: update snapshots [skip ci]
+ 2 files changed, 5019 insertions(+), 5019 deletions(-)
+[main cde9b632] data: update snapshots [skip ci]
+ 2 files changed, 8103 insertions(+), 8096 deletions(-)
+[main 4fe673a0] data: update snapshots [skip ci]
+ 1 file changed, 6413 insertions(+), 6420 deletions(-)
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+[main 5f9878fc] data: update snapshots [skip ci]
+ 1 file changed, 6096 insertions(+), 6026 deletions(-)
+[main d5cd2dce] data: update snapshots [skip ci]
+ 1 file changed, 7418 insertions(+), 7488 deletions(-)
+[main 21d14a49] data: update snapshots [skip ci]
+ 1 file changed, 8160 insertions(+), 8090 deletions(-)
+[main 1c5d7a54] data: update snapshots [skip ci]
+ 1 file changed, 6425 insertions(+), 6495 deletions(-)
+[main b3d2fd65] data: update snapshots [skip ci]
+ 2 files changed, 7299 insertions(+), 7299 deletions(-)
+[main a25dc7c8] data: update snapshots [skip ci]
+ 2 files changed, 5151 insertions(+), 5151 deletions(-)
+[main e89dcad1] data: update snapshots [skip ci]
+ 1 file changed, 4452 insertions(+), 4452 deletions(-)
+[main e70cf261] data: update snapshots [skip ci]
+ 1 file changed, 5237 insertions(+), 5237 deletions(-)
+[main 1029ae04] data: update snapshots [skip ci]
+ 1 file changed, 6468 insertions(+), 6580 deletions(-)
+[main 12083142] data: update snapshots [skip ci]
+ 1 file changed, 7974 insertions(+), 8051 deletions(-)
+[main 571d2f2c] data: update snapshots [skip ci]
+ 2 files changed, 3704 insertions(+), 3704 deletions(-)
+[main 298d775e] data: update snapshots [skip ci]
+ 2 files changed, 3235 insertions(+), 3235 deletions(-)
+[main da179aa1] data: update snapshots [skip ci]
+ 1 file changed, 4653 insertions(+), 4653 deletions(-)
+[main fa03acf1] data: update snapshots [skip ci]
+ 1 file changed, 7507 insertions(+), 7514 deletions(-)
+[main 6311af41] data: update snapshots [skip ci]
+ 1 file changed, 6122 insertions(+), 6234 deletions(-)
+[main 7b286cf3] data: update snapshots [skip ci]
+ 1 file changed, 7926 insertions(+), 7996 deletions(-)
+[main 08f84f73] data: update snapshots [skip ci]
+ 2 files changed, 6547 insertions(+), 6169 deletions(-)
+[main 1f5b1f8c] data: update snapshots [skip ci]
+ 2 files changed, 3702 insertions(+), 3702 deletions(-)
+[main c50eaa5b] data: update snapshots [skip ci]
+ 1 file changed, 6087 insertions(+), 6080 deletions(-)
+[main 209aba32] data: update snapshots [skip ci]
+ 1 file changed, 6244 insertions(+), 6251 deletions(-)
+[main 24ead003] data: update snapshots [skip ci]
+ 1 file changed, 6451 insertions(+), 6374 deletions(-)
+[main 32db2823] data: update snapshots [skip ci]
+ 1 file changed, 6555 insertions(+), 6821 deletions(-)
+[main 64cd53a2] data: update snapshots [skip ci]
+ 1 file changed, 2922 insertions(+), 2922 deletions(-)
+[main 65620afd] data: update snapshots [skip ci]
+ 2 files changed, 3547 insertions(+), 3547 deletions(-)
+[main d2b1a87b] data: update snapshots [skip ci]
+ 2 files changed, 2822 insertions(+), 2822 deletions(-)
+[main b27154f5] data: update snapshots [skip ci]
+ 1 file changed, 8000 insertions(+), 7811 deletions(-)
+[main 8238e882] data: update snapshots [skip ci]
+ 1 file changed, 3661 insertions(+), 3661 deletions(-)
+[main d68df841] data: update snapshots [skip ci]
+ 1 file changed, 8612 insertions(+), 8731 deletions(-)
+[main d6f37eb9] data: update snapshots [skip ci]
+ 1 file changed, 6026 insertions(+), 5907 deletions(-)
+[main 19606cc9] data: update snapshots [skip ci]
+ 2 files changed, 6772 insertions(+), 6772 deletions(-)
+[main 65f53ef1] data: update snapshots [skip ci]
+ 2 files changed, 4315 insertions(+), 4315 deletions(-)
+[main 8445542e] data: update snapshots [skip ci]
+ 1 file changed, 6483 insertions(+), 6413 deletions(-)
+[main cfa91514] data: update snapshots [skip ci]
+ 1 file changed, 7321 insertions(+), 7391 deletions(-)
+[main 6fb38102] data: update snapshots [skip ci]
+ 1 file changed, 5083 insertions(+), 5083 deletions(-)
+[main ad3ab3a3] data: update snapshots [skip ci]
+ 1 file changed, 7961 insertions(+), 7919 deletions(-)
+[main 869d89de] data: update snapshots [skip ci]
+ 2 files changed, 7912 insertions(+), 7961 deletions(-)
+[main 09a999b1] data: update snapshots [skip ci]
+ 2 files changed, 4475 insertions(+), 4468 deletions(-)
+[main 15b08884] data: update snapshots [skip ci]
+ 1 file changed, 3777 insertions(+), 3784 deletions(-)
+[main c69a2397] data: update snapshots [skip ci]
+ 1 file changed, 5220 insertions(+), 5213 deletions(-)
+[main 03a414ce] data: update snapshots [skip ci]
+ 1 file changed, 6313 insertions(+), 6467 deletions(-)
+[main 4faa755c] data: update snapshots [skip ci]
+ 1 file changed, 6223 insertions(+), 6076 deletions(-)
+[main c1f83004] data: update snapshots [skip ci]
+ 1 file changed, 3941 insertions(+), 3941 deletions(-)
+[main 75ba8f96] data: update snapshots [skip ci]
+ 2 files changed, 3406 insertions(+), 3406 deletions(-)
+[main d2adc212] data: update snapshots [skip ci]
+ 2 files changed, 3579 insertions(+), 3579 deletions(-)
+[main bc0b6c32] data: update snapshots [skip ci]
+ 1 file changed, 4946 insertions(+), 4946 deletions(-)
+--- Iran Intelligence Snapshot | 2026-04-14 09:25 ---
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+OSError: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/adapters.py", line 644, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='gamma-api.polymarket.com', port=443): Max retries exceeded with url: /events/slug/iran-leader-end-of-2026 (Caused by NewConnectionError("HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 143, in <module>
+    run_monitor()
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 39, in run_monitor
+    resp = requests.get(f"{GAMMA_URL}/{slug}")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/adapters.py", line 677, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='gamma-api.polymarket.com', port=443): Max retries exceeded with url: /events/slug/iran-leader-end-of-2026 (Caused by NewConnectionError("HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))
+[main ca636569] data: update snapshots [skip ci]
+ 1 file changed, 7551 insertions(+), 7740 deletions(-)
+[main 97a245d3] data: update snapshots [skip ci]
+ 1 file changed, 8024 insertions(+), 7835 deletions(-)
+[main 2b56a039] data: update snapshots [skip ci]
+ 2 files changed, 3675 insertions(+), 3675 deletions(-)
+[main 62517ad9] data: update snapshots [skip ci]
+ 2 files changed, 4684 insertions(+), 4684 deletions(-)
+[main a840341e] data: update snapshots [skip ci]
+ 1 file changed, 5033 insertions(+), 5033 deletions(-)
+[main 39cceba7] data: update snapshots [skip ci]
+ 1 file changed, 7002 insertions(+), 7191 deletions(-)
+[main 8e6bf4cf] data: update snapshots [skip ci]
+ 1 file changed, 6280 insertions(+), 6091 deletions(-)
+[main 8f6a89d3] data: update snapshots [skip ci]
+ 1 file changed, 6106 insertions(+), 6295 deletions(-)
+[main 5de917ed] data: update snapshots [skip ci]
+ 1 file changed, 6207 insertions(+), 6137 deletions(-)
+[main 897f1c5c] data: update snapshots [skip ci]
+ 2 files changed, 7663 insertions(+), 7733 deletions(-)
+[main eb5db3b4] data: update snapshots [skip ci]
+ 2 files changed, 2744 insertions(+), 2744 deletions(-)
+[main 1b86ec19] data: update snapshots [skip ci]
+ 1 file changed, 3190 insertions(+), 3190 deletions(-)
+[main 0cc22b62] data: update snapshots [skip ci]
+ 1 file changed, 4597 insertions(+), 4597 deletions(-)
+[main dfbadaf1] data: update snapshots [skip ci]
+ 1 file changed, 8032 insertions(+), 7843 deletions(-)
+[main 52a55acc] data: update snapshots [skip ci]
+ 1 file changed, 3840 insertions(+), 3840 deletions(-)
+[main 2a6b4820] data: update snapshots [skip ci]
+ 2 files changed, 3743 insertions(+), 3743 deletions(-)
+[main d241aa30] data: update snapshots [skip ci]
+ 2 files changed, 4532 insertions(+), 4532 deletions(-)
+[main 0e62c1de] data: update snapshots [skip ci]
+ 1 file changed, 9112 insertions(+), 9301 deletions(-)
+[main 6ae70bf5] data: update snapshots [skip ci]
+ 1 file changed, 6223 insertions(+), 6034 deletions(-)
+[main de1cb39e] data: update snapshots [skip ci]
+ 1 file changed, 2622 insertions(+), 2622 deletions(-)
+[main 12541f4f] data: update snapshots [skip ci]
+ 1 file changed, 3642 insertions(+), 3642 deletions(-)
+[main 7a421bd6] data: update snapshots [skip ci]
+ 1 file changed, 5110 insertions(+), 5110 deletions(-)
+[main 7acf6ec7] data: update snapshots [skip ci]
+ 2 files changed, 3298 insertions(+), 3298 deletions(-)
+[main 9e8d1a7a] data: update snapshots [skip ci]
+ 2 files changed, 4994 insertions(+), 4994 deletions(-)
+[main d33050f1] data: update snapshots [skip ci]
+ 1 file changed, 3205 insertions(+), 3205 deletions(-)
+[main 60921ff0] data: update snapshots [skip ci]
+ 1 file changed, 7944 insertions(+), 7755 deletions(-)
+[main 382cdef3] data: update snapshots [skip ci]
+ 1 file changed, 5411 insertions(+), 5411 deletions(-)
+[main 8bb7f45c] data: update snapshots [skip ci]
+ 1 file changed, 5441 insertions(+), 5441 deletions(-)
+[main c52090ef] data: update snapshots [skip ci]
+ 2 files changed, 6509 insertions(+), 6432 deletions(-)
+[main 07ea03e9] data: update snapshots [skip ci]
+ 2 files changed, 6562 insertions(+), 6639 deletions(-)
+[main bb67dca3] data: update snapshots [skip ci]
+ 1 file changed, 10012 insertions(+), 10201 deletions(-)
+[main 4210b698] data: update snapshots [skip ci]
+ 1 file changed, 2571 insertions(+), 2571 deletions(-)
+[main 56c0d616] data: update snapshots [skip ci]
+ 1 file changed, 3213 insertions(+), 3213 deletions(-)
+[main a552500a] data: update snapshots [skip ci]
+ 1 file changed, 4839 insertions(+), 4832 deletions(-)
+[main ef7db8c1] data: update snapshots [skip ci]
+ 1 file changed, 4961 insertions(+), 4968 deletions(-)
+[main e0de0ccb] data: update snapshots [skip ci]
+ 2 files changed, 3512 insertions(+), 3505 deletions(-)
+[main 51dc2da0] data: update snapshots [skip ci]
+ 2 files changed, 8166 insertions(+), 7984 deletions(-)
+[main 8bfb3418] data: update snapshots [skip ci]
+ 1 file changed, 7690 insertions(+), 7648 deletions(-)
+[main 5641d050] data: update snapshots [skip ci]
+ 1 file changed, 7973 insertions(+), 8015 deletions(-)
+[main 5eb31ad0] data: update snapshots [skip ci]
+ 1 file changed, 7308 insertions(+), 7497 deletions(-)
+[main 7c53728a] data: update snapshots [skip ci]
+ 2 files changed, 3567 insertions(+), 3567 deletions(-)
+[main dad4ab90] data: update snapshots [skip ci]
+ 2 files changed, 8468 insertions(+), 8657 deletions(-)
+[main dfb5ee33] data: update snapshots [skip ci]
+ 1 file changed, 6346 insertions(+), 6157 deletions(-)
+[main e9a37994] data: update snapshots [skip ci]
+ 1 file changed, 3388 insertions(+), 3388 deletions(-)
+[main 38077404] data: update snapshots [skip ci]
+ 1 file changed, 3156 insertions(+), 3149 deletions(-)
+[main 1418019e] data: update snapshots [skip ci]
+ 1 file changed, 3553 insertions(+), 3560 deletions(-)
+[main 453e5b41] data: update snapshots [skip ci]
+ 1 file changed, 3578 insertions(+), 3578 deletions(-)
+[main 1264f928] data: update snapshots [skip ci]
+ 1 file changed, 7993 insertions(+), 7804 deletions(-)
+[main f1425e0e] data: update snapshots [skip ci]
+ 1 file changed, 5497 insertions(+), 5497 deletions(-)
+[main 757fcac3] data: update snapshots [skip ci]
+ 1 file changed, 6282 insertions(+), 6471 deletions(-)
+[main cfed86d1] data: update snapshots [skip ci]
+ 1 file changed, 4555 insertions(+), 4555 deletions(-)
+[main e3f2ffb6] data: update snapshots [skip ci]
+ 1 file changed, 4893 insertions(+), 4886 deletions(-)
+[main 5d12631f] data: update snapshots [skip ci]
+ 1 file changed, 4449 insertions(+), 4456 deletions(-)
+[main e21855a9] data: update snapshots [skip ci]
+ 2 files changed, 6618 insertions(+), 6765 deletions(-)
+[main 55f340c7] data: update snapshots [skip ci]
+ 2 files changed, 5778 insertions(+), 5631 deletions(-)
+[main 9e311154] data: update snapshots [skip ci]
+ 1 file changed, 7999 insertions(+), 7999 deletions(-)
+[main 98101b93] data: update snapshots [skip ci]
+ 1 file changed, 5020 insertions(+), 5020 deletions(-)
+[main 30605f0f] data: update snapshots [skip ci]
+ 1 file changed, 5051 insertions(+), 5051 deletions(-)
+[main 105735a1] data: update snapshots [skip ci]
+ 1 file changed, 8147 insertions(+), 7958 deletions(-)
+[main f38a4fbd] data: update snapshots [skip ci]
+ 2 files changed, 6403 insertions(+), 6214 deletions(-)
+[main 70ad5649] data: update snapshots [skip ci]
+ 2 files changed, 7925 insertions(+), 7883 deletions(-)
+[main 0228fe47] data: update snapshots [skip ci]
+ 1 file changed, 7930 insertions(+), 8161 deletions(-)
+[main 45120236] data: update snapshots [skip ci]
+ 1 file changed, 7415 insertions(+), 7345 deletions(-)
+[main 4feafda0] data: update snapshots [skip ci]
+ 1 file changed, 7517 insertions(+), 7587 deletions(-)
+[main cc4d647a] data: update snapshots [skip ci]
+ 1 file changed, 5514 insertions(+), 5514 deletions(-)
+[main eb741dde] data: update snapshots [skip ci]
+ 1 file changed, 9479 insertions(+), 9661 deletions(-)
+[main cf04afb1] data: update snapshots [skip ci]
+ 2 files changed, 6413 insertions(+), 6231 deletions(-)
+[main c51f71dc] data: update snapshots [skip ci]
+ 2 files changed, 5529 insertions(+), 5529 deletions(-)
+[main d5298bc1] data: update snapshots [skip ci]
+ 1 file changed, 4272 insertions(+), 4272 deletions(-)
+[main 51715684] data: update snapshots [skip ci]
+ 1 file changed, 5388 insertions(+), 5388 deletions(-)
+[main 7532961b] data: update snapshots [skip ci]
+ 1 file changed, 6392 insertions(+), 6315 deletions(-)
+[main 3a4aec17] data: update snapshots [skip ci]
+ 1 file changed, 6662 insertions(+), 6739 deletions(-)
+[main 3d914ae3] data: update snapshots [skip ci]
+ 1 file changed, 3879 insertions(+), 3879 deletions(-)
+[main 4e55afb9] data: update snapshots [skip ci]
+ 1 file changed, 5608 insertions(+), 5608 deletions(-)
+[main 30f0d559] data: update snapshots [skip ci]
+ 1 file changed, 4762 insertions(+), 4762 deletions(-)
+[main f697c21d] data: update snapshots [skip ci]
+ 1 file changed, 7213 insertions(+), 7143 deletions(-)
+[main 77d33957] data: update snapshots [skip ci]
+ 1 file changed, 7183 insertions(+), 7253 deletions(-)
+[main bf79c906] data: update snapshots [skip ci]
+ 1 file changed, 8716 insertions(+), 8905 deletions(-)
+[main 5d022991] data: update snapshots [skip ci]
+ 2 files changed, 6493 insertions(+), 6304 deletions(-)
+[main cb034fca] data: update snapshots [skip ci]
+ 2 files changed, 5615 insertions(+), 5615 deletions(-)
+[main d1b97806] data: update snapshots [skip ci]
+ 1 file changed, 4379 insertions(+), 4379 deletions(-)
+[main 00ae5d6a] data: update snapshots [skip ci]
+ 1 file changed, 5476 insertions(+), 5476 deletions(-)
+[main 0b9cd48a] data: update snapshots [skip ci]
+ 1 file changed, 5520 insertions(+), 5520 deletions(-)
+[main 5f4a365d] data: update snapshots [skip ci]
+ 1 file changed, 4281 insertions(+), 4281 deletions(-)
+[main d66a4ba3] data: update snapshots [skip ci]
+ 1 file changed, 5565 insertions(+), 5565 deletions(-)
+[main 3032a314] data: update snapshots [skip ci]
+ 1 file changed, 8153 insertions(+), 8139 deletions(-)
+[main 48359423] data: update snapshots [skip ci]
+ 1 file changed, 6885 insertions(+), 6878 deletions(-)
+[main 3c646629] data: update snapshots [skip ci]
+ 1 file changed, 5576 insertions(+), 5569 deletions(-)
+[main b804d7c7] data: update snapshots [skip ci]
+ 1 file changed, 8099 insertions(+), 8092 deletions(-)
+[main fb8ea9d3] data: update snapshots [skip ci]
+ 1 file changed, 9782 insertions(+), 9957 deletions(-)
+[main 3bf8d1d6] data: update snapshots [skip ci]
+ 1 file changed, 6509 insertions(+), 6320 deletions(-)
+[main 9d591be4] data: update snapshots [skip ci]
+ 2 files changed, 8253 insertions(+), 8246 deletions(-)
+[main 21c2d5ec] data: update snapshots [skip ci]
+ 2 files changed, 8201 insertions(+), 8194 deletions(-)
+[main bfa36f8a] data: update snapshots [skip ci]
+ 1 file changed, 5820 insertions(+), 5813 deletions(-)
+[main 6ebad184] data: update snapshots [skip ci]
+ 1 file changed, 7131 insertions(+), 7124 deletions(-)
+[main 782ec468] data: update snapshots [skip ci]
+ 1 file changed, 5761 insertions(+), 5754 deletions(-)
+[main 98bb4011] data: update snapshots [skip ci]
+ 1 file changed, 8201 insertions(+), 8187 deletions(-)
+[main 58be598b] data: update snapshots [skip ci]
+ 2 files changed, 8199 insertions(+), 8192 deletions(-)
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+[main 0cc1dd63] data: update snapshots [skip ci]
+ 2 files changed, 8200 insertions(+), 8193 deletions(-)
+[main de162dd7] data: update snapshots [skip ci]
+ 1 file changed, 6618 insertions(+), 6422 deletions(-)
+[main e1aeb26f] data: update snapshots [skip ci]
+ 1 file changed, 8334 insertions(+), 8509 deletions(-)
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+[main 7bfccaff] data: update snapshots [skip ci]
+ 1 file changed, 8220 insertions(+), 8409 deletions(-)
+[main ad86a345] data: update snapshots [skip ci]
+ 1 file changed, 6618 insertions(+), 6422 deletions(-)
+[main af331776] data: update snapshots [skip ci]
+ 1 file changed, 6622 insertions(+), 6615 deletions(-)
+[main fbd4cd5b] data: update snapshots [skip ci]
+ 2 files changed, 5264 insertions(+), 5257 deletions(-)
+[main 8467d821] data: update snapshots [skip ci]
+ 2 files changed, 6750 insertions(+), 6743 deletions(-)
+[main 1c10595d] data: update snapshots [skip ci]
+ 1 file changed, 8232 insertions(+), 8232 deletions(-)
+[main c5732133] data: update snapshots [skip ci]
+ 1 file changed, 6158 insertions(+), 6144 deletions(-)
+[main 306ee631] data: update snapshots [skip ci]
+ 1 file changed, 6075 insertions(+), 6068 deletions(-)
+[main 7334f4e3] data: update snapshots [skip ci]
+ 1 file changed, 8344 insertions(+), 8288 deletions(-)
+[main 7eebc058] data: update snapshots [skip ci]
+ 2 files changed, 8213 insertions(+), 8248 deletions(-)
+[main 62f4bea1] data: update snapshots [skip ci]
+ 2 files changed, 6615 insertions(+), 6538 deletions(-)
+[main 6c4ce72a] data: update snapshots [skip ci]
+ 1 file changed, 8219 insertions(+), 8289 deletions(-)
+[main e811b00e] data: update snapshots [skip ci]
+ 1 file changed, 8237 insertions(+), 8412 deletions(-)
+[main 7f166b75] data: update snapshots [skip ci]
+ 1 file changed, 6598 insertions(+), 6409 deletions(-)
+[main bb170bd1] data: update snapshots [skip ci]
+ 1 file changed, 8253 insertions(+), 8246 deletions(-)
+[main acef5eca] data: update snapshots [skip ci]
+ 2 files changed, 6350 insertions(+), 6343 deletions(-)
+[main ec99fb2f] data: update snapshots [skip ci]
+ 2 files changed, 7964 insertions(+), 7957 deletions(-)
+[main c54a9ed7] data: update snapshots [skip ci]
+ 1 file changed, 6495 insertions(+), 6677 deletions(-)
+[main 97ff830f] data: update snapshots [skip ci]
+ 1 file changed, 6870 insertions(+), 6597 deletions(-)
+[main c325a12c] data: update snapshots [skip ci]
+ 1 file changed, 6546 insertions(+), 6609 deletions(-)
+[main e9d32239] data: update snapshots [skip ci]
+ 1 file changed, 3102 insertions(+), 3095 deletions(-)
+[main 2d9c37ee] data: update snapshots [skip ci]
+ 2 files changed, 8224 insertions(+), 8217 deletions(-)
+[main a4bc6b6b] data: update snapshots [skip ci]
+ 2 files changed, 6651 insertions(+), 6462 deletions(-)
+[main a644a835] data: update snapshots [skip ci]
+ 1 file changed, 8298 insertions(+), 8480 deletions(-)
+[main 7f50ba31] data: update snapshots [skip ci]
+ 1 file changed, 8444 insertions(+), 8612 deletions(-)
+[main a3b6e6ae] data: update snapshots [skip ci]
+ 1 file changed, 6639 insertions(+), 6450 deletions(-)
+[main bb761efd] data: update snapshots [skip ci]
+ 1 file changed, 5423 insertions(+), 5409 deletions(-)
+[main c3498d76] data: update snapshots [skip ci]
+ 1 file changed, 4711 insertions(+), 4704 deletions(-)
+[main 4179e497] data: update snapshots [skip ci]
+ 2 files changed, 8345 insertions(+), 8296 deletions(-)
+[main 9c79d037] data: update snapshots [skip ci]
+ 2 files changed, 6761 insertions(+), 6796 deletions(-)
+[main bd935147] data: update snapshots [skip ci]
+ 1 file changed, 7731 insertions(+), 7528 deletions(-)
+[main 80bc99a0] data: update snapshots [skip ci]
+ 1 file changed, 4439 insertions(+), 4432 deletions(-)
+[main d28d53f3] data: update snapshots [skip ci]
+ 1 file changed, 8227 insertions(+), 8409 deletions(-)
+[main 0d18f968] data: update snapshots [skip ci]
+ 1 file changed, 6716 insertions(+), 6639 deletions(-)
+[main 7a1afff9] data: update snapshots [skip ci]
+ 2 files changed, 7340 insertions(+), 7403 deletions(-)
+[main 33da5f54] data: update snapshots [skip ci]
+ 2 files changed, 7678 insertions(+), 7671 deletions(-)
+[main 76410626] data: update snapshots [skip ci]
+ 1 file changed, 8880 insertions(+), 9062 deletions(-)
+[main 9519a39e] data: update snapshots [skip ci]
+ 1 file changed, 6287 insertions(+), 6091 deletions(-)
+[main e51e0772] data: update snapshots [skip ci]
+ 1 file changed, 5776 insertions(+), 5769 deletions(-)
+[main 50aced4a] data: update snapshots [skip ci]
+ 1 file changed, 5607 insertions(+), 5593 deletions(-)
+[main a20d8993] data: update snapshots [skip ci]
+ 1 file changed, 8355 insertions(+), 8278 deletions(-)
+[main f2825d18] data: update snapshots [skip ci]
+ 2 files changed, 8320 insertions(+), 8306 deletions(-)
+[main 8c235a64] data: update snapshots [skip ci]
+ 2 files changed, 6480 insertions(+), 6550 deletions(-)
+[main 341866e7] data: update snapshots [skip ci]
+ 1 file changed, 7166 insertions(+), 6886 deletions(-)
+[main e176a203] data: update snapshots [skip ci]
+ 1 file changed, 8274 insertions(+), 8470 deletions(-)
+[main 8063d4fe] data: update snapshots [skip ci]
+ 1 file changed, 8121 insertions(+), 8191 deletions(-)
+[main c01f583d] data: update snapshots [skip ci]
+ 1 file changed, 6469 insertions(+), 6385 deletions(-)
+[main 38e3923b] data: update snapshots [skip ci]
+ 2 files changed, 8300 insertions(+), 8384 deletions(-)
+[main ffff159c] data: update snapshots [skip ci]
+ 2 files changed, 8453 insertions(+), 8642 deletions(-)
+[main c0a36b83] data: update snapshots [skip ci]
+ 1 file changed, 6180 insertions(+), 5984 deletions(-)
+[main 08482cde] data: update snapshots [skip ci]
+ 1 file changed, 7055 insertions(+), 7055 deletions(-)
+[main 05aafd14] data: update snapshots [skip ci]
+ 1 file changed, 3433 insertions(+), 3433 deletions(-)
+[main e2862281] data: update snapshots [skip ci]
+ 1 file changed, 6356 insertions(+), 6230 deletions(-)
+[main f3d75594] data: update snapshots [skip ci]
+ 1 file changed, 8430 insertions(+), 8367 deletions(-)
+[main c8f25d3e] data: update snapshots [skip ci]
+ 1 file changed, 5196 insertions(+), 5189 deletions(-)
+[main e605114c] data: update snapshots [skip ci]
+ 1 file changed, 8243 insertions(+), 8446 deletions(-)
+[main c1067ab8] data: update snapshots [skip ci]
+ 1 file changed, 4719 insertions(+), 4719 deletions(-)
+[main 063927b8] data: update snapshots [skip ci]
+ 1 file changed, 6631 insertions(+), 6589 deletions(-)
+[main db013b75] data: update snapshots [skip ci]
+ 1 file changed, 6300 insertions(+), 6342 deletions(-)
+[main d8041dd9] data: update snapshots [skip ci]
+ 2 files changed, 5051 insertions(+), 5051 deletions(-)
+[main 5e46d711] data: update snapshots [skip ci]
+ 2 files changed, 8071 insertions(+), 8260 deletions(-)
+[main 3f140e0f] data: update snapshots [skip ci]
+ 1 file changed, 6567 insertions(+), 6371 deletions(-)
+[main a419d4e7] data: update snapshots [skip ci]
+ 1 file changed, 3493 insertions(+), 3493 deletions(-)
+[main cebd0dd3] data: update snapshots [skip ci]
+ 1 file changed, 5194 insertions(+), 5194 deletions(-)
+[main d51aadc0] data: update snapshots [skip ci]
+ 1 file changed, 5003 insertions(+), 5003 deletions(-)
+[main 7c927ba4] data: update snapshots [skip ci]
+ 2 files changed, 8460 insertions(+), 8264 deletions(-)
+[main 9d07b3db] data: update snapshots [skip ci]
+ 2 files changed, 8342 insertions(+), 8538 deletions(-)
+[main b58cf8f2] data: update snapshots [skip ci]
+ 1 file changed, 6400 insertions(+), 6400 deletions(-)
+[main 933a4239] data: update snapshots [skip ci]
+ 1 file changed, 2003 insertions(+), 2003 deletions(-)
+[main b091c7e7] data: update snapshots [skip ci]
+ 1 file changed, 4645 insertions(+), 4519 deletions(-)
+[main d42616ed] data: update snapshots [skip ci]
+ 1 file changed, 4691 insertions(+), 4817 deletions(-)
+[main 12aa1e47] data: update snapshots [skip ci]
+ 1 file changed, 4799 insertions(+), 4792 deletions(-)
+[main c5e0be7c] data: update snapshots [skip ci]
+ 2 files changed, 5114 insertions(+), 5233 deletions(-)
+[main c7012034] data: update snapshots [skip ci]
+ 2 files changed, 5095 insertions(+), 4976 deletions(-)
+[main 1286d480] data: update snapshots [skip ci]
+ 1 file changed, 4525 insertions(+), 4455 deletions(-)
+[main a9962b67] data: update snapshots [skip ci]
+ 1 file changed, 4584 insertions(+), 4654 deletions(-)
+[main b50cbb05] data: update snapshots [skip ci]
+ 1 file changed, 5371 insertions(+), 5168 deletions(-)
+[main 8fa46f4f] data: update snapshots [skip ci]
+ 1 file changed, 2186 insertions(+), 2186 deletions(-)
+[main 79da0bcf] data: update snapshots [skip ci]
+ 2 files changed, 6726 insertions(+), 6922 deletions(-)
+[main 5de5a7ec] data: update snapshots [skip ci]
+ 2 files changed, 2194 insertions(+), 2194 deletions(-)
+[main 9246c0f2] data: update snapshots [skip ci]
+ 1 file changed, 4967 insertions(+), 4897 deletions(-)
+[main 85e0f78d] data: update snapshots [skip ci]
+ 1 file changed, 4990 insertions(+), 5060 deletions(-)
+[main 493e1afa] data: update snapshots [skip ci]
+ 1 file changed, 1977 insertions(+), 1977 deletions(-)
+[main d9babd68] data: update snapshots [skip ci]
+ 1 file changed, 5143 insertions(+), 5136 deletions(-)
+[main 359253fb] data: update snapshots [skip ci]
+ 1 file changed, 6728 insertions(+), 6924 deletions(-)
+[main 84ddce49] data: update snapshots [skip ci]
+ 2 files changed, 4904 insertions(+), 4708 deletions(-)
+[main b698eebd] data: update snapshots [skip ci]
+ 2 files changed, 2186 insertions(+), 2186 deletions(-)
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+[main 17c5d563] data: update snapshots [skip ci]
+ 1 file changed, 2180 insertions(+), 2180 deletions(-)
+[main 05b24f31] data: update snapshots [skip ci]
+ 1 file changed, 2077 insertions(+), 2077 deletions(-)
+[main 74e47477] data: update snapshots [skip ci]
+ 1 file changed, 5483 insertions(+), 5217 deletions(-)
+[main ceb2dad2] data: update snapshots [skip ci]
+ 2 files changed, 5083 insertions(+), 5307 deletions(-)
+[main 4a4481f7] data: update snapshots [skip ci]
+ 2 files changed, 5136 insertions(+), 5178 deletions(-)
+[main 00950912] data: update snapshots [skip ci]
+ 1 file changed, 4837 insertions(+), 4767 deletions(-)
+[main 595c4501] data: update snapshots [skip ci]
+ 1 file changed, 4877 insertions(+), 4947 deletions(-)
+[main b94b127d] data: update snapshots [skip ci]
+ 1 file changed, 1985 insertions(+), 1978 deletions(-)
+[main 23422d57] data: update snapshots [skip ci]
+ 1 file changed, 1969 insertions(+), 1976 deletions(-)
+[main e2d50ddf] data: update snapshots [skip ci]
+ 1 file changed, 4831 insertions(+), 4859 deletions(-)
+[main 11690e2c] data: update snapshots [skip ci]
+ 2 files changed, 6079 insertions(+), 5855 deletions(-)
+[main 92aad0c9] data: update snapshots [skip ci]
+ 2 files changed, 4915 insertions(+), 4831 deletions(-)
+[main ff06eddf] data: update snapshots [skip ci]
+ 1 file changed, 4926 insertions(+), 5017 deletions(-)
+[main a2e0b26c] data: update snapshots [skip ci]
+ 1 file changed, 2165 insertions(+), 2158 deletions(-)
+[main c84c5b2b] data: update snapshots [skip ci]
+ 1 file changed, 2014 insertions(+), 2014 deletions(-)
+[main 8484c5d0] data: update snapshots [skip ci]
+ 1 file changed, 5276 insertions(+), 5038 deletions(-)
+[main 5648dfc0] data: update snapshots [skip ci]
+ 2 files changed, 4906 insertions(+), 5144 deletions(-)
+[main d12dbf48] data: update snapshots [skip ci]
+ 2 files changed, 4805 insertions(+), 4735 deletions(-)
+[main 26e8a7ac] data: update snapshots [skip ci]
+ 1 file changed, 2022 insertions(+), 2022 deletions(-)
+[main cd651084] data: update snapshots [skip ci]
+ 1 file changed, 4962 insertions(+), 5032 deletions(-)
+[main 75db1f2d] data: update snapshots [skip ci]
+ 1 file changed, 2195 insertions(+), 2188 deletions(-)
+[main 4e01cf93] data: update snapshots [skip ci]
+ 1 file changed, 5082 insertions(+), 5278 deletions(-)
+[main 59caad32] data: update snapshots [skip ci]
+ 1 file changed, 4993 insertions(+), 4797 deletions(-)
+[main f9e1434e] data: update snapshots [skip ci]
+ 2 files changed, 4895 insertions(+), 4769 deletions(-)
+[main d1dcbf3b] data: update snapshots [skip ci]
+ 2 files changed, 4984 insertions(+), 5110 deletions(-)
+[main 58610477] data: update snapshots [skip ci]
+ 1 file changed, 1753 insertions(+), 1753 deletions(-)
+[main 134bb3e5] data: update snapshots [skip ci]
+ 1 file changed, 4856 insertions(+), 5052 deletions(-)
+[main 96d19d56] data: update snapshots [skip ci]
+ 1 file changed, 1599 insertions(+), 1599 deletions(-)
+[main 9898c335] data: update snapshots [skip ci]
+ 1 file changed, 1844 insertions(+), 1844 deletions(-)
+[main 98a8d5de] data: update snapshots [skip ci]
+ 2 files changed, 5067 insertions(+), 4675 deletions(-)
+[main 617adfb7] data: update snapshots [skip ci]
+ 2 files changed, 5159 insertions(+), 5348 deletions(-)
+[main 63733ef5] data: update snapshots [skip ci]
+ 1 file changed, 4946 insertions(+), 4953 deletions(-)
+[main 726c91b9] data: update snapshots [skip ci]
+ 1 file changed, 1708 insertions(+), 1708 deletions(-)
+[main a0b05db1] data: update snapshots [skip ci]
+ 1 file changed, 4963 insertions(+), 5145 deletions(-)
+[main 887bc27a] data: update snapshots [skip ci]
+ 1 file changed, 4828 insertions(+), 4639 deletions(-)
+[main ec8ef91b] data: update snapshots [skip ci]
+ 1 file changed, 1620 insertions(+), 1620 deletions(-)
+[main d0aa5b1b] data: update snapshots [skip ci]
+ 2 files changed, 1623 insertions(+), 1623 deletions(-)
+[main d790ab5c] data: update snapshots [skip ci]
+ 2 files changed, 4732 insertions(+), 4725 deletions(-)
+[main b575abf0] data: update snapshots [skip ci]
+ 1 file changed, 5064 insertions(+), 5225 deletions(-)
+[main 259303d1] data: update snapshots [skip ci]
+ 1 file changed, 2978 insertions(+), 2943 deletions(-)
+[main cc9cf125] data: update snapshots [skip ci]
+ 1 file changed, 4621 insertions(+), 4684 deletions(-)
+[main 7dc5908d] data: update snapshots [skip ci]
+ 1 file changed, 2222 insertions(+), 2229 deletions(-)
+[main 07dd5dd7] data: update snapshots [skip ci]
+ 2 files changed, 2011 insertions(+), 2011 deletions(-)
+[main c1e9bc8c] data: update snapshots [skip ci]
+ 2 files changed, 2008 insertions(+), 2008 deletions(-)
+[main f31f5655] data: update snapshots [skip ci]
+ 1 file changed, 2021 insertions(+), 2021 deletions(-)
+[main b70a66c4] data: update snapshots [skip ci]
+ 1 file changed, 6922 insertions(+), 7111 deletions(-)
+[main 238f85bd] data: update snapshots [skip ci]
+ 1 file changed, 4784 insertions(+), 4588 deletions(-)
+[main 876647ce] data: update snapshots [skip ci]
+ 1 file changed, 5106 insertions(+), 4784 deletions(-)
+[main c1a499c7] data: update snapshots [skip ci]
+ 2 files changed, 4880 insertions(+), 4922 deletions(-)
+[main d7133be8] data: update snapshots [skip ci]
+ 2 files changed, 5082 insertions(+), 5362 deletions(-)
+--- Iran Intelligence Snapshot | 2026-04-15 05:20 ---
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+OSError: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/adapters.py", line 644, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='gamma-api.polymarket.com', port=443): Max retries exceeded with url: /events/slug/iran-leader-end-of-2026 (Caused by NewConnectionError("HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 143, in <module>
+    run_monitor()
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 39, in run_monitor
+    resp = requests.get(f"{GAMMA_URL}/{slug}")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/adapters.py", line 677, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='gamma-api.polymarket.com', port=443): Max retries exceeded with url: /events/slug/iran-leader-end-of-2026 (Caused by NewConnectionError("HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable"))
+[main a72b2f29] data: update snapshots [skip ci]
+ 1 file changed, 4656 insertions(+), 4775 deletions(-)
+[main 8374bddb] data: update snapshots [skip ci]
+ 1 file changed, 4826 insertions(+), 4770 deletions(-)
+[main 3870ecdb] data: update snapshots [skip ci]
+ 1 file changed, 4906 insertions(+), 4962 deletions(-)
+[main e11d9294] data: update snapshots [skip ci]
+ 1 file changed, 2171 insertions(+), 2171 deletions(-)
+[main 23d32e66] data: update snapshots [skip ci]
+ 1 file changed, 4536 insertions(+), 4606 deletions(-)
+[main a30e321d] data: update snapshots [skip ci]
+ 2 files changed, 2060 insertions(+), 2060 deletions(-)
+[main 71f44606] data: update snapshots [skip ci]
+ 2 files changed, 4571 insertions(+), 4690 deletions(-)
+[main 39f71b91] data: update snapshots [skip ci]
+ 1 file changed, 4615 insertions(+), 4489 deletions(-)
+[main 4df5a0b6] data: update snapshots [skip ci]
+ 1 file changed, 4830 insertions(+), 4788 deletions(-)
+[main 1c958cf9] data: update snapshots [skip ci]
+ 1 file changed, 4799 insertions(+), 4834 deletions(-)
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+[main 1708c845] data: update snapshots [skip ci]
+ 1 file changed, 1999 insertions(+), 1992 deletions(-)
+[main 7c55c3cf] data: update snapshots [skip ci]
+ 1 file changed, 5095 insertions(+), 5298 deletions(-)
+[main 54a49f04] data: update snapshots [skip ci]
+ 2 files changed, 5073 insertions(+), 5066 deletions(-)
+[main c39a8a4d] data: update snapshots [skip ci]
+ 2 files changed, 4717 insertions(+), 4724 deletions(-)
+[main c03c3e1e] data: update snapshots [skip ci]
+ 1 file changed, 2366 insertions(+), 2366 deletions(-)
+[main f9aef51a] data: update snapshots [skip ci]
+ 1 file changed, 2300 insertions(+), 2300 deletions(-)
+[main 99465be4] data: update snapshots [skip ci]
+ 1 file changed, 2300 insertions(+), 2300 deletions(-)
+[main d38b88d5] data: update snapshots [skip ci]
+ 1 file changed, 4617 insertions(+), 4575 deletions(-)
+[main a85b6d66] data: update snapshots [skip ci]
+ 1 file changed, 4422 insertions(+), 4464 deletions(-)
+[main 4f6e8630] data: update snapshots [skip ci]
+ 1 file changed, 9296 insertions(+), 9093 deletions(-)
+[main bd4c8cad] data: update snapshots [skip ci]
+ 1 file changed, 4781 insertions(+), 4774 deletions(-)
+[main 5f357d9e] data: update snapshots [skip ci]
+ 1 file changed, 2214 insertions(+), 2214 deletions(-)
+[main 58b16196] data: update snapshots [skip ci]
+ 1 file changed, 4850 insertions(+), 4808 deletions(-)
+[main e927f6b4] data: update snapshots [skip ci]
+ 1 file changed, 4803 insertions(+), 4761 deletions(-)
+[main 8264bbf5] data: update snapshots [skip ci]
+ 1 file changed, 4837 insertions(+), 5117 deletions(-)
+[main aaa3c25d] data: update snapshots [skip ci]
+ 2 files changed, 1660 insertions(+), 1660 deletions(-)
+[main 626ac44a] data: update snapshots [skip ci]
+ 2 files changed, 4939 insertions(+), 4932 deletions(-)
+[main aed5141a] data: update snapshots [skip ci]
+ 1 file changed, 4887 insertions(+), 4894 deletions(-)
+[main 82ffb7e9] data: update snapshots [skip ci]
+ 1 file changed, 6554 insertions(+), 6288 deletions(-)
+[main 8ac9a53e] data: update snapshots [skip ci]
+ 1 file changed, 4710 insertions(+), 4780 deletions(-)
+[main 4fc006cd] data: update snapshots [skip ci]
+ 2 files changed, 6700 insertions(+), 6889 deletions(-)
+[main b7f2bf84] data: update snapshots [skip ci]
+ 2 files changed, 4873 insertions(+), 4677 deletions(-)
+[main 35f36779] data: update snapshots [skip ci]
+ 1 file changed, 4863 insertions(+), 4863 deletions(-)
+[main c842dd7a] data: update snapshots [skip ci]
+ 1 file changed, 1862 insertions(+), 1862 deletions(-)
+[main 559cae87] data: update snapshots [skip ci]
+ 1 file changed, 4716 insertions(+), 4674 deletions(-)
+[main 440c3a9e] data: update snapshots [skip ci]
+ 1 file changed, 4948 insertions(+), 4990 deletions(-)
+[main 2e13ba84] data: update snapshots [skip ci]
+ 1 file changed, 1960 insertions(+), 1960 deletions(-)
+[main 0d4f52df] data: update snapshots [skip ci]
+ 2 files changed, 2089 insertions(+), 2089 deletions(-)
+[main 074fdbf8] data: update snapshots [skip ci]
+ 2 files changed, 2678 insertions(+), 2678 deletions(-)
+[main 513da5f9] data: update snapshots [skip ci]
+ 1 file changed, 1968 insertions(+), 1968 deletions(-)
+[main 36a3d190] data: update snapshots [skip ci]
+ 1 file changed, 1962 insertions(+), 1962 deletions(-)
+[main be762da4] data: update snapshots [skip ci]
+ 1 file changed, 1800 insertions(+), 1800 deletions(-)
+[main 6644c3e0] data: update snapshots [skip ci]
+ 1 file changed, 6659 insertions(+), 6848 deletions(-)
+[main 3df79ffc] data: update snapshots [skip ci]
+ 2 files changed, 4709 insertions(+), 4513 deletions(-)
+[main 60c8c52e] data: update snapshots [skip ci]
+ 2 files changed, 4787 insertions(+), 4703 deletions(-)
+[main bb566e2f] data: update snapshots [skip ci]
+ 1 file changed, 4660 insertions(+), 4744 deletions(-)
+[main 632fa564] data: update snapshots [skip ci]
+ 1 file changed, 1962 insertions(+), 1962 deletions(-)
+[main 1cc75631] data: update snapshots [skip ci]
+ 1 file changed, 2064 insertions(+), 2064 deletions(-)
+[main 3b262eb7] data: update snapshots [skip ci]
+ 1 file changed, 2211 insertions(+), 2211 deletions(-)
+[main 7368dfa5] data: update snapshots [skip ci]
+ 1 file changed, 2501 insertions(+), 2494 deletions(-)
+[main 1332e5ea] data: update snapshots [skip ci]
+ 1 file changed, 6755 insertions(+), 6559 deletions(-)
+[main a4ee9da2] data: update snapshots [skip ci]
+ 1 file changed, 1987 insertions(+), 1987 deletions(-)
+[main 327f59eb] data: update snapshots [skip ci]
+ 1 file changed, 1996 insertions(+), 1996 deletions(-)
+[main 3d86acd9] data: update snapshots [skip ci]
+ 1 file changed, 1791 insertions(+), 1791 deletions(-)
+[main 4e463a9e] data: update snapshots [skip ci]
+ 1 file changed, 4986 insertions(+), 5168 deletions(-)
+[main eceaa281] data: update snapshots [skip ci]
+ 1 file changed, 4544 insertions(+), 4355 deletions(-)
+[main cb88b29d] data: update snapshots [skip ci]
+ 2 files changed, 4508 insertions(+), 4704 deletions(-)
+[main 6f3fc9a8] data: update snapshots [skip ci]
+ 2 files changed, 2218 insertions(+), 2218 deletions(-)
+[main 0bf04390] data: update snapshots [skip ci]
+ 1 file changed, 2054 insertions(+), 2054 deletions(-)
+[main a4b9811a] data: update snapshots [skip ci]
+ 1 file changed, 4505 insertions(+), 4309 deletions(-)
+[main b68c1e64] data: update snapshots [skip ci]
+ 1 file changed, 3105 insertions(+), 3098 deletions(-)
+[main f6cccad4] data: update snapshots [skip ci]
+ 1 file changed, 1869 insertions(+), 1869 deletions(-)
+[main d76531ad] data: update snapshots [skip ci]
+ 2 files changed, 6105 insertions(+), 5909 deletions(-)
+[main 1839950e] data: update snapshots [skip ci]
+ 2 files changed, 2592 insertions(+), 2592 deletions(-)
+[main 91e69e03] data: update snapshots [skip ci]
+ 1 file changed, 2572 insertions(+), 2572 deletions(-)
+[main 4e080b44] data: update snapshots [skip ci]
+ 1 file changed, 2577 insertions(+), 2577 deletions(-)
+[main 80573fbb] data: update snapshots [skip ci]
+ 1 file changed, 6975 insertions(+), 7164 deletions(-)
+[main cbb2a03e] data: update snapshots [skip ci]
+ 1 file changed, 4927 insertions(+), 4731 deletions(-)
+[main 19076403] data: update snapshots [skip ci]
+ 2 files changed, 2469 insertions(+), 2469 deletions(-)
+[main de62db6d] data: update snapshots [skip ci]
+ 2 files changed, 2314 insertions(+), 2314 deletions(-)
+[main c1e3eb64] data: update snapshots [skip ci]
+ 1 file changed, 2471 insertions(+), 2471 deletions(-)
+[main d7d5f705] data: update snapshots [skip ci]
+ 1 file changed, 3165 insertions(+), 3158 deletions(-)
+[main 185cc7cc] data: update snapshots [skip ci]
+ 1 file changed, 2432 insertions(+), 2432 deletions(-)
+[main 0e875080] data: update snapshots [skip ci]
+ 1 file changed, 2489 insertions(+), 2489 deletions(-)
+[main cff82098] data: update snapshots [skip ci]
+ 2 files changed, 5628 insertions(+), 5390 deletions(-)
+[main 6244be94] data: update snapshots [skip ci]
+ 2 files changed, 4734 insertions(+), 4776 deletions(-)
+[main bf42cafc] data: update snapshots [skip ci]
+ 1 file changed, 2368 insertions(+), 2368 deletions(-)
+[main 96a2b19c] data: update snapshots [skip ci]
+ 1 file changed, 3101 insertions(+), 3094 deletions(-)
+[main 2b923a71] data: update snapshots [skip ci]
+ 1 file changed, 2722 insertions(+), 2729 deletions(-)
+[main 1ece5c39] data: update snapshots [skip ci]
+ 1 file changed, 5440 insertions(+), 5629 deletions(-)
+[main 54e398f0] data: update snapshots [skip ci]
+ 1 file changed, 2486 insertions(+), 2486 deletions(-)
+[main 49f8d8de] data: update snapshots [skip ci]
+ 2 files changed, 2516 insertions(+), 2516 deletions(-)
+[main 249f5c8e] data: update snapshots [skip ci]
+ 2 files changed, 7597 insertions(+), 7786 deletions(-)
+[main 61e98bf2] data: update snapshots [skip ci]
+ 1 file changed, 1787 insertions(+), 1787 deletions(-)
+[main fe53fcbc] data: update snapshots [skip ci]
+ 1 file changed, 1791 insertions(+), 1791 deletions(-)
+[main bd3a846e] data: update snapshots [skip ci]
+ 1 file changed, 5473 insertions(+), 5235 deletions(-)
+[main b27d105c] data: update snapshots [skip ci]
+ 1 file changed, 4791 insertions(+), 4833 deletions(-)
+[main b1f8fca7] data: update snapshots [skip ci]
+ 2 files changed, 2193 insertions(+), 2193 deletions(-)
+[main 77e9479f] data: update snapshots [skip ci]
+ 2 files changed, 4914 insertions(+), 5110 deletions(-)
+[main 9c10438f] data: update snapshots [skip ci]
+ 1 file changed, 1723 insertions(+), 1723 deletions(-)
+[main e84bbe26] data: update snapshots [skip ci]
+ 1 file changed, 4525 insertions(+), 4455 deletions(-)
+[main 9b6b69f6] data: update snapshots [skip ci]
+ 1 file changed, 4795 insertions(+), 4669 deletions(-)
+[main 7fbec05d] data: update snapshots [skip ci]
+ 1 file changed, 2178 insertions(+), 2178 deletions(-)
+[main 5ade2dbb] data: update snapshots [skip ci]
+ 1 file changed, 2254 insertions(+), 2254 deletions(-)
+[main 54a027d7] data: update snapshots [skip ci]
+ 2 files changed, 6990 insertions(+), 7179 deletions(-)
+[main f7c8624f] data: update snapshots [skip ci]
+ 2 files changed, 2100 insertions(+), 2100 deletions(-)
+[main 8a46d5a4] data: update snapshots [skip ci]
+ 1 file changed, 5047 insertions(+), 4725 deletions(-)
+[main 3ec1b87d] data: update snapshots [skip ci]
+ 1 file changed, 5477 insertions(+), 5603 deletions(-)
+[main 956162a2] data: update snapshots [skip ci]
+ 1 file changed, 4646 insertions(+), 4842 deletions(-)
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+[main e4526e7b] data: update snapshots [skip ci]
+ 1 file changed, 2089 insertions(+), 2089 deletions(-)
+[main a873ef0c] data: update snapshots [skip ci]
+ 2 files changed, 2099 insertions(+), 2099 deletions(-)
+[main af934901] data: update snapshots [skip ci]
+ 2 files changed, 4752 insertions(+), 4710 deletions(-)
+[main 9deea2a5] data: update snapshots [skip ci]
+ 1 file changed, 1582 insertions(+), 1582 deletions(-)
+[main deffd24f] data: update snapshots [skip ci]
+ 1 file changed, 5151 insertions(+), 4997 deletions(-)
+[main f434a9ca] data: update snapshots [skip ci]
+ 1 file changed, 2214 insertions(+), 2214 deletions(-)
+[main fa6d23b9] data: update snapshots [skip ci]
+ 1 file changed, 6860 insertions(+), 7049 deletions(-)
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+[main 1779b5f6] data: update snapshots [skip ci]
+ 1 file changed, 2060 insertions(+), 2060 deletions(-)
+[main 6dc52a74] data: update snapshots [skip ci]
+ 1 file changed, 5840 insertions(+), 5644 deletions(-)
+[main 4b61e6a4] data: update snapshots [skip ci]
+ 1 file changed, 5122 insertions(+), 4989 deletions(-)
+[main 4d0b1905] data: update snapshots [skip ci]
+ 1 file changed, 5528 insertions(+), 5654 deletions(-)
+[main c869fb7a] data: update snapshots [skip ci]
+ 1 file changed, 4753 insertions(+), 4949 deletions(-)
+[main 24d77667] data: update snapshots [skip ci]
+ 1 file changed, 2036 insertions(+), 2036 deletions(-)
+[main d2f66c86] data: update snapshots [skip ci]
+ 2 files changed, 2163 insertions(+), 2163 deletions(-)
+[main c357e081] data: update snapshots [skip ci]
+ 2 files changed, 2166 insertions(+), 2166 deletions(-)
+[main 30442b0a] data: update snapshots [skip ci]
+ 1 file changed, 2105 insertions(+), 2105 deletions(-)
+[main 5f7c5b17] data: update snapshots [skip ci]
+ 1 file changed, 4818 insertions(+), 4622 deletions(-)
+[main 8a6fc6a4] data: update snapshots [skip ci]
+ 1 file changed, 4854 insertions(+), 4658 deletions(-)
+[main 0e03cba7] data: update snapshots [skip ci]
+ 1 file changed, 5204 insertions(+), 5400 deletions(-)
+[main eabdabf5] data: update snapshots [skip ci]
+ 1 file changed, 4711 insertions(+), 4641 deletions(-)
+[main 562d8a38] data: update snapshots [skip ci]
+ 2 files changed, 4719 insertions(+), 4789 deletions(-)
+[main f00f89cc] data: update snapshots [skip ci]
+ 2 files changed, 2224 insertions(+), 2224 deletions(-)
+[main 6f872f53] data: update snapshots [skip ci]
+ 1 file changed, 6858 insertions(+), 7047 deletions(-)
+[main 34b06bf8] data: update snapshots [skip ci]
+ 1 file changed, 2460 insertions(+), 2460 deletions(-)
+[main aaca6de8] data: update snapshots [skip ci]
+ 1 file changed, 4606 insertions(+), 4599 deletions(-)
+[main 84d46ade] data: update snapshots [skip ci]
+ 1 file changed, 4976 insertions(+), 4983 deletions(-)
+[main 89a27bf3] data: update snapshots [skip ci]
+ 2 files changed, 1934 insertions(+), 1934 deletions(-)
+[main 1df5b7a7] data: update snapshots [skip ci]
+ 2 files changed, 1928 insertions(+), 1928 deletions(-)
+[main b6bf15b4] data: update snapshots [skip ci]
+ 1 file changed, 4908 insertions(+), 4712 deletions(-)
+[main 787ab67e] data: update snapshots [skip ci]
+ 1 file changed, 2201 insertions(+), 2201 deletions(-)
+[main 0b0bc70f] data: update snapshots [skip ci]
+ 1 file changed, 1983 insertions(+), 1983 deletions(-)
+[main 4914d3c0] data: update snapshots [skip ci]
+ 1 file changed, 1987 insertions(+), 1987 deletions(-)
+[main 2af2b8fd] data: update snapshots [skip ci]
+ 1 file changed, 1984 insertions(+), 1984 deletions(-)
+[main 47c35302] data: update snapshots [skip ci]
+ 2 files changed, 4912 insertions(+), 4863 deletions(-)
+[main 8f03b24b] data: update snapshots [skip ci]
+ 2 files changed, 5002 insertions(+), 5044 deletions(-)
+[main 293c7724] data: update snapshots [skip ci]
+ 1 file changed, 2783 insertions(+), 2783 deletions(-)
+[main 2cb6a586] data: update snapshots [skip ci]
+ 1 file changed, 1969 insertions(+), 1969 deletions(-)
+[main f6e1470d] data: update snapshots [skip ci]
+ 1 file changed, 1971 insertions(+), 1971 deletions(-)
+[main b9c0fcc0] data: update snapshots [skip ci]
+ 1 file changed, 1968 insertions(+), 1968 deletions(-)
+[main 81a016c2] data: update snapshots [skip ci]
+ 2 files changed, 6818 insertions(+), 7007 deletions(-)
+[main 503fdadb] data: update snapshots [skip ci]
+ 2 files changed, 4626 insertions(+), 4430 deletions(-)
+[main aaa68e93] data: update snapshots [skip ci]
+ 1 file changed, 5197 insertions(+), 5190 deletions(-)
+[main 0e20c019] data: update snapshots [skip ci]
+ 1 file changed, 2262 insertions(+), 2269 deletions(-)
+[main d6b20bf3] data: update snapshots [skip ci]
+ 1 file changed, 2012 insertions(+), 2012 deletions(-)
+[main 8120ea0a] data: update snapshots [skip ci]
+ 1 file changed, 2011 insertions(+), 2011 deletions(-)
+[main 9ebeabb7] data: update snapshots [skip ci]
+ 2 files changed, 4948 insertions(+), 4836 deletions(-)
+[main ed8d443d] data: update snapshots [skip ci]
+ 2 files changed, 7012 insertions(+), 7054 deletions(-)
+[main 4f65c6e6] data: update snapshots [skip ci]
+ 1 file changed, 5026 insertions(+), 5096 deletions(-)
+[main 3c0e416d] data: update snapshots [skip ci]
+ 1 file changed, 1818 insertions(+), 1818 deletions(-)
+[main d732e18f] data: update snapshots [skip ci]
+ 1 file changed, 1837 insertions(+), 1837 deletions(-)
+[main 99cd52d2] data: update snapshots [skip ci]
+ 1 file changed, 2081 insertions(+), 2074 deletions(-)
+[main bccee640] data: update snapshots [skip ci]
+ 1 file changed, 6818 insertions(+), 7014 deletions(-)
+[main aa900d6d] data: update snapshots [skip ci]
+ 1 file changed, 4703 insertions(+), 4507 deletions(-)
+[main 895dec63] data: update snapshots [skip ci]
+ 1 file changed, 2778 insertions(+), 2771 deletions(-)
+[main 74ba221e] data: update snapshots [skip ci]
+ 1 file changed, 4843 insertions(+), 4801 deletions(-)
+[main b8d0f2dd] data: update snapshots [skip ci]
+ 1 file changed, 4840 insertions(+), 4882 deletions(-)
+[main 30eb74c0] data: update snapshots [skip ci]
+ 1 file changed, 1875 insertions(+), 1875 deletions(-)
+[main a349edcc] data: update snapshots [skip ci]
+ 2 files changed, 2835 insertions(+), 2835 deletions(-)
+[main eeac66de] data: update snapshots [skip ci]
+ 2 files changed, 2050 insertions(+), 2050 deletions(-)
+[main 723046ac] data: update snapshots [skip ci]
+ 1 file changed, 4988 insertions(+), 4946 deletions(-)
+[main 903fa5bb] data: update snapshots [skip ci]
+ 1 file changed, 5171 insertions(+), 5213 deletions(-)
+[main 48bd7534] data: update snapshots [skip ci]
+ 1 file changed, 4359 insertions(+), 4366 deletions(-)
+[main a3ff127e] data: update snapshots [skip ci]
+ 1 file changed, 3209 insertions(+), 3202 deletions(-)
+[main 071f76a2] data: update snapshots [skip ci]
+ 1 file changed, 6849 insertions(+), 7038 deletions(-)
+[main 616bf346] data: update snapshots [skip ci]
+ 2 files changed, 4612 insertions(+), 4416 deletions(-)
+[main fb637535] data: update snapshots [skip ci]
+ 2 files changed, 5117 insertions(+), 5110 deletions(-)
+[main 83f084df] data: update snapshots [skip ci]
+ 1 file changed, 2020 insertions(+), 2020 deletions(-)
+[main 84b0d009] data: update snapshots [skip ci]
+ 1 file changed, 2025 insertions(+), 2025 deletions(-)
+[main 5c013eaa] data: update snapshots [skip ci]
+ 1 file changed, 4620 insertions(+), 4816 deletions(-)
+[main 57c25c83] data: update snapshots [skip ci]
+ 1 file changed, 5094 insertions(+), 4898 deletions(-)
+[main f45a344e] data: update snapshots [skip ci]
+ 2 files changed, 2848 insertions(+), 2806 deletions(-)
+[main d9778838] data: update snapshots [skip ci]
+ 2 files changed, 2782 insertions(+), 2824 deletions(-)
+[main 0d40020a] data: update snapshots [skip ci]
+ 1 file changed, 2684 insertions(+), 2677 deletions(-)
+[main 3bc84c99] data: update snapshots [skip ci]
+ 1 file changed, 2691 insertions(+), 2698 deletions(-)
+[main 5c605a0b] data: update snapshots [skip ci]
+ 1 file changed, 2280 insertions(+), 2280 deletions(-)
+[main 6d3a8443] data: update snapshots [skip ci]
+ 1 file changed, 6854 insertions(+), 7043 deletions(-)
+[main fa8c1a79] data: update snapshots [skip ci]
+ 1 file changed, 4765 insertions(+), 4569 deletions(-)
+[main 24f9e147] data: update snapshots [skip ci]
+ 2 files changed, 4981 insertions(+), 4890 deletions(-)
+[main 3dd70f33] data: update snapshots [skip ci]
+ 2 files changed, 4937 insertions(+), 5021 deletions(-)
+[main 3dc0be0b] data: update snapshots [skip ci]
+ 1 file changed, 2118 insertions(+), 2118 deletions(-)
+[main 0c645448] data: update snapshots [skip ci]
+ 1 file changed, 2127 insertions(+), 2127 deletions(-)
+[main a5842608] data: update snapshots [skip ci]
+ 1 file changed, 5385 insertions(+), 5063 deletions(-)
+[main 7480948e] data: update snapshots [skip ci]
+ 1 file changed, 1198 insertions(+), 1198 deletions(-)
+[main 6f0a364c] data: update snapshots [skip ci]
+ 2 files changed, 5041 insertions(+), 5356 deletions(-)
+[main dbd21421] data: update snapshots [skip ci]
+ 2 files changed, 2228 insertions(+), 2235 deletions(-)
+[main e19045de] data: update snapshots [skip ci]
+ 1 file changed, 2085 insertions(+), 2085 deletions(-)
+[main 5b185b69] data: update snapshots [skip ci]
+ 1 file changed, 1688 insertions(+), 1688 deletions(-)
+[main 31d02a67] data: update snapshots [skip ci]
+ 1 file changed, 6819 insertions(+), 7001 deletions(-)
+[main 222e7b01] data: update snapshots [skip ci]
+ 1 file changed, 4625 insertions(+), 4436 deletions(-)
+[main c5bc63ba] data: update snapshots [skip ci]
+ 1 file changed, 1620 insertions(+), 1620 deletions(-)
+[main 475f9073] data: update snapshots [skip ci]
+ 2 files changed, 1614 insertions(+), 1614 deletions(-)
+[main d0d4e86c] data: update snapshots [skip ci]
+ 2 files changed, 4598 insertions(+), 4598 deletions(-)
+[main 2a93fb64] data: update snapshots [skip ci]
+ 1 file changed, 4708 insertions(+), 4638 deletions(-)
+[main 480192bf] data: update snapshots [skip ci]
+ 1 file changed, 5737 insertions(+), 5814 deletions(-)
+[main a374d923] data: update snapshots [skip ci]
+ 1 file changed, 5075 insertions(+), 4809 deletions(-)
+[main 550b5864] data: update snapshots [skip ci]
+ 2 files changed, 4789 insertions(+), 5013 deletions(-)
+[main dc49c9d3] data: update snapshots [skip ci]
+ 2 files changed, 2093 insertions(+), 2135 deletions(-)
+[main 936b8bf2] data: update snapshots [skip ci]
+ 1 file changed, 5065 insertions(+), 4995 deletions(-)
+[main e2ba18e1] data: update snapshots [skip ci]
+ 1 file changed, 5248 insertions(+), 5318 deletions(-)
+[main 70047462] data: update snapshots [skip ci]
+ 1 file changed, 7097 insertions(+), 7286 deletions(-)
+[main 33f9b09e] data: update snapshots [skip ci]
+ 1 file changed, 4872 insertions(+), 4676 deletions(-)
+[main d9a124e9] data: update snapshots [skip ci]
+ 1 file changed, 2602 insertions(+), 2595 deletions(-)
+[main 7e38462c] data: update snapshots [skip ci]
+ 2 files changed, 2689 insertions(+), 2696 deletions(-)
+[main b1382e13] data: update snapshots [skip ci]
+ 2 files changed, 2128 insertions(+), 2128 deletions(-)
+[main 0552aee1] data: update snapshots [skip ci]
+ 1 file changed, 6936 insertions(+), 6740 deletions(-)
+[main 73dca3d9] data: update snapshots [skip ci]
+ 1 file changed, 2766 insertions(+), 2794 deletions(-)
+[main 67deec9a] data: update snapshots [skip ci]
+ 1 file changed, 4882 insertions(+), 5050 deletions(-)
+[main 0d7b13d0] data: update snapshots [skip ci]
+ 1 file changed, 2639 insertions(+), 2632 deletions(-)
+[main b8e07d1c] data: update snapshots [skip ci]
+ 2 files changed, 2738 insertions(+), 2745 deletions(-)
+[main 8527bcdc] data: update snapshots [skip ci]
+ 2 files changed, 5164 insertions(+), 5094 deletions(-)
+[main 093c5727] data: update snapshots [skip ci]
+ 1 file changed, 4740 insertions(+), 4803 deletions(-)
+[main eb0ac6e2] data: update snapshots [skip ci]
+ 2 files changed, 7488 insertions(+), 7624 deletions(-)
