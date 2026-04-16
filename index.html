@@ -360,40 +360,7 @@
 
 
 
-        <!-- SHIPPING DATA SECTION (ALL SHIPPING GRAPHS AT TOP) -->
-        <!-- Duplicate VLCC/VLGC and General Cargo shipping sections removed -->
-
-        <!-- Oil Spread section removed from top; only appears below casualties -->
-
-        <!-- BDTI section removed from top; only appears below casualties -->
-
-        <!-- Polymarket Table & Graphs - moved under Shipping -->
-        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-xl font-bold text-slate-800">Polymarket: Key Risk Probabilities</h2>
-                <a href="alternative_data.html" class="text-blue-500 text-xs hover:underline font-semibold">Full Alt Data →</a>
-            </div>
-            <p class="text-slate-500 text-xs italic mb-4">Market-implied probabilities for key conflict outcomes (deducted per window). 24h change shown. <a href="alternative_data.html" class="text-blue-500 hover:underline">See full Polymarket data →</a></p>
-            <div id="poly-mini-table" class="mb-6 overflow-x-auto rounded-lg border border-slate-200 shadow-sm"></div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                <div>
-                    <h3 class="text-xs font-bold text-slate-500 mb-2 uppercase text-center tracking-widest">Bab el-Mandeb Strait: Closure Probability</h3>
-                    <div id="poly-bab-chart" class="h-[250px] w-full" style="min-height:250px"></div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-500 mb-2 uppercase text-center tracking-widest">Iran × Israel/US Conflict Ends Probability</h3>
-                    <div id="poly-conflict-chart" class="h-[250px] w-full" style="min-height:250px"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Daily Escalation Trend - now below Shipping and Polymarket -->
-        <section class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <h2 class="text-2xl font-bold mb-2 text-slate-800">Daily Escalation Trend</h2>
-            <p class="text-sm text-slate-500 mb-4">Strikes originating from Iran (or its allies) on a daily basis, also when origin is not confirmed. All hits are assumed to be by Iran.</p>
-            <div id="dailyChart" class="w-full h-[500px]" style="min-height:500px"></div>
-        </section>
-
+        <!-- SHIPPING DATA SECTION -->
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: VLCC/VLGC Transits (Crude Oil)</h2>
             <p class="text-slate-500 text-sm italic">Vessel transit estimates are derived from AIS position snapshots. A vessel is counted as a chokepoint transit when sequential positions are observed on opposite sides of a defined geofence surrounding the Strait of Hormuz. Erroneous data is filtered out based on geo data. </p>
@@ -415,6 +382,33 @@
             </div>
         </section>
 
+        <!-- Polymarket Table & Graphs -->
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xl font-bold text-slate-800">Polymarket: Key Risk Probabilities</h2>
+                <a href="alternative_data.html" class="text-blue-500 text-xs hover:underline font-semibold">Full Alt Data →</a>
+            </div>
+            <p class="text-slate-500 text-xs italic mb-4">Market-implied probabilities for key conflict outcomes (deducted per window). 24h change shown. <a href="alternative_data.html" class="text-blue-500 hover:underline">See full Polymarket data →</a></p>
+            <div id="poly-mini-table" class="mb-6 overflow-x-auto rounded-lg border border-slate-200 shadow-sm"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-500 mb-2 uppercase text-center tracking-widest">Bab el-Mandeb Strait: Closure Probability</h3>
+                    <div id="poly-bab-chart" class="h-[250px] w-full" style="min-height:250px"></div>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-slate-500 mb-2 uppercase text-center tracking-widest">Iran × Israel/US Conflict Ends Probability</h3>
+                    <div id="poly-conflict-chart" class="h-[250px] w-full" style="min-height:250px"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Daily Escalation Trend -->
+        <section class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold mb-2 text-slate-800">Daily Escalation Trend</h2>
+            <p class="text-sm text-slate-500 mb-4">Strikes originating from Iran (or its allies) on a daily basis, also when origin is not confirmed. All hits are assumed to be by Iran.</p>
+            <div id="dailyChart" class="w-full h-[500px]" style="min-height:500px"></div>
+        </section>
+
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
     <div id="chart-iran-cas" class="bg-white p-4 rounded shadow h-80" style="min-height:320px"></div>
@@ -430,6 +424,22 @@
 <p class="text-[10px] text-slate-400 leading-relaxed mb-8 px-2">
     <strong>Source:</strong> Casualty data is aggregated daily from official and semi-official reports, including MoH (Lebanon/Gaza), HRANA/Hengaw (Iran), IDF/Magen David Adom (Israel), and US Pentagon updates. Figures represent a combination of confirmed combatant losses and reported non-combatant fatalities; due to the speed of kinetic events, reporting lags of 24-48 hours are common for remote strike zones. Data can be revised as new information emerges, and may not capture all casualties, especially in contested areas. The charts above show daily reported casualties, which can fluctuate based on reporting cadence and access to affected regions.
 </p>
+
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Hormuz: Oil Spread</h2>
+                    <p class="text-slate-500 text-sm italic">The Murban-Brent spread reflects the geopolitical risk of the Gulf. Sharp changes can signal rising tanker risk and geopolitical stress as markets price in potential disruption around the Strait of Hormuz.</p>
+                </div>
+                <div class="flex bg-slate-100 p-1 rounded-lg self-start">
+                    <button onclick="filterOil('1M')" id="btn-oil-1M" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1M</button>
+                    <button onclick="filterOil('3M')" id="btn-oil-3M" class="px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all">3M</button>
+                    <button onclick="filterOil('1Y')" id="btn-oil-1Y" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1Y</button>
+                    <button onclick="filterOil('ALL')" id="btn-oil-ALL" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">ALL</button>
+                </div>
+            </div>
+            <div id="oilSpreadChart" class="w-full h-[450px]" style="min-height:450px"></div>
+        </section>
 
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
