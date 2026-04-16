@@ -235,13 +235,13 @@
 <section class="mb-8"> 
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200" style="font-family: sans-serif; max-width: 800px; margin: auto;"> 
         <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2" style="font-size: 1.5rem; color: #1e293b; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem; margin-bottom: 1rem;"> 
-            Executive Summary: April 12, 2026 (Day 44 of the War)
+            Executive Summary: April 14, 2026 (Day 46 of the War)
         </h2> 
         <div class="text-slate-600 leading-relaxed space-y-4" style="color: #475569; line-height: 1.6;"> 
-        <p>We do not want anyone to block the Strait of Hormuz. So let's block it ourselves! </p>
-        <p>Well, that's kind of what US wants to do. Iran blocks the Straits for non-friendly countries. Now the US wants to do the same. Any ship stopping at Iranian ports will be blocked. This means the 'shadow fleet' won't be the only ones passing the Strait. It means no one will. This impacts roughly 2% of global oil trade. </p>
-        <p>In practice it means two things: Iran will keep blocking Hormuz and the small amount of ships still passing could likely also be blocked now. Probably, what the US purports to do is: If you let the other ships pass, we let your ships pass. Kind of an overt negotiation tactic but it's not likely to work. Will the US block any ships with China flags? Do they dare? Likely not but it adds more uncertainty. The oil and market moves are relatively muted today based on this development. WTI trading at 103 only and European stocks only down a percent. </p>
-        <p>What the market is underestimating is that delayed impact on global growth due to lack of oil and impact on inflation. Hormuz will be blocked for longer it seems and negative impact will just grow. We are still close to all-time highs while the world is changing markedly, not for the better. The pain will come but not as a big news item but slowly. Painfully. </p>
+        <p>The Strait of Hormuz. It should be renamed Schrodingers Strait. Is it open or is it closed? </p>
+        <p>Iran already was letting through some ships, of 'friends' and of course of themselves. The US is now supposed to block any ship that harbored at an Iranian port. Some ships have made U-turns while others - that supposedly were at Iranian harbors - passed. Trump also had a letter conversion with Xi Jinping and then said the Strait is open! What is it? No idea. Cease-fire might be extended. There might be peace talks again soon. </p>    
+        <p>For the markets. Oil is now trading just above 90 dollars. Equities (at least in US) are around all-time highs. While the IMF has warned of recession risks and high persistent inflation. Although, in all honest, inflation is not necessarily bad for equity markets (as it is in nominal terms)</p>
+        <p>Anyway, this page will be online longer as it probably does not end soon. </p>
    </div> 
     </div> 
 </section>
@@ -358,12 +358,25 @@
 </div>
 <p class="text-[10px] text-slate-400 italic px-1 -mt-2 mb-8">Value in brackets is the difference vs. the previous 24-hour window.</p>
 
-        <section class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <h2 class="text-2xl font-bold mb-2 text-slate-800">Daily Escalation Trend</h2>
-            <p class="text-sm text-slate-500 mb-4">Strikes originating from Iran (or its allies) on a daily basis, also when origin is not confirmed. All hits are assumed to be by Iran.</p>
-            <div id="dailyChart" class="w-full h-[500px]" style="min-height:500px"></div>
+
+        <!-- Shipping Data (Hormuz) Section - moved to top -->
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Hormuz: Oil spread</h2>
+                    <p class="text-slate-500 text-sm italic">The Murban-Brent spread reflects the geopolitical risk of the Gulf. Sharp changes can signal rising tanker risk and geopolitical stress as markets price in potential disruption around the Strait of Hormuz.</p>
+                </div>
+                <div class="flex bg-slate-100 p-1 rounded-lg self-start">
+                    <button onclick="filterOil('1M')" id="btn-oil-1M" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1M</button>
+                    <button onclick="filterOil('3M')" id="btn-oil-3M" class="px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all">3M</button>
+                    <button onclick="filterOil('1Y')" id="btn-oil-1Y" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1Y</button>
+                    <button onclick="filterOil('ALL')" id="btn-oil-ALL" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">ALL</button>
+                </div>
+            </div>
+            <div id="oilSpreadChart" class="w-full h-[450px]" style="min-height:450px"></div>
         </section>
 
+        <!-- Polymarket Table & Graphs - moved under Shipping -->
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-xl font-bold text-slate-800">Polymarket: Key Risk Probabilities</h2>
@@ -383,20 +396,11 @@
             </div>
         </section>
 
-        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Hormuz: Oil spread</h2>
-                    <p class="text-slate-500 text-sm italic">The Murban-Brent spread reflects the geopolitical risk of the Gulf. Sharp changes can signal rising tanker risk and geopolitical stress as markets price in potential disruption around the Strait of Hormuz.</p>
-                </div>
-                <div class="flex bg-slate-100 p-1 rounded-lg self-start">
-                    <button onclick="filterOil('1M')" id="btn-oil-1M" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1M</button>
-                    <button onclick="filterOil('3M')" id="btn-oil-3M" class="px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all">3M</button>
-                    <button onclick="filterOil('1Y')" id="btn-oil-1Y" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1Y</button>
-                    <button onclick="filterOil('ALL')" id="btn-oil-ALL" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">ALL</button>
-                </div>
-            </div>
-            <div id="oilSpreadChart" class="w-full h-[450px]" style="min-height:450px"></div>
+        <!-- Daily Escalation Trend - now below Shipping and Polymarket -->
+        <section class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold mb-2 text-slate-800">Daily Escalation Trend</h2>
+            <p class="text-sm text-slate-500 mb-4">Strikes originating from Iran (or its allies) on a daily basis, also when origin is not confirmed. All hits are assumed to be by Iran.</p>
+            <div id="dailyChart" class="w-full h-[500px]" style="min-height:500px"></div>
         </section>
 
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
@@ -1410,6 +1414,7 @@ async function loadCharts() {
 
             // Render a Polymarket chart for a given event
             function renderPolyMiniChart(eventId, containerId) {
+
                 const marketsInEvent = polyEventData[eventId];
                 if (!marketsInEvent) return;
                 const eventMarkets = polyMeta.markets.filter(m => String(m.event_id) === eventId);
@@ -1417,11 +1422,16 @@ async function loadCharts() {
                     .sort((a, b) => Date.parse(a.label + " 2026") - Date.parse(b.label + " 2026"))
                     .map(m => String(m.market_id));
 
+                // Only show last 3 days for Polymarket mini charts
+                const threeDaysAgo = new Date();
+                threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
                 const traces = sortedMarketIds.map((mid, i) => {
-                    const series = marketsInEvent[mid];
-                    if (!series) return null;
+                    // Filter series to last 3 days
+                    const series = marketsInEvent[mid].filter(s => new Date(s.created_at) >= threeDaysAgo);
+                    if (!series.length) return null;
                     const prevMid = i > 0 ? sortedMarketIds[i - 1] : null;
-                    const prevSeries = prevMid ? marketsInEvent[prevMid] : null;
+                    const prevSeries = prevMid ? marketsInEvent[prevMid].filter(s => new Date(s.created_at) >= threeDaysAgo) : null;
                     const label = polyMarketLabels[mid] || `Market ${mid}`;
                     return {
                         x: series.map(s => s.created_at),
