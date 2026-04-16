@@ -359,22 +359,32 @@
 <p class="text-[10px] text-slate-400 italic px-1 -mt-2 mb-8">Value in brackets is the difference vs. the previous 24-hour window.</p>
 
 
-        <!-- Shipping Data (Hormuz) Section - moved to top -->
+
+        <!-- SHIPPING DATA SECTION (ALL SHIPPING GRAPHS AT TOP) -->
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: VLCC/VLGC Transits (Crude Oil)</h2>
+            <p class="text-slate-500 text-sm italic">Vessel transit estimates are derived from AIS position snapshots. A vessel is counted as a chokepoint transit when sequential positions are observed on opposite sides of a defined geofence surrounding the Strait of Hormuz. Erroneous data is filtered out based on geo data. </p>
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Hormuz: Oil spread</h2>
-                    <p class="text-slate-500 text-sm italic">The Murban-Brent spread reflects the geopolitical risk of the Gulf. Sharp changes can signal rising tanker risk and geopolitical stress as markets price in potential disruption around the Strait of Hormuz.</p>
-                </div>
-                <div class="flex bg-slate-100 p-1 rounded-lg self-start">
-                    <button onclick="filterOil('1M')" id="btn-oil-1M" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1M</button>
-                    <button onclick="filterOil('3M')" id="btn-oil-3M" class="px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all">3M</button>
-                    <button onclick="filterOil('1Y')" id="btn-oil-1Y" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1Y</button>
-                    <button onclick="filterOil('ALL')" id="btn-oil-ALL" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">ALL</button>
+                    <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
+                    <div id="vlccDailyChart" class="w-full h-[350px]" style="min-height:350px"></div>
                 </div>
             </div>
-            <div id="oilSpreadChart" class="w-full h-[450px]" style="min-height:450px"></div>
         </section>
+
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: General Cargo Transits</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
+                    <div id="cargoDailyChart" class="w-full h-[350px]" style="min-height:350px"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Oil Spread section removed from top; only appears below casualties -->
+
+        <!-- BDTI section removed from top; only appears below casualties -->
 
         <!-- Polymarket Table & Graphs - moved under Shipping -->
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
