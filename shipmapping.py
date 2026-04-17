@@ -60,18 +60,29 @@ def process_missing_shipids(shipids):
         supabase.table("ship_mapping").insert(df.to_dict(orient="records")).execute()
         print(f"Inserted {len(df)} records into ship_mapping.")
 
+def fetch_all_shipids(table_name):
+    """Fetch ALL unique shipids from a table, bypassing Supabase's 100-row default limit."""
+    all_rows = []
+    page_size = 100  # Match the server's actual max-rows limit
+    offset = 0
+    while True:
+        res = supabase.table(table_name).select("shipid").range(offset, offset + page_size - 1).execute()
+        if not res.data:
+            break
+        all_rows.extend(res.data)
+        print(f"  [{table_name}] Fetched {len(all_rows)} rows so far...")
+        if len(res.data) < page_size:
+            break
+        offset += page_size
+    if not all_rows:
+        return pd.DataFrame(columns=["shipid"])
+    return pd.DataFrame(all_rows)
+
 def main():
     # 1. Get all unique shipid from vessel_history
-    vh_res = supabase.table("vessel_history").select("shipid").execute()
-    all_shipids = set(r["shipid"] for r in vh_res.data if r.get("shipid"))
-
-    # 2. Get all shipid from ship_mapping
-    sm_res = supabase.table("ship_mapping").select("shipid").execute()
-    mapped_shipids = set(r["shipid"] for r in sm_res.data if r.get("shipid"))
-
-    # 3. Find missing shipids
-    missing_shipids = all_shipids - mapped_shipids
-
+    res = supabase.rpc("get_unmapped_shipids").execute()
+    missing_shipids = set(r["shipid"] for r in res.data)
+    print(missing_shipids)
     # 4. Process missing shipids
     process_missing_shipids(missing_shipids)
 
