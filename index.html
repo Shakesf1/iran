@@ -944,7 +944,7 @@ function renderDailyTransitChart(crossings, targetId) {
         height: 350,
         barmode: 'stack',
         legend: { orientation: "h", y: -0.2, x: 0.5, xanchor: 'center' },
-        xaxis: { gridcolor: '#f1f5f9', fixedrange: true, tickformat: '%d %b' },
+        xaxis: { gridcolor: '#f1f5f9', fixedrange: true, type: 'date', tickformat: '%d %b' },
         yaxis: { gridcolor: '#f1f5f9', fixedrange: true, dtick: 1 } // dtick 1 for clearer small counts
     };
 
@@ -1190,7 +1190,15 @@ async function loadCharts() {
         const hourlyData = descramble((await hourlyRes.json()).payload);
         const summaryData = descramble((await summaryRes.json()).payload);
         const shippingData = descramble((await shippingRes.json()).payload);
-            
+
+        // Normalize numeric ship_type codes (7=VLCC, 8=Cargo) to string labels
+        const SHIP_TYPE_MAP = {7: 'VLCC', 8: 'Cargo'};
+        (shippingData.crossings || []).forEach(c => {
+            if (typeof c.ship_type === 'number') {
+                c.ship_type = SHIP_TYPE_MAP[c.ship_type] || String(c.ship_type);
+            }
+        });
+
         const vlccData = shippingData.crossings.filter(c => c.ship_type === 'VLCC');
         const cargoData = shippingData.crossings.filter(c => c.ship_type === 'Cargo');
 
