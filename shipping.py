@@ -251,13 +251,14 @@ def export_stats():
         }).execute()
     
     print(crossings_res)
+    SHIP_TYPE_MAP = {7: 'VLCC', 8: 'Cargo'}
     crossings = [
         {
             "time": r['out_transit_time'], 
             "mmsi": r['out_shipid'], 
             "name": r['out_name'], 
             "dir": r['out_direction'],
-            "ship_type": r['out_ship_type']
+            "ship_type": SHIP_TYPE_MAP.get(int(r['out_ship_type'] or 0), str(r['out_ship_type']))
         } for r in crossings_res.data
     ]
 

@@ -12,16 +12,24 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
+BATCH_SIZE = 50
+
+def flush_to_supabase(results):
+    """Insert a batch of results into ship_mapping."""
+    if results:
+        supabase.table("ship_mapping").insert(results).execute()
+        print(f"  -> Inserted {len(results)} records into ship_mapping.")
+
 def process_missing_shipids(shipids):
     RawURL = "https://www.marinetraffic.com/en/ais/details/ships/shipid:"
     results = []
-    for i, shipid in enumerate(list(shipids)):  # Remove [:2] to process all
+    for i, shipid in enumerate(list(shipids)):
         url = RawURL + str(shipid)
-        print(f"Fetching: {url}")
+        print(f"[{i+1}] Fetching: {url}")
         co = ChromiumOptions()
         co.set_argument('--no-sandbox')
         co.set_argument('--headless=new')
-        co.set_argument('--disable-dev-shm-usage') # Uses /tmp instead of memory (Slower but stable)
+        co.set_argument('--disable-dev-shm-usage')
         co.set_argument('--disable-gpu')
         profile_path = f'/tmp/chrome_profile_{os.getpid()}'
         co.set_user_data_path(profile_path)
@@ -43,22 +51,24 @@ def process_missing_shipids(shipids):
             match = re.search(r'<th[^>]*>IMO</th>\s*<td[^>]*>(\d+)</td>', html)
             if match:
                 imo = match.group(1)
-                print(f"shipid: {shipid} -> IMO: {imo}")
+                print(f"  shipid: {shipid} -> IMO: {imo}")
             else:
-                print(f"shipid: {shipid} -> IMO not found")
+                print(f"  shipid: {shipid} -> IMO not found")
         except Exception as e:
-            print(f"Error fetching/parsing for shipid {shipid}: {e}")
+            print(f"  Error fetching/parsing for shipid {shipid}: {e}")
         finally:
             if page:
                 page.quit()
+
         results.append({"shipid": str(shipid), "imo": imo})
-    # Convert to DataFrame for inspection
-    df = pd.DataFrame(results)
-    print(df)
-    # Insert all to Supabase in one go
-    if not df.empty:
-        supabase.table("ship_mapping").insert(df.to_dict(orient="records")).execute()
-        print(f"Inserted {len(df)} records into ship_mapping.")
+
+        # Flush every BATCH_SIZE records
+        if len(results) >= BATCH_SIZE:
+            flush_to_supabase(results)
+            results = []
+
+    # Flush any remaining records
+    flush_to_supabase(results)
 
 def fetch_all_shipids(table_name):
     """Fetch ALL unique shipids from a table, bypassing Supabase's 100-row default limit."""
