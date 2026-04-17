@@ -250,7 +250,7 @@ def export_stats():
             'east_limit': EAST_LIMIT
         }).execute()
     
-
+    print(crossings_res)
     crossings = [
         {
             "time": r['out_transit_time'], 
