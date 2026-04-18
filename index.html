@@ -1191,8 +1191,8 @@ async function loadCharts() {
         const summaryData = descramble((await summaryRes.json()).payload);
         const shippingData = descramble((await shippingRes.json()).payload);
 
-        // Normalize numeric ship_type codes (7=VLCC, 8=Cargo) to string labels
-        const SHIP_TYPE_MAP = {7: 'VLCC', 8: 'Cargo'};
+        // Normalize numeric ship_type codes (8=VLCC, 7=Cargo) to string labels
+        const SHIP_TYPE_MAP = {8: 'VLCC', 7: 'Cargo'};
         (shippingData.crossings || []).forEach(c => {
             if (typeof c.ship_type === 'number') {
                 c.ship_type = SHIP_TYPE_MAP[c.ship_type] || String(c.ship_type);

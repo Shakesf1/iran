@@ -261,7 +261,7 @@ def export_stats():
             "ship_type": SHIP_TYPE_MAP.get(int(r['out_ship_type'] or 0), str(r['out_ship_type']))
         } for r in crossings_res.data
     ]
-
+    print(crossings)
     # 2. NEW: Fetch Bab el-Mandeb Crossings
         # No parameters needed as the limits are hardcoded in the SQL function
     bab_res = supabase.rpc('get_bab_el_mandeb_transits').execute()
