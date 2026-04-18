@@ -250,8 +250,8 @@ def export_stats():
             'east_limit': EAST_LIMIT
         }).execute()
     
-    print(crossings_res)
-    SHIP_TYPE_MAP = {7: 'VLCC', 8: 'Cargo'}
+
+    SHIP_TYPE_MAP = {8: 'VLCC', 7: 'Cargo'}
     crossings = [
         {
             "time": r['out_transit_time'], 
