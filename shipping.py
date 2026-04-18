@@ -70,11 +70,11 @@ def update_vessel_locations():
     """Classifies vessel positions as water, bad, or coastal_noise using spatial data in Supabase."""
     print("--- Classifying vessel locations via GeoPandas ---")
 
-    # 1. Fetch rows that haven't been classified yet
-    # Note: Using .is_("location", "null") to find records needing classification
+    # 1. Fetch rows that haven't been classified yet, in batches to avoid timeout
     response = supabase.table("vessel_history") \
         .select("id, longitude, latitude") \
         .is_("location", "null") \
+        .limit(500) \
         .execute()
     
     rows = response.data
