@@ -34,6 +34,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Update your paths to be absolute
 
 JSON_PATH = os.path.join(BASE_DIR, "dashboard_stats.json")
+HORMUZ_TRANSITS_PATH = os.path.join(BASE_DIR, "hormuz_transits.json")
 
 # --- CONFIGURATION ---
 CHOKEPOINTS = [
@@ -261,7 +262,7 @@ def export_stats():
             "ship_type": SHIP_TYPE_MAP.get(int(r['out_ship_type'] or 0), str(r['out_ship_type']))
         } for r in crossings_res.data
     ]
-    print(crossings)
+
     # 2. NEW: Fetch Bab el-Mandeb Crossings
         # No parameters needed as the limits are hardcoded in the SQL function
     bab_res = supabase.rpc('get_bab_el_mandeb_transits').execute()
@@ -315,6 +316,20 @@ def export_stats():
         json.dump({"payload": encrypted_payload}, f)
     
     print(f"Successfully exported stats to {JSON_PATH}")
+
+    # --- Fetch vessel sanctions view for Hormuz transit detail ---
+    try:
+        sanctions_res = supabase.table("vessel_sanctions_view").select("*").execute()
+        hormuz_transits = sanctions_res.data or []
+        print(f"Fetched {len(hormuz_transits)} records from vessel_sanctions_view")
+
+        hormuz_json = json.dumps(hormuz_transits)
+        hormuz_encrypted = encrypt_data(hormuz_json)
+        with open(HORMUZ_TRANSITS_PATH, 'w') as f:
+            json.dump({"payload": hormuz_encrypted}, f)
+        print(f"Successfully exported hormuz transits to {HORMUZ_TRANSITS_PATH}")
+    except Exception as e:
+        print(f"Error fetching vessel sanctions view: {e}")
 
 
 if __name__ == "__main__":

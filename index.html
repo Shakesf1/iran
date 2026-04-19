@@ -235,13 +235,12 @@
 <section class="mb-8"> 
     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200" style="font-family: sans-serif; max-width: 800px; margin: auto;"> 
         <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2" style="font-size: 1.5rem; color: #1e293b; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem; margin-bottom: 1rem;"> 
-            Executive Summary: April 14, 2026 (Day 46 of the War)
+            Executive Summary: April 18, 2026 (Day 50 of the War)
         </h2> 
         <div class="text-slate-600 leading-relaxed space-y-4" style="color: #475569; line-height: 1.6;"> 
-        <p>The Strait of Hormuz. It should be renamed Schrodingers Strait. Is it open or is it closed? </p>
-        <p>Iran already was letting through some ships, of 'friends' and of course of themselves. The US is now supposed to block any ship that harbored at an Iranian port. Some ships have made U-turns while others - that supposedly were at Iranian harbors - passed. Trump also had a letter conversion with Xi Jinping and then said the Strait is open! What is it? No idea. Cease-fire might be extended. There might be peace talks again soon. </p>    
-        <p>For the markets. Oil is now trading just above 90 dollars. Equities (at least in US) are around all-time highs. While the IMF has warned of recession risks and high persistent inflation. Although, in all honest, inflation is not necessarily bad for equity markets (as it is in nominal terms)</p>
-        <p>Anyway, this page will be online longer as it probably does not end soon. </p>
+        <p>The last newsletter was already named "Schrodingers Strait" and that was before Iran closed it again, after US never removed the blockade. </p>
+        <p>Markets rallied last friday and oil dropped significantly after Iran said the Strait was open for everyone. A record number of ships passed the Strait yesterday until... Iran closed it again and shot at two ships. At least one of them Indian (which was friendly with Iran and Indian ships were allowed to pass earlier). Its visible on the data on this website, "INDIANSHIPINDIANCREW" passed the area I defined to determine crossings... but returned two hours later after being shot at. Since then virtually nothing has passed the Strait anymore. US is blocking the shadowfleet, that was able to pass in the first month of the war, while Iran again blocks the rest. Making the Hormuz situation the worst since the beginning of the war, however for markets its not as bad as then since at least no refining capabilities are being bombed/targeted. </p>
+        <p>Since the US effectively targets the shadow fleet, I've added more data on this page. The graph now also shows the number of sanctioned ships that pass. Compared to earlier in the war, this should now be zero. Numbers will never lie (parties involved in the war do nothing but). </p>
    </div> 
     </div> 
 </section>
@@ -330,12 +329,12 @@
         <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 text-center md:text-left">VLCC Transits (Last 24h)</h3>
         <div class="flex justify-around items-center">
             <div class="text-center">
-                <span id="vlcc-east" class="block text-2xl font-black text-emerald-600">0</span>
+                <span id="vlcc-east" class="block text-2xl font-black text-emerald-600 leading-tight">0</span>
                 <span class="text-[10px] uppercase text-slate-500">Eastbound</span>
             </div>
-            <div class="h-8 border-l border-slate-200"></div>
+            <div class="h-12 border-l border-slate-200"></div>
             <div class="text-center">
-                <span id="vlcc-west" class="block text-2xl font-black text-red-600">0</span>
+                <span id="vlcc-west" class="block text-2xl font-black text-red-600 leading-tight">0</span>
                 <span class="text-[10px] uppercase text-slate-500">Westbound</span>
             </div>
         </div>
@@ -345,18 +344,18 @@
         <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 text-center md:text-left">General Cargo Transits (Last 24h)</h3>
         <div class="flex justify-around items-center">
             <div class="text-center">
-                <span id="cargo-east" class="block text-2xl font-black text-emerald-600">0</span>
+                <span id="cargo-east" class="block text-2xl font-black text-emerald-600 leading-tight">0</span>
                 <span class="text-[10px] uppercase text-slate-500">Eastbound</span>
             </div>
-            <div class="h-8 border-l border-slate-200"></div>
+            <div class="h-12 border-l border-slate-200"></div>
             <div class="text-center">
-                <span id="cargo-west" class="block text-2xl font-black text-red-600">0</span>
+                <span id="cargo-west" class="block text-2xl font-black text-red-600 leading-tight">0</span>
                 <span class="text-[10px] uppercase text-slate-500">Westbound</span>
             </div>
         </div>
     </div>
 </div>
-<p class="text-[10px] text-slate-400 italic px-1 -mt-2 mb-8">Value in brackets is the difference vs. the previous 24-hour window.</p>
+<p class="text-[10px] text-slate-400 italic px-1 -mt-2 mb-8">Ship count (of which sanctioned), change vs previous 24-hour window (sanctioned change).</p>
 
 
 
@@ -369,6 +368,10 @@
                     <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
                     <div id="vlccDailyChart" class="w-full h-[350px]" style="min-height:350px"></div>
                 </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 mb-1 uppercase text-center">Tonnage Shipped (DWT)</h3>
+                    <div id="vlccDWTChart" class="w-full h-[200px]" style="min-height:200px"></div>
+                </div>
             </div>
         </section>
 
@@ -379,25 +382,9 @@
                     <h3 class="text-sm font-bold text-slate-500 mb-2 uppercase text-center">Daily Aggregate</h3>
                     <div id="cargoDailyChart" class="w-full h-[350px]" style="min-height:350px"></div>
                 </div>
-            </div>
-        </section>
-
-        <!-- Polymarket Table & Graphs -->
-        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-xl font-bold text-slate-800">Polymarket: Key Risk Probabilities</h2>
-                <a href="alternative_data.html" class="text-blue-500 text-xs hover:underline font-semibold">Full Alt Data →</a>
-            </div>
-            <p class="text-slate-500 text-xs italic mb-4">Market-implied probabilities for key conflict outcomes (deducted per window). 24h change shown. <a href="alternative_data.html" class="text-blue-500 hover:underline">See full Polymarket data →</a></p>
-            <div id="poly-mini-table" class="mb-6 overflow-x-auto rounded-lg border border-slate-200 shadow-sm"></div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                 <div>
-                    <h3 class="text-xs font-bold text-slate-500 mb-2 uppercase text-center tracking-widest">Bab el-Mandeb Strait: Closure Probability</h3>
-                    <div id="poly-bab-chart" class="h-[250px] w-full" style="min-height:250px"></div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-500 mb-2 uppercase text-center tracking-widest">Iran × Israel/US Conflict Ends Probability</h3>
-                    <div id="poly-conflict-chart" class="h-[250px] w-full" style="min-height:250px"></div>
+                    <h3 class="text-sm font-bold text-slate-500 mb-1 uppercase text-center">Tonnage Shipped (DWT)</h3>
+                    <div id="cargoDWTChart" class="w-full h-[200px]" style="min-height:200px"></div>
                 </div>
             </div>
         </section>
@@ -916,39 +903,111 @@ async function renderEscalationCharts() {
 
 }
 
-function renderDailyTransitChart(crossings, targetId) {
-    const { days, data } = groupTransitsByDay(crossings);
-    
-    const directions = [
-        { key: 'WESTBOUND', shipKey: 'westShips', color: '#f43f5e', name: 'Westbound' },
-        { key: 'EASTBOUND', shipKey: 'eastShips', color: '#10b981', name: 'Eastbound' }
+function renderSanctionTransitChart(transits, containerId, vesselClasses) {
+    const filtered = (transits || []).filter(t => vesselClasses.includes(t.out_vessel_class));
+    if (!filtered.length) return;
+
+    const SANCTION_ORGS = ['ofac', 'fcdo', 'uani', 'eu', 'aso', 'mfat', 'gac', 'seco', 'un'];
+    const getSanctionOrgs = t => SANCTION_ORGS.filter(o => t[o]).join(', ');
+    const shipDetail = t => {
+        const time = (t.out_transit_time || '').split(' ')[1] || '';
+        const orgs = getSanctionOrgs(t);
+        return `${time} | ${t.out_name}${orgs ? ' | ' + orgs : ''}`;
+    };
+
+    const days = [...new Set(filtered.map(t => t.transit_day))].sort();
+
+    const groups = {};
+    days.forEach(d => { groups[d] = { EC: [], ES: [], WC: [], WS: [] }; });
+    filtered.forEach(t => {
+        const d = t.transit_day;
+        if (!groups[d]) return;
+        const isEast = t.out_direction === 'EASTBOUND';
+        const isSanc = t.is_sanctioned;
+        const detail = shipDetail(t);
+        if (isEast) {
+            if (isSanc) groups[d].ES.push(detail); else groups[d].EC.push(detail);
+        } else {
+            if (isSanc) groups[d].WS.push(detail); else groups[d].WC.push(detail);
+        }
+    });
+
+    const barDefs = [
+        { key: 'EC', name: 'Eastbound (Clean)',      color: '#22c55e', sign:  1 },
+        { key: 'ES', name: 'Eastbound (Sanctioned)', color: '#dc2626', sign:  1 },
+        { key: 'WC', name: 'Westbound (Clean)',      color: '#16a34a', sign: -1 },
+        { key: 'WS', name: 'Westbound (Sanctioned)', color: '#ef4444', sign: -1 },
     ];
 
-    const traces = directions.map(d => ({
+    const traces = barDefs.map(({ key, name, color, sign }) => ({
         x: days,
-        y: days.map(day => data[day][d.key]),
-        name: d.name,
+        y: days.map(d => sign * groups[d][key].length),
+        name,
         type: 'bar',
-        marker: { color: d.color },
-        // Pass the array of ship names for each day
-        customdata: days.map(day => data[day][d.shipKey].join('<br>')),
-        // Update hover to show the count and then the list of ships
-        hovertemplate: 
-            `<b>%{y} ${d.name} Transits</b><br>` +
-            `------------------<br>` +
-            `%{customdata}<extra></extra>`
+        marker: { color },
+        customdata: days.map(d => groups[d][key].join('<br>') || '—'),
+        hovertemplate: `<b>${name}</b>: <b>%{y}</b><br>%{customdata}<extra></extra>`
     }));
 
     const layout = {
         ...layoutBase,
         height: 350,
-        barmode: 'stack',
-        legend: { orientation: "h", y: -0.2, x: 0.5, xanchor: 'center' },
+        barmode: 'relative',
+        hovermode: 'closest',
+        showlegend: true,
+        legend: { orientation: 'h', y: -0.28, x: 0.5, xanchor: 'center', font: { size: 10 } },
+        margin: { t: 10, r: 20, b: 110, l: 45 },
         xaxis: { gridcolor: '#f1f5f9', fixedrange: true, type: 'date', tickformat: '%d %b' },
-        yaxis: { gridcolor: '#f1f5f9', fixedrange: true, dtick: 1 } // dtick 1 for clearer small counts
+        yaxis: { gridcolor: '#f1f5f9', fixedrange: true, zeroline: true, zerolinecolor: '#94a3b8', zerolinewidth: 2, title: 'Ships' }
     };
 
-    Plotly.newPlot(targetId, traces, layout, { displaylogo: false, responsive: false, displayModeBar: false });
+    Plotly.newPlot(containerId, traces, layout, { displaylogo: false, responsive: false, displayModeBar: false });
+}
+
+function renderDWTChart(transits, containerId, vesselClasses) {
+    const DWT_CUTOFF = '2026-03-19';
+    const filtered = (transits || []).filter(t =>
+        vesselClasses.includes(t.out_vessel_class) && t.transit_day >= DWT_CUTOFF
+    );
+    if (!filtered.length) return;
+
+    const days = [...new Set(filtered.map(t => t.transit_day))].sort();
+    const dwtGroups = {};
+    days.forEach(d => { dwtGroups[d] = { east: 0, west: 0 }; });
+    filtered.forEach(t => {
+        const d = t.transit_day;
+        if (!dwtGroups[d]) return;
+        if (t.out_direction === 'EASTBOUND') dwtGroups[d].east += t.out_dwt || 0;
+        else dwtGroups[d].west += t.out_dwt || 0;
+    });
+
+    const dwtTraces = [
+        {
+            x: days, y: days.map(d => dwtGroups[d].east),
+            name: 'Eastbound DWT', type: 'bar',
+            marker: { color: '#22c55e' },
+            hovertemplate: 'East DWT: %{y:,.0f}<extra></extra>'
+        },
+        {
+            x: days, y: days.map(d => dwtGroups[d].west),
+            name: 'Westbound DWT', type: 'bar',
+            marker: { color: '#ef4444' },
+            hovertemplate: 'West DWT: %{y:,.0f}<extra></extra>'
+        }
+    ];
+
+    const dwtLayout = {
+        ...layoutBase,
+        height: 200,
+        barmode: 'group',
+        showlegend: true,
+        legend: { orientation: 'h', y: -0.45, x: 0.5, xanchor: 'center', font: { size: 10 } },
+        margin: { t: 5, r: 20, b: 80, l: 60 },
+        xaxis: { gridcolor: '#f1f5f9', fixedrange: true, type: 'date', tickformat: '%d %b' },
+        yaxis: { gridcolor: '#f1f5f9', fixedrange: true, title: { text: 'Tonnage shipped (DWT)', font: { size: 10 } }, tickformat: ',.0f' }
+    };
+
+    Plotly.newPlot(containerId, dwtTraces, dwtLayout, { displaylogo: false, responsive: false, displayModeBar: false });
 }
 
 async function renderCasualties() {
@@ -1179,58 +1238,64 @@ async function loadCharts() {
             renderCasualties(),
             loadEscalationChart()
         ]);
-        const [dailyRes, hourlyRes, summaryRes, shippingRes] = await Promise.all([
+        const [dailyRes, hourlyRes, summaryRes, shippingRes, hormuzRes] = await Promise.all([
             fetch('./daily_data.json'),
             fetch('./hourly_data.json'),
             fetch('./summary_latest.json'),
-            fetch('./dashboard_stats.json')
+            fetch('./dashboard_stats.json'),
+            fetch('./hormuz_transits.json')
         ]);
 
         const dailyData = descramble((await dailyRes.json()).payload);
         const hourlyData = descramble((await hourlyRes.json()).payload);
         const summaryData = descramble((await summaryRes.json()).payload);
         const shippingData = descramble((await shippingRes.json()).payload);
+        const hormuzTransits = descramble((await hormuzRes.json()).payload);
 
-        // Normalize numeric ship_type codes (8=VLCC, 7=Cargo) to string labels
-        const SHIP_TYPE_MAP = {8: 'VLCC', 7: 'Cargo'};
-        (shippingData.crossings || []).forEach(c => {
-            if (typeof c.ship_type === 'number') {
-                c.ship_type = SHIP_TYPE_MAP[c.ship_type] || String(c.ship_type);
-            }
-        });
-
-        const vlccData = shippingData.crossings.filter(c => c.ship_type === 'VLCC');
-        const cargoData = shippingData.crossings.filter(c => c.ship_type === 'Cargo');
-
-        // Render the Daily Maritime Charts
-        renderDailyTransitChart(vlccData, 'vlccDailyChart');
-        renderDailyTransitChart(cargoData, 'cargoDailyChart');
+        // Render the Hormuz transit charts using the sanctions-enriched view
+        renderSanctionTransitChart(hormuzTransits, 'vlccDailyChart', ['VLCC']);
+        renderDWTChart(hormuzTransits, 'vlccDWTChart', ['VLCC']);
+        renderSanctionTransitChart(hormuzTransits, 'cargoDailyChart', ['Cargo']);
+        renderDWTChart(hormuzTransits, 'cargoDWTChart', ['Cargo']);
 
         // Update the 24h Summary numbers at the top
         const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
         const prev24h = new Date(Date.now() - 48 * 60 * 60 * 1000);
-        const get24hCount = (data, direction) => data.filter(c => 
-            new Date(c.time) >= last24h && c.dir === direction
-        ).length;
-        const getPrev24hCount = (data, direction) => data.filter(c => 
-            new Date(c.time) >= prev24h && new Date(c.time) < last24h && c.dir === direction
-        ).length;
 
-        const formatDelta = (current, previous) => {
-            const delta = current - previous;
-            if (delta > 0) return `<span style="font-size:0.65em; font-weight:700; color:#16a34a">(+${delta})</span>`;
-            if (delta < 0) return `<span style="font-size:0.65em; font-weight:700; color:#dc2626">(${delta})</span>`;
-            return `<span style="font-size:0.65em; font-weight:600; color:#94a3b8">(±0)</span>`;
+        const get24hStats = (classes, direction) => {
+            const rows = hormuzTransits.filter(t =>
+                classes.includes(t.out_vessel_class) &&
+                t.out_direction === direction &&
+                new Date(t.out_transit_time) >= last24h
+            );
+            return { total: rows.length, sanctioned: rows.filter(r => r.is_sanctioned).length };
+        };
+        const getPrev24hStats = (classes, direction) => {
+            const rows = hormuzTransits.filter(t =>
+                classes.includes(t.out_vessel_class) &&
+                t.out_direction === direction &&
+                new Date(t.out_transit_time) >= prev24h &&
+                new Date(t.out_transit_time) < last24h
+            );
+            return { total: rows.length, sanctioned: rows.filter(r => r.is_sanctioned).length };
         };
 
-        const setCount = (id, current, prev) => {
-            document.getElementById(id).innerHTML = `${current} ${formatDelta(current, prev)}`;
+        const setCount = (id, cur, prev) => {
+            const deltaTot = cur.total - prev.total;
+            const deltaSanc = cur.sanctioned - prev.sanctioned;
+            const dSign = deltaTot >= 0 ? '+' : '';
+            const sDSign = deltaSanc >= 0 ? '+' : '';
+            const dColor = deltaTot > 0 ? '#16a34a' : deltaTot < 0 ? '#dc2626' : '#94a3b8';
+            const totalColor = cur.total > 0 ? '#16a34a' : '#94a3b8';
+            document.getElementById(id).innerHTML =
+                `<span style="color:${totalColor}">${cur.total}</span> <span style="font-size:0.55em;font-weight:600;color:#64748b">(of which ${cur.sanctioned} sanctioned)</span>` +
+                `<span style="font-size:0.45em;font-weight:600;color:#64748b;display:block;margin-top:2px">Change of <span style="color:${dColor};font-weight:700">${dSign}${deltaTot}</span> vs previous 24 hours (${sDSign}${deltaSanc} sanctioned)</span>`;
         };
 
-        setCount('vlcc-east',  get24hCount(vlccData, 'EASTBOUND'),  getPrev24hCount(vlccData, 'EASTBOUND'));
-        setCount('vlcc-west',  get24hCount(vlccData, 'WESTBOUND'),  getPrev24hCount(vlccData, 'WESTBOUND'));
-        setCount('cargo-east', get24hCount(cargoData, 'EASTBOUND'), getPrev24hCount(cargoData, 'EASTBOUND'));
-        setCount('cargo-west', get24hCount(cargoData, 'WESTBOUND'), getPrev24hCount(cargoData, 'WESTBOUND'));
+        setCount('vlcc-east',  get24hStats(['VLCC'],  'EASTBOUND'), getPrev24hStats(['VLCC'],  'EASTBOUND'));
+        setCount('vlcc-west',  get24hStats(['VLCC'],  'WESTBOUND'), getPrev24hStats(['VLCC'],  'WESTBOUND'));
+        setCount('cargo-east', get24hStats(['Cargo'], 'EASTBOUND'), getPrev24hStats(['Cargo'], 'EASTBOUND'));
+        setCount('cargo-west', get24hStats(['Cargo'], 'WESTBOUND'), getPrev24hStats(['Cargo'], 'WESTBOUND'));
 
         // Update timestamps
         const rawTime = shippingData.latest_ais || shippingData.calculated_at;
@@ -1313,171 +1378,6 @@ async function loadCharts() {
 
         Plotly.newPlot('dailyChart', createTrace(dailyData, 'day'), layout, { displaylogo: false, responsive: false, displayModeBar: false });
 
-        // --- POLYMARKET MINI INTEGRATION ---
-        try {
-            const [polyMetaRes, polySeriesRes] = await Promise.all([
-                fetch('./poly_metadata.json'),
-                fetch('./poly_series.json')
-            ]);
-            const polyMeta = await polyMetaRes.json();
-            const polySeries = await polySeriesRes.json();
-
-            // Target event IDs
-            const BAB_EVENT_ID = '276527';
-            const CONFLICT_EVENT_ID = '236884';
-
-            // Market-level history map: market_id -> series[]
-            const polyMarketGroups = {};
-            polySeries.forEach(s => {
-                const mid = String(s.market_id);
-                if (!polyMarketGroups[mid]) polyMarketGroups[mid] = [];
-                polyMarketGroups[mid].push(s);
-            });
-
-            // Event-level data map: event_id -> market_id -> series[]
-            const polyEventData = {};
-            polySeries.forEach(s => {
-                const eid = String(s.event_id);
-                const mid = String(s.market_id);
-                if (!polyEventData[eid]) polyEventData[eid] = {};
-                if (!polyEventData[eid][mid]) polyEventData[eid][mid] = [];
-                polyEventData[eid][mid].push(s);
-            });
-
-            const polyMarketLabels = {};
-            polyMeta.markets.forEach(m => { polyMarketLabels[String(m.market_id)] = m.label; });
-
-            const polyNow = new Date();
-            const poly24hAgo = new Date(polyNow.getTime() - 24 * 60 * 60 * 1000);
-
-            // Find the global latest date across all series data
-            const polyLatestDate = polySeries.reduce((max, s) =>
-                s.created_at > max ? s.created_at : max, polySeries[0].created_at
-            ).split('T')[0];
-
-            // Compute deducted probability rows for a given event
-            function calcPolyRows(eventId) {
-                const eventMarkets = polyMeta.markets.filter(m => String(m.event_id) === eventId);
-                const sorted = [...eventMarkets].sort((a, b) => Date.parse(a.label + " 2026") - Date.parse(b.label + " 2026"));
-                return sorted.map((m, idx) => {
-                    const mid = String(m.market_id);
-                    const history = polyMarketGroups[mid];
-                    if (!history || history.length === 0) return null;
-                    // Skip markets not present in the latest snapshot
-                    if (history[0].created_at.split('T')[0] < polyLatestDate) return null;
-                    const latest = history[0];
-                    const oldRecord = history.find(s => new Date(s.created_at) <= poly24hAgo) || history[history.length - 1];
-                    const rawProb = latest.probability;
-                    let displayProb = rawProb;
-                    let displayChange = rawProb - oldRecord.probability;
-                    if (idx > 0) {
-                        const prevMid = String(sorted[idx - 1].market_id);
-                        const prevHistory = polyMarketGroups[prevMid];
-                        if (prevHistory && prevHistory.length > 0) {
-                            const prevLatest = prevHistory[0];
-                            const prevOld = prevHistory.find(s => new Date(s.created_at) <= poly24hAgo) || prevHistory[prevHistory.length - 1];
-                            displayProb = Math.max(0, rawProb - prevLatest.probability);
-                            const prevDeductedProb = Math.max(0, oldRecord.probability - prevOld.probability);
-                            displayChange = displayProb - prevDeductedProb;
-                        }
-                    }
-                    return { label: m.label, rawProb: rawProb, prob: displayProb, change: displayChange };
-                }).filter(Boolean);
-            }
-
-            const babRows = calcPolyRows(BAB_EVENT_ID);
-            const conflictRows = calcPolyRows(CONFLICT_EVENT_ID);
-
-            // Render mini table
-            const miniTableContainer = document.getElementById('poly-mini-table');
-            let miniHTML = `<table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Event</th>
-                        <th class="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Deadline</th>
-                        <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Raw Prob</th>
-                        <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Adj. Prob</th>
-                        <th class="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">24h Δ</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 bg-white">`;
-            [
-                { title: 'Bab el-Mandeb Strait effectively closed by...?', rows: babRows },
-                { title: 'Iran × Israel/US conflict ends by...?', rows: conflictRows }
-            ].forEach(({ title, rows }) => {
-                rows.forEach((row, i) => {
-                    const changeClass = row.change > 0 ? 'text-emerald-600' : row.change < 0 ? 'text-rose-600' : 'text-slate-400';
-                    const borderClass = i === 0 ? 'border-t-2 border-slate-200' : '';
-                    miniHTML += `<tr class="${borderClass} hover:bg-slate-50 transition-colors">
-                        <td class="px-4 py-2 font-bold text-slate-800 text-[10px] uppercase leading-tight">${i === 0 ? title : ''}</td>
-                        <td class="px-4 py-2 text-slate-600 border-l border-slate-50">${row.label}</td>
-                        <td class="px-4 py-2 text-right font-mono text-slate-400">${row.rawProb.toFixed(1)}%</td>
-                        <td class="px-4 py-2 text-right font-mono font-bold">${row.prob.toFixed(1)}%</td>
-                        <td class="px-4 py-2 text-right font-mono font-bold ${changeClass}">${row.change >= 0 ? '+' : ''}${row.change.toFixed(1)}%</td>
-                    </tr>`;
-
-                });
-            });
-            miniHTML += `</tbody></table>`;
-            miniTableContainer.innerHTML = miniHTML;
-
-            // Render a Polymarket chart for a given event
-            function renderPolyMiniChart(eventId, containerId) {
-
-                const marketsInEvent = polyEventData[eventId];
-                if (!marketsInEvent) return;
-                const eventMarkets = polyMeta.markets.filter(m => String(m.event_id) === eventId);
-                const sortedMarketIds = [...eventMarkets]
-                    .sort((a, b) => Date.parse(a.label + " 2026") - Date.parse(b.label + " 2026"))
-                    .map(m => String(m.market_id));
-
-                // Only show last 3 days for Polymarket mini charts
-                const threeDaysAgo = new Date();
-                threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-
-                const traces = sortedMarketIds.map((mid, i) => {
-                    // Filter series to last 3 days
-                    const series = marketsInEvent[mid].filter(s => new Date(s.created_at) >= threeDaysAgo);
-                    if (!series.length) return null;
-                    const prevMid = i > 0 ? sortedMarketIds[i - 1] : null;
-                    const prevSeries = prevMid ? marketsInEvent[prevMid].filter(s => new Date(s.created_at) >= threeDaysAgo) : null;
-                    const label = polyMarketLabels[mid] || `Market ${mid}`;
-                    return {
-                        x: series.map(s => s.created_at),
-                        y: series.map((s, idx) => {
-                            const prevProb = (prevSeries && prevSeries[idx]) ? prevSeries[idx].probability : 0;
-                            return Math.max(0, s.probability - prevProb);
-                        }),
-                        name: label,
-                        type: 'scatter',
-                        mode: 'lines',
-                        line: { width: 0.8 },
-                        fill: 'tonexty',
-                        stackgroup: 'one',
-                        hovertemplate: `%{y:.1f}% <span style="font-size:9px">${label}</span><extra></extra>`
-                    };
-                }).filter(Boolean);
-
-                const chartLayout = {
-                    ...layoutBase,
-                    height: 250,
-                    showlegend: false,
-                    hovermode: 'x unified',
-                    hoverlabel: { bgcolor: 'rgba(255, 255, 255, 0.98)', font: { size: 9 }, namelength: 0 },
-                    yaxis: { range: [0, 100], ticksuffix: '%', tickfont: { size: 8 }, fixedrange: true },
-                    xaxis: { type: 'date', tickfont: { size: 8 }, fixedrange: true },
-                    margin: { t: 5, b: 30, l: 30, r: 10 }
-                };
-                Plotly.newPlot(containerId, traces, chartLayout, { responsive: false, displayModeBar: false });
-            }
-
-            renderPolyMiniChart(BAB_EVENT_ID, 'poly-bab-chart');
-            renderPolyMiniChart(CONFLICT_EVENT_ID, 'poly-conflict-chart');
-        } catch (polyErr) {
-            console.error('Polymarket mini load error:', polyErr);
-        }
-        // --- END POLYMARKET MINI INTEGRATION ---
-
     } catch (err) {
         console.error("Error loading data:", err);
         document.getElementById('status-text').innerText = "Sync Error";
@@ -1500,7 +1400,7 @@ setTimeout(function(){
 // This restores auto-width on window resize instead.
 const _chartIds = [
     'escalationChart', 'oilSpreadChart', 'bdtiChart', 'spreadChart',
-    'dailyChart', 'vlccDailyChart', 'cargoDailyChart',
+    'dailyChart', 'vlccDailyChart', 'vlccDWTChart', 'cargoDailyChart', 'cargoDWTChart',
     'chart-iran-cas', 'chart-us-cas', 'chart-iran-inj', 'chart-us-inj',
     'poly-bab-chart', 'poly-conflict-chart'
 ];
