@@ -96,12 +96,12 @@ jobs:
           # 3. Pull latest changes to avoid conflicts (non-rebase)
           git pull origin main --no-rebase
 
-          # 4. Add the file (using wildcard to ensure it's found if in a subdir)
-          git add **/dashboard_stats.json || git add dashboard_stats.json
+          # 4. Add the data files
+          git add **/dashboard_stats.json **/hormuz_transits.json || git add dashboard_stats.json hormuz_transits.json
 
-          # 5. Only commit and push if the file actually changed
+          # 5. Only commit and push if the files actually changed
           if git diff --staged --quiet; then
-            echo "No changes detected in dashboard_stats.json"
+            echo "No changes detected in data files"
           else
             git commit -m "Update shipping data and dashboard [skip ci]"
             git push origin main
