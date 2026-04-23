@@ -88,23 +88,26 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          # 2. Check exactly where the file is
-          echo "Locating dashboard_stats.json..."
-          find . -name "dashboard_stats.json"
 
-          # 3. Pull latest changes to avoid conflicts (non-rebase)
-          git pull origin main --no-rebase
+          # 1. Stage the generated files FIRST, before pulling
+          git add dashboard_stats.json hormuz_transits.json
 
-          # 4. Add the data files
-          git add **/dashboard_stats.json **/hormuz_transits.json || git add dashboard_stats.json hormuz_transits.json
-
-          # 5. Only commit and push if the files actually changed
+          # 2. If nothing changed, skip entirely
           if git diff --staged --quiet; then
             echo "No changes detected in data files"
-          else
-            git commit -m "Update shipping data and dashboard [skip ci]"
-            git push origin main
+            exit 0
           fi
+
+          # 3. Pull latest remote changes (stash our staged files, pull, then restore)
+          git stash
+          git pull origin main --no-rebase
+          git stash pop
+
+          # 4. Re-add after stash pop (stash pop restores to working tree, not index)
+          git add dashboard_stats.json hormuz_transits.json
+
+          # 5. Commit and push
+          git commit -m "Update shipping data and dashboard [skip ci]"
+          git push origin main
 
 
