@@ -75,6 +75,10 @@ jobs:
 
           python -u shipping.py
 
+      - name: Generate Shipping Maps
+        run: |
+          python -u shipmapping.py
+
 
       - name: Commit and Push Data
         run: |
