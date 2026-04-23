@@ -76,15 +76,15 @@ jobs:
           python -u shipping.py
 
       - name: Generate Shipping Maps
+        env:
+          DISPLAY: :99
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}         
         run: |
           python -u shipmapping.py
 
 
-      - name: Commit and Push Data
-        env:
-          DISPLAY: :99
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}    
+      - name: Commit and Push Data 
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
