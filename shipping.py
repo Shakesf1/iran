@@ -319,9 +319,9 @@ def export_stats():
 
     # --- Fetch vessel sanctions view for Hormuz transit detail ---
     try:
-        sanctions_res = supabase.table("vessel_sanctions_view").select("*").execute()
+        sanctions_res = supabase.rpc('get_vessel_sanctions_view', {}).execute()
         hormuz_transits = sanctions_res.data or []
-        print(f"Fetched {len(hormuz_transits)} records from vessel_sanctions_view")
+        print(f"Fetched {len(hormuz_transits)} records from get_vessel_sanctions_view")
 
         hormuz_json = json.dumps(hormuz_transits)
         hormuz_encrypted = encrypt_data(hormuz_json)
