@@ -38,7 +38,7 @@ HORMUZ_TRANSITS_PATH = os.path.join(BASE_DIR, "hormuz_transits.json")
 
 # --- CONFIGURATION ---
 CHOKEPOINTS = [
-    "https://www.marinetraffic.com/en/ais/home/centerx:60.4/centery:25.8/zoom:7", # Hormuz
+    "https://www.marinetraffic.com/en/ais/home/centerx:56.5/centery:25.8/zoom:7", # Hormuz
     "https://www.marinetraffic.com/en/ais/home/centerx:45.4/centery:14.4/zoom:7", # Bab al-Mandab
     "https://www.marinetraffic.com/en/ais/home/centerx:29.7/centery:30.3/zoom:7"  # Suez
 ]
