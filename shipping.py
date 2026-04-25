@@ -38,7 +38,14 @@ HORMUZ_TRANSITS_PATH = os.path.join(BASE_DIR, "hormuz_transits.json")
 
 # --- CONFIGURATION ---
 CHOKEPOINTS = [
-    "https://www.marinetraffic.com/en/ais/home/centerx:56.5/centery:25.8/zoom:7", # Hormuz
+    "https://www.marinetraffic.com/en/ais/home/centerx:57.5/centery:24.9/zoom:10", # Hormuz
+    "https://www.marinetraffic.com/en/ais/home/centerx:57.5/centery:25.9/zoom:10",
+    "https://www.marinetraffic.com/en/ais/home/centerx:56.7/centery:26.6/zoom:10",
+    "https://www.marinetraffic.com/en/ais/home/centerx:55.1/centery:26.0/zoom:10",
+    "https://www.marinetraffic.com/en/ais/home/centerx:53.0/centery:25.2/zoom:9",
+    "https://www.marinetraffic.com/en/ais/home/centerx:51.9/centery:26.9/zoom:9",
+    "https://www.marinetraffic.com/en/ais/home/centerx:50.9/centery:28.6/zoom:9",
+    "https://www.marinetraffic.com/en/ais/home/centerx:58.6/centery:24.5/zoom:9",
     "https://www.marinetraffic.com/en/ais/home/centerx:45.4/centery:14.4/zoom:7", # Bab al-Mandab
     "https://www.marinetraffic.com/en/ais/home/centerx:29.7/centery:30.3/zoom:7"  # Suez
 ]
@@ -161,7 +168,7 @@ def get_ships_with_stealth(map_url):
         page = ChromiumPage(co)
         page.listen.start('get_data_json')
         page.get(map_url)
-        page.wait.ele_displayed('css:.leaflet-container', timeout=20)
+        page.wait.ele_displayed('css:.leaflet-container', timeout=35)
 
         time.sleep(random.uniform(4, 6))  # Wait for potential AJAX calls to populate data
 
@@ -201,6 +208,18 @@ def process_and_save(strait_data):
         return
 
     rows = strait_data.get("data", {}).get("rows", [])
+
+
+# --- DEBUG START ---
+    # Check if the target ship ID is present in the RAW rows
+    target_id = '466738'
+    found_in_raw = any(str(ship.get('SHIP_ID')) == target_id for ship in rows)
+    if found_in_raw:
+        print(f"🎯 DEBUG: Target ship {target_id} FOUND in raw JSON rows!")
+    else:
+        # This helps confirm if the scraper is even seeing the ship on the map
+        print(f"🔍 DEBUG: Target ship {target_id} NOT found in this packet ({len(rows)} ships total).")
+    # --- DEBUG END ---
 
     vessels_to_insert = []
     for ship in rows:
@@ -338,6 +357,7 @@ if __name__ == "__main__":
         time.sleep(random.uniform(2, 4))
         print(f"Scraping URL: {url}")
         data = get_ships_with_stealth(url)
+
         if data:
             process_and_save(data)
 
