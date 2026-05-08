@@ -284,7 +284,7 @@ def export_stats():
 
     # 2. NEW: Fetch Bab el-Mandeb Crossings
         # No parameters needed as the limits are hardcoded in the SQL function
-    bab_res = supabase.rpc('get_bab_el_mandeb_transits').execute()
+    bab_res = supabase.rpc('get_bab_el_mandeb_transits_new').execute()
 
     bab_crossings = [
         {
@@ -292,7 +292,8 @@ def export_stats():
             "mmsi": r['ship_id'], 
             "name": r['vessel_name'], 
             "dir": r['transit_direction'],
-            "ship_type": r['vessel_class']
+            "ship_type": r['vessel_class'],
+            "dwt": r['dwt']
         } for r in bab_res.data
     ]
 
