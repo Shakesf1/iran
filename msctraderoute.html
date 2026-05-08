@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSC Land Bridge Monitor | Real-Time Bypass Tracking</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        .pulse { animation: pulse-animation 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.7); }
+            100% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-12 border-b border-slate-200 pb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start gap-6">
+                <div class="max-w-3xl">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-1">
+                        <h1 class="text-4xl font-extrabold tracking-tight text-slate-800">MSC Land Bridge Monitor</h1>
+                        <nav class="flex gap-3 text-sm font-semibold">
+                            <a href="index.html" class="text-slate-900 border-b-2 border-red-500 pb-0.5">Main Monitor</a>
+                            <a href="alternative_data.html" class="text-slate-500 hover:text-slate-800 transition-colors">Bab el-Mendab</a>
+                            <a href="msctraderoute.html" class="text-slate-900 border-b-2 border-red-500 pb-0.5">Land Bridge</a>
+
+                        </nav>
+                    </div>
+                    <p class="text-slate-500 mt-2 italic mb-6">Monitoring the Sea-Land-Sea bypass of the Strait of Hormuz</p>
+                    
+                    <div class="text-slate-600 leading-relaxed text-sm">
+                        <p class="mb-4">
+                            The MSC Land Bridge serves as the primary multimodal alternative to the blocked Strait of Hormuz. 
+                            By offloading at Red Sea ports and utilizing Saudi Arabia's "Land Bridge" trucking and rail corridor to Dammam, 
+                            carriers attempt to maintain Gulf supply chains. We track the <strong>Inflow</strong> (Mother vessels at Jeddah/KAP) 
+                            against the <strong>Outflow</strong> (Feeders at Dammam) to measure the efficiency of this bypass.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-lg px-4 py-2 shadow-sm text-sm min-w-[220px] md:mt-2">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span id="status-dot" class="h-2 w-2 rounded-full bg-emerald-500 pulse"></span>
+                        <span class="font-bold text-slate-700 uppercase tracking-wider text-xs">System Live:</span>
+                    </div>
+                    <p class="text-slate-500 text-[11px]">
+                        <span class="border-b border-dotted border-slate-300">Live Intel</span>: 
+                        <span class="font-medium text-slate-800">MAY 2026</span>
+                    </p>
+                    <p class="text-slate-500 text-[11px]">
+                        <span class="border-b border-dotted border-slate-300">Node Sync</span>: 
+                        <span id="last-sync" class="font-medium text-slate-800">Updating...</span>
+                    </p>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-blue-500">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Western Node: Red Sea Inflow</h2>
+                <p class="text-2xl font-black text-slate-800 mb-2" id="latest-inflow">--- DWT</p>
+                <p class="text-slate-500 text-xs leading-relaxed">
+                    Measures DWT of "Mother Vessels" discharging at Jeddah & King Abdullah Port. This represents the total <b>Supply</b> entering the land corridor.
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-amber-500">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Eastern Node: Dammam Outflow</h2>
+                <p class="text-2xl font-black text-slate-800 mb-2" id="latest-outflow">--- DWT</p>
+                <p class="text-slate-500 text-xs leading-relaxed">
+                    Measures DWT of "Feeder Vessels" loading at Dammam. This is the <b>Proof of Success</b> for containers successfully crossing the desert.
+                </p>
+            </div>
+        </div>
+
+        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-slate-800">Daily Throughput Analysis (DWT)</h2>
+                <span class="text-[10px] font-normal text-slate-400 uppercase">30-Minute Refresh Cycle</span>
+            </div>
+            <div class="h-[400px]">
+                <canvas id="throughputChart"></canvas>
+            </div>
+            <p class="text-[10px] text-slate-400 italic mt-4">
+                Note: A temporal lag of 3-5 days is expected between Red Sea Inflow and Dammam Outflow, representing desert transit time.
+            </p>
+        </section>
+        
+        <footer class="text-center text-slate-400 text-[11px] pb-12">
+            &copy; 2026 Warescalation.com | MSC Land Bridge Monitor | Data via AIS snapshots and maritime intelligence. All rights reserved.
+        </footer>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://tyktxwlekvvdjftkexzd.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_1MjwD_-NQUnW7M3obTljwA_b8yIfI2x';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function fetchData() {
+            const { data, error } = await supabaseClient
+                .from('msc_landbridge_daily_throughput')
+                .select('*')
+                .order('report_date', { ascending: true });
+
+            if (error) {
+                console.error('Error fetching data:', error);
+                return;
+            }
+
+            // Update KPI cards with latest data
+            if (data.length > 0) {
+                const latest = data[data.length - 1];
+                document.getElementById('latest-inflow').innerText = latest.red_sea_inflow_dwt.toLocaleString() + ' DWT';
+                document.getElementById('latest-outflow').innerText = latest.persian_gulf_outflow_dwt.toLocaleString() + ' DWT';
+                document.getElementById('last-sync').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
+            renderChart(data);
+        }
+
+        function renderChart(data) {
+            const ctx = document.getElementById('throughputChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => {
+                        const date = new Date(d.report_date);
+                        return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                    }),
+                    datasets: [
+                        {
+                            label: 'Red Sea Inflow',
+                            data: data.map(d => d.red_sea_inflow_dwt),
+                            borderColor: '#3b82f6', // Warescalation Blue
+                            backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 2
+                        },
+                        {
+                            label: 'Dammam Outflow',
+                            data: data.map(d => d.persian_gulf_outflow_dwt),
+                            borderColor: '#f59e0b', // Warescalation Amber/Gold
+                            backgroundColor: 'rgba(245, 158, 11, 0.05)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { usePointStyle: true, boxWidth: 6, font: { size: 11, weight: '600' }, padding: 20 } 
+                        },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleFont: { size: 13 },
+                            padding: 12,
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            ticks: { color: '#94a3b8', font: { size: 10 } }, 
+                            grid: { display: false } 
+                        },
+                        y: { 
+                            ticks: { 
+                                color: '#94a3b8', 
+                                font: { size: 10 },
+                                callback: function(value) { return (value / 1000) + 'k'; }
+                            }, 
+                            grid: { color: '#f1f5f9' },
+                            title: { display: true, text: 'Tonnage (DWT)', color: '#64748b', font: { size: 11, weight: '600' }}
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchData);
+    </script>
+</body>
+</html>
