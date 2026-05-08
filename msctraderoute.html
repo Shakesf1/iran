@@ -30,19 +30,25 @@
                         <h1 class="text-4xl font-extrabold tracking-tight text-slate-800">MSC Land Bridge Monitor</h1>
                         <nav class="flex gap-3 text-sm font-semibold">
                             <a href="index.html" class="text-slate-500 hover:text-slate-800 transition-colors">Main Monitor</a>
-                            <a href="alternative_data.html" class="text-slate-500 hover:text-slate-800 transition-colors">Bab el-Mendab</a>
+                            <a href="alternative_data.html" class="text-slate-500 hover:text-slate-800 transition-colors">Bab el-Mandeb</a>
                             <a href="msctraderoute.html" class="text-slate-900 border-b-2 border-red-500 pb-0.5">Land Bridge</a>
-
                         </nav>
                     </div>
                     <p class="text-slate-500 mt-2 italic mb-6">Monitoring the Sea-Land-Sea bypass of the Strait of Hormuz</p>
                     
                     <div class="text-slate-600 leading-relaxed text-sm">
                         <p class="mb-4">
-                            The MSC Land Bridge serves as the primary multimodal alternative to the blocked Strait of Hormuz. 
-                            By offloading at Red Sea ports and utilizing Saudi Arabia's "Land Bridge" trucking and rail corridor to Dammam, 
-                            carriers attempt to maintain Gulf supply chains. We track the <strong>Inflow</strong> (Mother vessels at Jeddah/KAP) 
-                            against the <strong>Outflow</strong> (Feeders at Dammam) to measure the efficiency of this bypass.
+                            MSC, Mediterranean Shipping Company, has announced a new land bridge as an alternative to Hormuz which is blocked. 
+                            First sailing is scheduled for <strong>May 10</strong> from Antwerp. Ships will cross the Suez Canal into the Red Sea and visit two ports on the western coast of Saudi Arabia — Jeddah and King Abdullah. 
+                            <a href="https://economictimes.indiatimes.com/industry/energy/oil-gas/worlds-largest-container-carrier-plans-route-avoiding-hormuz/articleshow/130715344.cms" class="text-blue-600 hover:underline" target="_blank">Source.</a>
+                        </p>
+                        <p class="mb-4">
+                            From there, trucks will move to Dammam on the Persian Gulf, where they will be loaded onto smaller feeder vessels for onward transport to ports in the UAE and India. 
+                            This avoids both Hormuz and Bab el-Mandeb, providing a relevant alternative route (but costs more time and money).
+                        </p>
+                        <p class="mb-4">
+                            We track the <strong>Inflow/Outflow</strong> (arrivals and departures) at both Jeddah/KAP and Dammam to measure the efficiency of this bypass. 
+                            Data observed before the land route becomes effective serves as our <strong>baseline</strong> for normal Saudi domestic trade.
                         </p>
                     </div>
                 </div>
@@ -57,46 +63,48 @@
                         <span class="font-medium text-slate-800">MAY 2026</span>
                     </p>
                     <p class="text-slate-500 text-[11px]">
-                        <span class="border-b border-dotted border-slate-300">Node Sync</span>: 
-                        <span id="last-sync" class="font-medium text-slate-800">Updating...</span>
+                        <span class="border-b border-dotted border-slate-300">Last Sync</span>: 
+                        <span id="last-sync" class="font-medium text-slate-800">---</span>
                     </p>
                 </div>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-blue-500">
-                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Western Node: Red Sea Inflow</h2>
-                <p class="text-2xl font-black text-slate-800 mb-2" id="latest-inflow">--- DWT</p>
-                <p class="text-slate-500 text-xs leading-relaxed">
-                    Measures DWT of "Mother Vessels" discharging at Jeddah & King Abdullah Port. This represents the total <b>Supply</b> entering the land corridor.
-                </p>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-4 rounded-xl shadow-sm border-t-4 border-t-blue-600">
+                <h2 class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Red Sea In (Import)</h2>
+                <p class="text-xl font-black text-slate-800" id="latest-red-sea-in">---</p>
             </div>
-
-            <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-t-amber-500">
-                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Eastern Node: Dammam Outflow</h2>
-                <p class="text-2xl font-black text-slate-800 mb-2" id="latest-outflow">--- DWT</p>
-                <p class="text-slate-500 text-xs leading-relaxed">
-                    Measures DWT of "Feeder Vessels" loading at Dammam. This is the <b>Proof of Success</b> for containers successfully crossing the desert.
-                </p>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-t-4 border-t-blue-400">
+                <h2 class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Dammam Out (Import)</h2>
+                <p class="text-xl font-black text-slate-800" id="latest-dammam-out">---</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-t-4 border-t-amber-600">
+                <h2 class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Dammam In (Export)</h2>
+                <p class="text-xl font-black text-slate-800" id="latest-dammam-in">---</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-t-4 border-t-amber-400">
+                <h2 class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Red Sea Out (Export)</h2>
+                <p class="text-xl font-black text-slate-800" id="latest-red-sea-out">---</p>
             </div>
         </div>
 
         <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-slate-800">Daily Throughput Analysis (DWT)</h2>
-                <span class="text-[10px] font-normal text-slate-400 uppercase">30-Minute Refresh Cycle</span>
+                <h2 class="text-xl font-bold text-slate-800">Dry Canal Throughput Analysis (DWT)</h2>
+                <span class="text-[10px] font-normal text-slate-400 uppercase">Intraday Transit Monitoring</span>
             </div>
-            <div class="h-[400px]">
+            <div class="h-[450px]">
                 <canvas id="throughputChart"></canvas>
             </div>
-            <p class="text-[10px] text-slate-400 italic mt-4">
-                Note: A temporal lag of 3-5 days is expected between Red Sea Inflow and Dammam Outflow, representing desert transit time.
-            </p>
+            <div class="mt-6 p-4 bg-slate-50 rounded-lg text-[11px] text-slate-600 flex flex-wrap gap-6 justify-center">
+                <span><span class="inline-block w-3 h-0.5 bg-blue-600 mr-1"></span> <strong>Imports:</strong> Big boats arriving West vs. small boats leaving East (4-day lag).</span>
+                <span><span class="inline-block w-3 h-0.5 bg-amber-600 mr-1"></span> <strong>Exports:</strong> Small boats arriving East vs. big boats leaving West (4-day lag).</span>
+            </div>
         </section>
         
         <footer class="text-center text-slate-400 text-[11px] pb-12">
-            &copy; 2026 Warescalation.com | MSC Land Bridge Monitor | Data via AIS snapshots and maritime intelligence. All rights reserved.
+            &copy; 2026 Warescalation.com | MSC Land Bridge Monitor | Data via AIS snapshots and maritime intelligence.
         </footer>
     </div>
 
@@ -116,11 +124,12 @@
                 return;
             }
 
-            // Update KPI cards with latest data
             if (data.length > 0) {
                 const latest = data[data.length - 1];
-                document.getElementById('latest-inflow').innerText = latest.red_sea_inflow_dwt.toLocaleString() + ' DWT';
-                document.getElementById('latest-outflow').innerText = latest.persian_gulf_outflow_dwt.toLocaleString() + ' DWT';
+                document.getElementById('latest-red-sea-in').innerText = latest.red_sea_inflow_dwt.toLocaleString() + ' DWT';
+                document.getElementById('latest-dammam-out').innerText = latest.dammam_outflow_dwt.toLocaleString() + ' DWT';
+                document.getElementById('latest-dammam-in').innerText = latest.dammam_inflow_dwt.toLocaleString() + ' DWT';
+                document.getElementById('latest-red-sea-out').innerText = latest.red_sea_outflow_dwt.toLocaleString() + ' DWT';
                 document.getElementById('last-sync').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             }
 
@@ -139,24 +148,42 @@
                     }),
                     datasets: [
                         {
-                            label: 'Red Sea Inflow',
+                            label: 'Import: Red Sea Arrival',
                             data: data.map(d => d.red_sea_inflow_dwt),
-                            borderColor: '#3b82f6', // Warescalation Blue
-                            backgroundColor: 'rgba(59, 130, 246, 0.05)',
-                            borderWidth: 3,
-                            fill: true,
+                            borderColor: '#2563eb',
+                            borderWidth: 2.5,
+                            fill: false,
                             tension: 0.3,
-                            pointRadius: 2
+                            pointRadius: 0
                         },
                         {
-                            label: 'Dammam Outflow',
-                            data: data.map(d => d.persian_gulf_outflow_dwt),
-                            borderColor: '#f59e0b', // Warescalation Amber/Gold
-                            backgroundColor: 'rgba(245, 158, 11, 0.05)',
-                            borderWidth: 3,
-                            fill: true,
+                            label: 'Import: Dammam Departure',
+                            data: data.map(d => d.dammam_outflow_dwt),
+                            borderColor: '#2563eb',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            fill: false,
                             tension: 0.3,
-                            pointRadius: 2
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Export: Dammam Arrival',
+                            data: data.map(d => d.dammam_inflow_dwt),
+                            borderColor: '#d97706',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.3,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Export: Red Sea Departure',
+                            data: data.map(d => d.red_sea_outflow_dwt),
+                            borderColor: '#d97706',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.3,
+                            pointRadius: 0
                         }
                     ]
                 },
@@ -164,37 +191,20 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { 
-                            position: 'bottom',
-                            labels: { usePointStyle: true, boxWidth: 6, font: { size: 11, weight: '600' }, padding: 20 } 
-                        },
-                        tooltip: {
-                            backgroundColor: '#1e293b',
-                            titleFont: { size: 13 },
-                            padding: 12,
-                            mode: 'index',
-                            intersect: false
-                        }
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, weight: '600' }, padding: 20 } },
+                        tooltip: { mode: 'index', intersect: false, backgroundColor: '#1e293b' }
                     },
                     scales: {
-                        x: { 
-                            ticks: { color: '#94a3b8', font: { size: 10 } }, 
-                            grid: { display: false } 
-                        },
+                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
                         y: { 
-                            ticks: { 
-                                color: '#94a3b8', 
-                                font: { size: 10 },
-                                callback: function(value) { return (value / 1000) + 'k'; }
-                            }, 
+                            ticks: { font: { size: 10 }, callback: v => v/1000 + 'k' },
                             grid: { color: '#f1f5f9' },
-                            title: { display: true, text: 'Tonnage (DWT)', color: '#64748b', font: { size: 11, weight: '600' }}
+                            title: { display: true, text: 'Tonnage (DWT)', font: { size: 11, weight: '700' }}
                         }
                     }
                 }
             });
         }
-
         document.addEventListener('DOMContentLoaded', fetchData);
     </script>
 </body>
