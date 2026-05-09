@@ -479,6 +479,7 @@ const traces = directions.map(d => ({
     y: days.map(day => data[day][d.key]),
     name: d.name,
     type: 'bar',
+    width: 86400000 * 0.8,
     marker: { color: d.color },
     
     // GENERATE ALIGNED TEXT COLUMNS
