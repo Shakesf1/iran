@@ -390,7 +390,7 @@ function groupTransitsByDay(crossings) {
     // Initialize groups for the last 30 days or available range
     crossings.forEach(c => {
         if (!c.time) console.warn("Missing transit_time in:", c);
-        const dStr = c.time.split(' ')[0]; // Extract YYYY-MM-DD
+        const dStr = c.time.split(/[ T]/)[0]; // Extract YYYY-MM-DD (handles both space and T separator)
         if (!dailyGroups[dStr]) {
             dailyGroups[dStr] = { 
                 NORTHBOUND: 0, 
@@ -400,7 +400,7 @@ function groupTransitsByDay(crossings) {
             };
         }
         
-        const timeOnly = c.time.split(' ')[1]; // Extract HH:MM
+        const timeOnly = c.time.split(/[ T]/)[1]?.slice(0, 5) ?? ''; // Extract HH:MM (handles both space and T separator)
         dailyGroups[dStr][c.dir]++;
         
         // Save the ship details for the hover
