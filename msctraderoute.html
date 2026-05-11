@@ -225,7 +225,14 @@
                 options: CHART_OPTIONS
             });
         }
-        document.addEventListener('DOMContentLoaded', fetchData);
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData().then(() => {
+                if (window.location.hash) {
+                    const target = document.querySelector(window.location.hash);
+                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
     </script>
     <script data-goatcounter="https://shakes.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>

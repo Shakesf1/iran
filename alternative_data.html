@@ -966,7 +966,12 @@ setTimeout(() => {
 }, 100);
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadCharts();
+    loadCharts().then(() => {
+        if (window.location.hash) {
+            const target = document.querySelector(window.location.hash);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
 });
 
 // Refresh the entire page every 300 seconds
