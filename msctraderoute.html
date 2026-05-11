@@ -88,20 +88,36 @@
             </div>
         </div>
 
-        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-slate-800">Monitoring tonnage of Cargo transported through land bridge Saudi Arabia</h2>
-                <span class="text-[10px] font-normal text-slate-400 uppercase">Intraday Monitoring</span>
-            </div>
-            <div class="h-[450px]">
-                <canvas id="throughputChart"></canvas>
-            </div>
-            <div class="mt-6 p-4 bg-slate-50 rounded-lg text-[11px] text-slate-600 flex flex-wrap gap-6 justify-center">
-                <span><span class="inline-block w-3 h-0.5 bg-blue-600 mr-1"></span> <strong>Imports:</strong> Large boats arriving West vs. small boats leaving East (roughly 4-day lag in between).</span>
-                <span><span class="inline-block w-3 h-0.5 bg-amber-600 mr-1"></span> <strong>Exports:</strong> Small boats arriving East vs. large boats leaving West (roughly 4-day lag in between).</span>
-            </div>
-        </section>
-        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+            <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="mb-4">
+                    <h2 class="text-lg font-bold text-slate-800">Persian Gulf Import</h2>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Red Sea arrivals &rarr; Dammam departures (eastbound)</p>
+                </div>
+                <div class="h-[360px]">
+                    <canvas id="importBarChart"></canvas>
+                </div>
+                <div class="mt-4 p-3 bg-slate-50 rounded-lg text-[11px] text-slate-600 flex flex-wrap gap-4">
+                    <span><span class="inline-block w-3 h-3 rounded-sm bg-[#c2410c] mr-1 align-middle"></span> <strong>Red Sea Arrivals</strong></span>
+                    <span><span class="inline-block w-3 h-3 rounded-sm bg-[#fdba74] mr-1 align-middle"></span> <strong>Dammam Departures</strong></span>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="mb-4">
+                    <h2 class="text-lg font-bold text-slate-800">Persian Gulf Export</h2>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Dammam arrivals &rarr; Red Sea departures (westbound)</p>
+                </div>
+                <div class="h-[360px]">
+                    <canvas id="exportBarChart"></canvas>
+                </div>
+                <div class="mt-4 p-3 bg-slate-50 rounded-lg text-[11px] text-slate-600 flex flex-wrap gap-4">
+                    <span><span class="inline-block w-3 h-3 rounded-sm bg-[#1d4ed8] mr-1 align-middle"></span> <strong>Dammam Arrivals</strong></span>
+                    <span><span class="inline-block w-3 h-3 rounded-sm bg-[#93c5fd] mr-1 align-middle"></span> <strong>Red Sea Departures</strong></span>
+                </div>
+            </section>
+        </div>
+
         <footer class="text-center text-slate-400 text-[11px] pb-12">
             &copy; 2026 Warescalation.com | MSC Land Bridge Monitor | Data via AIS snapshots and maritime intelligence.
         </footer>
@@ -135,73 +151,78 @@
             renderChart(data);
         }
 
+
+        const CHART_OPTIONS = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, weight: '600' }, padding: 16 } },
+                tooltip: { mode: 'index', intersect: false, backgroundColor: '#1e293b' }
+            },
+            scales: {
+                x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+                y: {
+                    ticks: { font: { size: 10 }, callback: v => v / 1000 + 'k' },
+                    grid: { color: '#f1f5f9' },
+                    title: { display: true, text: 'Tonnage (DWT)', font: { size: 11, weight: '700' } }
+                }
+            }
+        };
+
         function renderChart(data) {
-            const ctx = document.getElementById('throughputChart').getContext('2d');
-            
-            new Chart(ctx, {
-                type: 'line',
+            const labels = data.map(d => {
+                const date = new Date(d.report_date);
+                return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            });
+
+            // Persian Gulf Import chart
+            new Chart(document.getElementById('importBarChart').getContext('2d'), {
+                type: 'bar',
                 data: {
-                    labels: data.map(d => {
-                        const date = new Date(d.report_date);
-                        return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-                    }),
+                    labels,
                     datasets: [
                         {
-                            label: 'Import: Red Sea Arrival',
+                            label: 'Red Sea Arrivals',
                             data: data.map(d => d.red_sea_inflow_dwt),
-                            borderColor: '#2563eb',
-                            borderWidth: 2.5,
-                            fill: false,
-                            tension: 0.3,
-                            pointRadius: 0
+                            backgroundColor: '#c2410c',
+                            borderRadius: 3,
+                            borderSkipped: false
                         },
                         {
-                            label: 'Import: Dammam Departure',
+                            label: 'Dammam Departures',
                             data: data.map(d => d.dammam_outflow_dwt),
-                            borderColor: '#2563eb',
-                            borderDash: [5, 5],
-                            borderWidth: 2,
-                            fill: false,
-                            tension: 0.3,
-                            pointRadius: 0
-                        },
-                        {
-                            label: 'Export: Dammam Arrival',
-                            data: data.map(d => d.dammam_inflow_dwt),
-                            borderColor: '#d97706',
-                            borderWidth: 2.5,
-                            fill: false,
-                            tension: 0.3,
-                            pointRadius: 0
-                        },
-                        {
-                            label: 'Export: Red Sea Departure',
-                            data: data.map(d => d.red_sea_outflow_dwt),
-                            borderColor: '#d97706',
-                            borderDash: [5, 5],
-                            borderWidth: 2,
-                            fill: false,
-                            tension: 0.3,
-                            pointRadius: 0
+                            backgroundColor: '#fdba74',
+                            borderRadius: 3,
+                            borderSkipped: false
                         }
                     ]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, weight: '600' }, padding: 20 } },
-                        tooltip: { mode: 'index', intersect: false, backgroundColor: '#1e293b' }
-                    },
-                    scales: {
-                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
-                        y: { 
-                            ticks: { font: { size: 10 }, callback: v => v/1000 + 'k' },
-                            grid: { color: '#f1f5f9' },
-                            title: { display: true, text: 'Tonnage (DWT)', font: { size: 11, weight: '700' }}
+                options: CHART_OPTIONS
+            });
+
+            // Persian Gulf Export chart
+            new Chart(document.getElementById('exportBarChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Dammam Arrivals',
+                            data: data.map(d => d.dammam_inflow_dwt),
+                            backgroundColor: '#1d4ed8',
+                            borderRadius: 3,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'Red Sea Departures',
+                            data: data.map(d => d.red_sea_outflow_dwt),
+                            backgroundColor: '#93c5fd',
+                            borderRadius: 3,
+                            borderSkipped: false
                         }
-                    }
-                }
+                    ]
+                },
+                options: CHART_OPTIONS
             });
         }
         document.addEventListener('DOMContentLoaded', fetchData);
