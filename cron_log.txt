@@ -46989,3 +46989,395 @@ postgrest.exceptions.APIError: {'message': 'JSON could not be generated', 'code'
  1 file changed, 4003 insertions(+), 3891 deletions(-)
 [main 3ac843a1] data: update snapshots [skip ci]
  1 file changed, 4108 insertions(+), 3884 deletions(-)
+[main ac5d638f] data: update snapshots [skip ci]
+ 1 file changed, 4028 insertions(+), 3916 deletions(-)
+[main 95fa61c6] data: update snapshots [skip ci]
+ 1 file changed, 4000 insertions(+), 3888 deletions(-)
+[main ec5b7b84] data: update snapshots [skip ci]
+ 1 file changed, 4043 insertions(+), 3931 deletions(-)
+[main 6303cf4c] data: update snapshots [skip ci]
+ 1 file changed, 4030 insertions(+), 3918 deletions(-)
+[main 313dff11] data: update snapshots [skip ci]
+ 1 file changed, 4134 insertions(+), 4022 deletions(-)
+[main 5ca25c64] data: update snapshots [skip ci]
+ 2 files changed, 4165 insertions(+), 4053 deletions(-)
+[main 21c34847] data: update snapshots [skip ci]
+ 2 files changed, 4094 insertions(+), 3982 deletions(-)
+[main 1e7cc12f] data: update snapshots [skip ci]
+ 1 file changed, 4127 insertions(+), 4015 deletions(-)
+[main 63c959e2] data: update snapshots [skip ci]
+ 1 file changed, 4255 insertions(+), 4143 deletions(-)
+[main 2bc89258] data: update snapshots [skip ci]
+ 1 file changed, 4226 insertions(+), 4184 deletions(-)
+[main 5ae7a010] data: update snapshots [skip ci]
+ 1 file changed, 2728 insertions(+), 2658 deletions(-)
+[main 3a4f1037] data: update snapshots [skip ci]
+ 1 file changed, 4320 insertions(+), 4208 deletions(-)
+[main 329e3775] data: update snapshots [skip ci]
+ 2 files changed, 4309 insertions(+), 4197 deletions(-)
+[main cb4e60d1] data: update snapshots [skip ci]
+ 2 files changed, 4384 insertions(+), 4272 deletions(-)
+[main 71024662] data: update snapshots [skip ci]
+ 1 file changed, 4447 insertions(+), 4335 deletions(-)
+[main deaef8e2] data: update snapshots [skip ci]
+ 1 file changed, 4294 insertions(+), 4182 deletions(-)
+[main 1c8b4b7c] data: update snapshots [skip ci]
+ 1 file changed, 4373 insertions(+), 4261 deletions(-)
+[main 990ff1e8] data: update snapshots [skip ci]
+ 1 file changed, 4343 insertions(+), 4231 deletions(-)
+[main 120911c0] data: update snapshots [skip ci]
+ 1 file changed, 4356 insertions(+), 4244 deletions(-)
+[main ce0e35d2] data: update snapshots [skip ci]
+ 2 files changed, 4495 insertions(+), 4383 deletions(-)
+[main e881a8c7] data: update snapshots [skip ci]
+ 2 files changed, 4546 insertions(+), 4434 deletions(-)
+[main c91e63b4] data: update snapshots [skip ci]
+ 1 file changed, 4479 insertions(+), 4479 deletions(-)
+[main c3e1611b] data: update snapshots [skip ci]
+ 1 file changed, 4520 insertions(+), 4408 deletions(-)
+[main 78eb21c8] data: update snapshots [skip ci]
+ 1 file changed, 4647 insertions(+), 4423 deletions(-)
+[main ef653161] data: update snapshots [skip ci]
+ 1 file changed, 4594 insertions(+), 4482 deletions(-)
+[main 4e75b6a3] data: update snapshots [skip ci]
+ 2 files changed, 4540 insertions(+), 4428 deletions(-)
+[main ddf5d53d] data: update snapshots [skip ci]
+ 2 files changed, 4599 insertions(+), 4487 deletions(-)
+[main cb360664] data: update snapshots [skip ci]
+ 1 file changed, 4493 insertions(+), 4381 deletions(-)
+[main c317f9c8] data: update snapshots [skip ci]
+ 1 file changed, 4727 insertions(+), 4615 deletions(-)
+[main 93daa102] data: update snapshots [skip ci]
+ 1 file changed, 4673 insertions(+), 4561 deletions(-)
+[main aa9953a7] data: update snapshots [skip ci]
+ 1 file changed, 4662 insertions(+), 4550 deletions(-)
+[main 29dfe085] data: update snapshots [skip ci]
+ 2 files changed, 4835 insertions(+), 4723 deletions(-)
+[main 63dd9aeb] data: update snapshots [skip ci]
+ 2 files changed, 4672 insertions(+), 4560 deletions(-)
+[main e08c06e7] data: update snapshots [skip ci]
+ 1 file changed, 4647 insertions(+), 4535 deletions(-)
+[main a7afee06] data: update snapshots [skip ci]
+ 1 file changed, 4558 insertions(+), 4558 deletions(-)
+[main 4826b9c0] data: update snapshots [skip ci]
+ 1 file changed, 4684 insertions(+), 4684 deletions(-)
+[main df0ab5ce] data: update snapshots [skip ci]
+ 1 file changed, 4798 insertions(+), 4903 deletions(-)
+[main e9864026] data: update snapshots [skip ci]
+ 1 file changed, 4611 insertions(+), 4506 deletions(-)
+[main b65c9e24] data: update snapshots [skip ci]
+ 2 files changed, 4621 insertions(+), 4733 deletions(-)
+[main d9df6627] data: update snapshots [skip ci]
+ 2 files changed, 1661 insertions(+), 1661 deletions(-)
+[main abdada0d] data: update snapshots [skip ci]
+ 1 file changed, 1885 insertions(+), 1885 deletions(-)
+[main 24a90064] data: update snapshots [skip ci]
+ 1 file changed, 1612 insertions(+), 1612 deletions(-)
+[main 5424ba4c] data: update snapshots [skip ci]
+ 1 file changed, 1458 insertions(+), 1458 deletions(-)
+[main 9fa1e3ee] data: update snapshots [skip ci]
+ 1 file changed, 4833 insertions(+), 4791 deletions(-)
+[main 53e897a7] data: update snapshots [skip ci]
+ 1 file changed, 2077 insertions(+), 2077 deletions(-)
+[main 961b0c05] data: update snapshots [skip ci]
+ 1 file changed, 4923 insertions(+), 4853 deletions(-)
+[main 96cb626f] data: update snapshots [skip ci]
+ 1 file changed, 4938 insertions(+), 4938 deletions(-)
+[main 1f981aca] data: update snapshots [skip ci]
+ 1 file changed, 4721 insertions(+), 4721 deletions(-)
+[main abb57824] data: update snapshots [skip ci]
+ 1 file changed, 4625 insertions(+), 4583 deletions(-)
+[main d7287d46] data: update snapshots [skip ci]
+ 1 file changed, 4753 insertions(+), 4795 deletions(-)
+[main 109aad80] data: update snapshots [skip ci]
+ 1 file changed, 2299 insertions(+), 2299 deletions(-)
+[main f4c9a480] data: update snapshots [skip ci]
+ 2 files changed, 4877 insertions(+), 4765 deletions(-)
+[main adf1e643] data: update snapshots [skip ci]
+ 2 files changed, 4924 insertions(+), 5036 deletions(-)
+[main 5304d788] data: update snapshots [skip ci]
+ 1 file changed, 2254 insertions(+), 2254 deletions(-)
+[main bff8e362] data: update snapshots [skip ci]
+ 1 file changed, 2177 insertions(+), 2177 deletions(-)
+[main 1aebb7fe] data: update snapshots [skip ci]
+ 1 file changed, 2189 insertions(+), 2189 deletions(-)
+[main 1960f2e9] data: update snapshots [skip ci]
+ 1 file changed, 4726 insertions(+), 4719 deletions(-)
+[main f78458c2] data: update snapshots [skip ci]
+ 2 files changed, 4922 insertions(+), 4705 deletions(-)
+[main 3e0b9dfc] data: update snapshots [skip ci]
+ 2 files changed, 4891 insertions(+), 5003 deletions(-)
+[main 6edab9bf] data: update snapshots [skip ci]
+ 1 file changed, 4864 insertions(+), 4934 deletions(-)
+[main a1759b00] data: update snapshots [skip ci]
+ 1 file changed, 4726 insertions(+), 4768 deletions(-)
+[main bedd1826] data: update snapshots [skip ci]
+ 1 file changed, 2320 insertions(+), 2320 deletions(-)
+[main 73a838de] data: update snapshots [skip ci]
+ 1 file changed, 2206 insertions(+), 2206 deletions(-)
+[main eeebd463] data: update snapshots [skip ci]
+ 1 file changed, 4712 insertions(+), 4600 deletions(-)
+[main 54b31f88] data: update snapshots [skip ci]
+ 2 files changed, 4678 insertions(+), 4790 deletions(-)
+[main a5b6b570] data: update snapshots [skip ci]
+ 2 files changed, 2237 insertions(+), 2237 deletions(-)
+[main 23f27119] data: update snapshots [skip ci]
+ 1 file changed, 2252 insertions(+), 2252 deletions(-)
+[main 57343ddd] data: update snapshots [skip ci]
+ 1 file changed, 4774 insertions(+), 4753 deletions(-)
+[main 17106744] data: update snapshots [skip ci]
+ 1 file changed, 4671 insertions(+), 4692 deletions(-)
+[main 810e71b7] data: update snapshots [skip ci]
+ 1 file changed, 4693 insertions(+), 4805 deletions(-)
+[main b01e0619] data: update snapshots [skip ci]
+ 2 files changed, 4636 insertions(+), 4524 deletions(-)
+[main 576da96c] data: update snapshots [skip ci]
+ 2 files changed, 2867 insertions(+), 2643 deletions(-)
+[main 97a51437] data: update snapshots [skip ci]
+ 1 file changed, 4708 insertions(+), 4778 deletions(-)
+[main c855613d] data: update snapshots [skip ci]
+ 1 file changed, 4679 insertions(+), 4714 deletions(-)
+[main 74497ce1] data: update snapshots [skip ci]
+ 1 file changed, 4718 insertions(+), 4697 deletions(-)
+[main 3a0c5071] data: update snapshots [skip ci]
+ 2 files changed, 2412 insertions(+), 2412 deletions(-)
+[main e15a94a6] data: update snapshots [skip ci]
+ 2 files changed, 4629 insertions(+), 4650 deletions(-)
+[main 3c665385] data: update snapshots [skip ci]
+ 1 file changed, 4720 insertions(+), 4678 deletions(-)
+[main 093289cf] data: update snapshots [skip ci]
+ 1 file changed, 4696 insertions(+), 4738 deletions(-)
+[main 63b36032] data: update snapshots [skip ci]
+ 1 file changed, 2536 insertions(+), 2536 deletions(-)
+[main 8b5ca601] data: update snapshots [skip ci]
+ 1 file changed, 4760 insertions(+), 4648 deletions(-)
+[main 715d39f3] data: update snapshots [skip ci]
+ 1 file changed, 4901 insertions(+), 5013 deletions(-)
+[main a7220c6b] data: update snapshots [skip ci]
+ 2 files changed, 4781 insertions(+), 4781 deletions(-)
+[main 1c3fec86] data: update snapshots [skip ci]
+ 2 files changed, 4771 insertions(+), 4883 deletions(-)
+[main 8c41d1e2] data: update snapshots [skip ci]
+ 1 file changed, 4746 insertions(+), 4634 deletions(-)
+[main 176abd74] data: update snapshots [skip ci]
+ 1 file changed, 4683 insertions(+), 4795 deletions(-)
+[main b416a691] data: update snapshots [skip ci]
+ 1 file changed, 2236 insertions(+), 2236 deletions(-)
+[main 0a696dc2] data: update snapshots [skip ci]
+ 1 file changed, 4743 insertions(+), 4631 deletions(-)
+[main 64dda033] data: update snapshots [skip ci]
+ 2 files changed, 4728 insertions(+), 4819 deletions(-)
+[main d3bf4f82] data: update snapshots [skip ci]
+ 2 files changed, 4663 insertions(+), 4572 deletions(-)
+[main f1735763] data: update snapshots [skip ci]
+ 1 file changed, 4876 insertions(+), 4946 deletions(-)
+[main cfce8711] data: update snapshots [skip ci]
+ 1 file changed, 4830 insertions(+), 4872 deletions(-)
+[main 0cb4bd96] data: update snapshots [skip ci]
+ 1 file changed, 2274 insertions(+), 2274 deletions(-)
+[main 95875ab1] data: update snapshots [skip ci]
+ 1 file changed, 4792 insertions(+), 4729 deletions(-)
+[main 4c3a00e3] data: update snapshots [skip ci]
+ 2 files changed, 4733 insertions(+), 4684 deletions(-)
+[main 912b97b1] data: update snapshots [skip ci]
+ 2 files changed, 4631 insertions(+), 4589 deletions(-)
+[main c4dd185e] data: update snapshots [skip ci]
+ 1 file changed, 4726 insertions(+), 4747 deletions(-)
+[main 4f81cf92] data: update snapshots [skip ci]
+ 1 file changed, 4680 insertions(+), 4701 deletions(-)
+[main ea8b0410] data: update snapshots [skip ci]
+ 1 file changed, 4784 insertions(+), 4672 deletions(-)
+[main 1339561c] data: update snapshots [skip ci]
+ 1 file changed, 5009 insertions(+), 5114 deletions(-)
+[main 7157f36a] data: update snapshots [skip ci]
+ 2 files changed, 2611 insertions(+), 2611 deletions(-)
+[main e5e89917] data: update snapshots [skip ci]
+ 2 files changed, 2295 insertions(+), 2295 deletions(-)
+[main cc06846e] data: update snapshots [skip ci]
+ 1 file changed, 4830 insertions(+), 4606 deletions(-)
+[main 52203440] data: update snapshots [skip ci]
+ 1 file changed, 4810 insertions(+), 4922 deletions(-)
+[main fe0c5531] data: update snapshots [skip ci]
+ 1 file changed, 2345 insertions(+), 2345 deletions(-)
+[main 8cb8255f] data: update snapshots [skip ci]
+ 1 file changed, 4767 insertions(+), 4991 deletions(-)
+[main bc67a3a5] data: update snapshots [skip ci]
+ 2 files changed, 4815 insertions(+), 4703 deletions(-)
+[main 20239714] data: update snapshots [skip ci]
+ 2 files changed, 2559 insertions(+), 2559 deletions(-)
+[main 26f3fc24] data: update snapshots [skip ci]
+ 1 file changed, 2299 insertions(+), 2299 deletions(-)
+[main eace0571] data: update snapshots [skip ci]
+ 1 file changed, 4772 insertions(+), 4660 deletions(-)
+[main 7e849e76] data: update snapshots [skip ci]
+ 1 file changed, 2488 insertions(+), 2488 deletions(-)
+[main 6ab95f9f] data: update snapshots [skip ci]
+ 1 file changed, 4887 insertions(+), 4999 deletions(-)
+[main e5afe5a5] data: update snapshots [skip ci]
+ 2 files changed, 2605 insertions(+), 2605 deletions(-)
+[main 72afac62] data: update snapshots [skip ci]
+ 2 files changed, 4981 insertions(+), 4862 deletions(-)
+[main dddb777e] data: update snapshots [skip ci]
+ 1 file changed, 4645 insertions(+), 4610 deletions(-)
+[main c4a37986] data: update snapshots [skip ci]
+ 1 file changed, 2726 insertions(+), 2726 deletions(-)
+[main 7d4f8dfb] data: update snapshots [skip ci]
+ 1 file changed, 4754 insertions(+), 4796 deletions(-)
+[main c6e0ec94] data: update snapshots [skip ci]
+ 1 file changed, 4695 insertions(+), 4912 deletions(-)
+[main 86c32048] data: update snapshots [skip ci]
+ 2 files changed, 4658 insertions(+), 4553 deletions(-)
+[main 30f952b7] data: update snapshots [skip ci]
+ 2 files changed, 2517 insertions(+), 2517 deletions(-)
+[main 7701ad26] data: update snapshots [skip ci]
+ 1 file changed, 4763 insertions(+), 4721 deletions(-)
+[main 1abd919c] data: update snapshots [skip ci]
+ 1 file changed, 4823 insertions(+), 4865 deletions(-)
+[main f03c8dc7] data: update snapshots [skip ci]
+ 1 file changed, 2552 insertions(+), 2552 deletions(-)
+[main faf25937] data: update snapshots [skip ci]
+ 1 file changed, 2650 insertions(+), 2650 deletions(-)
+[main 3ced27d9] data: update snapshots [skip ci]
+ 2 files changed, 2597 insertions(+), 2597 deletions(-)
+[main e3a7ec9b] data: update snapshots [skip ci]
+ 2 files changed, 4935 insertions(+), 4816 deletions(-)
+--- Iran Intelligence Snapshot | 2026-05-11 21:40 ---
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 963, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 211, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to resolve 'gamma-api.polymarket.com' ([Errno -3] Temporary failure in name resolution)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/adapters.py", line 644, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='gamma-api.polymarket.com', port=443): Max retries exceeded with url: /events/slug/iran-leader-end-of-2026 (Caused by NameResolutionError("HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to resolve 'gamma-api.polymarket.com' ([Errno -3] Temporary failure in name resolution)"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 143, in <module>
+    run_monitor()
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 39, in run_monitor
+    resp = requests.get(f"{GAMMA_URL}/{slug}")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/adapters.py", line 677, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='gamma-api.polymarket.com', port=443): Max retries exceeded with url: /events/slug/iran-leader-end-of-2026 (Caused by NameResolutionError("HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to resolve 'gamma-api.polymarket.com' ([Errno -3] Temporary failure in name resolution)"))
+--- Iran Intelligence Snapshot | 2026-05-11 21:45 ---
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 963, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 211, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to resolve 'gamma-api.polymarket.com' ([Errno -3] Temporary failure in name resolution)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/adapters.py", line 644, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='gamma-api.polymarket.com', port=443): Max retries exceeded with url: /events/slug/iran-leader-end-of-2026 (Caused by NameResolutionError("HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to resolve 'gamma-api.polymarket.com' ([Errno -3] Temporary failure in name resolution)"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 143, in <module>
+    run_monitor()
+  File "/media/shakes/ServerStorage/IranMonitor/polymarket.py", line 39, in run_monitor
+    resp = requests.get(f"{GAMMA_URL}/{slug}")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shakes/ServerStorage/IranMonitor/.venv/lib/python3.12/site-packages/requests/adapters.py", line 677, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='gamma-api.polymarket.com', port=443): Max retries exceeded with url: /events/slug/iran-leader-end-of-2026 (Caused by NameResolutionError("HTTPSConnection(host='gamma-api.polymarket.com', port=443): Failed to resolve 'gamma-api.polymarket.com' ([Errno -3] Temporary failure in name resolution)"))
