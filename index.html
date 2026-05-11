@@ -306,7 +306,7 @@
 
 
         <!-- SHIPPING DATA SECTION -->
-        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <section id="vlcc-transits" class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: VLCC/VLGC Transits (Crude Oil)</h2>
             <p class="text-slate-500 text-sm italic">Vessel transit estimates are derived from AIS position snapshots. A vessel is counted as a chokepoint transit when sequential positions are observed on opposite sides of a defined geofence surrounding the Strait of Hormuz. Erroneous data is filtered out based on geo data. </p>
             <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
@@ -321,7 +321,7 @@
             </div>
         </section>
 
-        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <section id="cargo-transits" class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Hormuz Gate: General Cargo Transits</h2>
             <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
                 <div>
@@ -336,7 +336,7 @@
         </section>
 
         <!-- Daily Escalation Trend -->
-        <section class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <section id="escalation-trend" class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <h2 class="text-2xl font-bold mb-2 text-slate-800">Daily Escalation Trend</h2>
             <p class="text-sm text-slate-500 mb-4">Strikes originating from Iran (or its allies) on a daily basis, also when origin is not confirmed. All hits are assumed to be by Iran.</p>
             <div id="dailyChart" class="w-full h-[500px]" style="min-height:500px"></div>
@@ -399,7 +399,7 @@
 </div>
 <p class="text-[10px] text-slate-400 italic px-1 -mt-6 mb-8">Value in brackets is the increase from the previous day's report.</p>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div id="casualties" class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
     <div id="chart-iran-cas" class="bg-white p-4 rounded shadow h-80" style="min-height:320px"></div>
 
@@ -415,7 +415,7 @@
     <strong>Source:</strong> Casualty data is aggregated daily from official and semi-official reports, including MoH (Lebanon/Gaza), HRANA/Hengaw (Iran), IDF/Magen David Adom (Israel), and US Pentagon updates. Figures represent a combination of confirmed combatant losses and reported non-combatant fatalities; due to the speed of kinetic events, reporting lags of 24-48 hours are common for remote strike zones. Data can be revised as new information emerges, and may not capture all casualties, especially in contested areas. The charts above show daily reported casualties, which can fluctuate based on reporting cadence and access to affected regions.
 </p>
 
-        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <section id="oil-spread" class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-800">Hormuz: Oil Spread</h2>
@@ -431,7 +431,7 @@
             <div id="oilSpreadChart" class="w-full h-[450px]" style="min-height:450px"></div>
         </section>
 
-        <section class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <section id="bdti" class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-800">Maritime Economic Risk (BDTI)</h2>
@@ -447,7 +447,7 @@
             <div id="bdtiChart" class="w-full h-[400px]" style="min-height:400px"></div>
         </section>
 
-        <section class="mb-16">
+        <section id="theater-spread" class="mb-16">
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
                 <h2 class="text-xl font-bold text-slate-800">Theater Spread</h2>
                 <p class="text-sm text-slate-500 mb-4">Max unique countries/territories targeted per day. A spike here indicates conflict horizontal expansion.</p>
