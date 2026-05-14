@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>High-Res Charts – Warescalation</title>
+    <!-- Full Plotly for best SVG/PNG export quality -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- descramble lives in monitor_core.js -->
+    <script src="monitor_core.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #1e293b;
+            padding: 32px 24px 64px;
+        }
+
+        h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+
+        .chart-block {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 20px rgba(0,0,0,0.04);
+            padding: 32px 36px 28px;
+            margin-bottom: 48px;
+            /* Fix width so screenshots are consistent */
+            max-width: 1200px;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .chart-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .chart-sub {
+            font-size: 0.82rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-width: 740px;
+        }
+
+        .export-btn {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #1e293b;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 18px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .export-btn:hover { background: #334155; }
+
+        .chart-section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .chart-wrap {
+            width: 100%;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #f1f5f9;
+            margin: 28px 0 24px;
+        }
+
+        .source-note {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Warescalation · High-Res Chart Export</h1>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  CHART 1 – Strategic Escalation Score          -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="chart-block" id="block-escalation">
+    <div class="chart-header">
+        <div class="chart-title">Strategic Escalation Score</div>
+        <button class="export-btn" onclick="exportChart('escalationChart', 'escalation_score')">
+            ↓ Export PNG
+        </button>
+    </div>
+    <p class="chart-sub">
+        A multi-factor composite index measuring theater intensity. Values <strong>&gt; 1</strong> signal active
+        escalation; values <strong>&lt; −1</strong> indicate significant cooling. Integrates four pillars:
+        <strong>Kinetics</strong> (launch acceleration), <strong>Maritime Friction</strong> (VLCC crossings),
+        <strong>Energy Risk</strong> (Murban–Brent spread) and <strong>Economic Cost</strong> (log-change BDTI).
+        Updates intraday every 30 min.
+    </p>
+    <div class="chart-wrap">
+        <div id="escalationChart" style="width:100%; height:580px;"></div>
+    </div>
+    <p class="source-note">Source: warescalation.com &nbsp;·&nbsp; Data as of <span id="esc-date">—</span></p>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  CHART 2 – VLCC Transits through Hormuz        -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="chart-block" id="block-vlcc">
+    <div class="chart-header">
+        <div class="chart-title">Hormuz Gate: VLCC / VLGC Transits (Crude Oil)</div>
+        <button class="export-btn" onclick="exportChart('vlccDailyChart', 'vlcc_transits_daily')">
+            ↓ Export PNG
+        </button>
+    </div>
+    <p class="chart-sub">
+        Daily VLCC transit estimates derived from AIS position snapshots. A vessel is counted as a chokepoint
+        transit when sequential positions are observed on opposite sides of the Strait of Hormuz geofence.
+        Green bars = eastbound (loaded crude outbound); red bars = westbound (return). Darker shades indicate
+        sanctioned vessels.
+    </p>
+
+    <div class="chart-section-label">Daily Aggregate (Eastbound / Westbound)</div>
+    <div class="chart-wrap">
+        <div id="vlccDailyChart" style="width:100%; height:500px;"></div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="chart-header" style="margin-bottom:6px;">
+        <div style="font-size:1rem; font-weight:700; color:#0f172a;">Tonnage Shipped (DWT)</div>
+        <button class="export-btn" onclick="exportChart('vlccDWTChart', 'vlcc_dwt')">
+            ↓ Export PNG
+        </button>
+    </div>
+    <div class="chart-section-label">Deadweight tonnage per day (from 19 Mar 2026)</div>
+    <div class="chart-wrap">
+        <div id="vlccDWTChart" style="width:100%; height:300px;"></div>
+    </div>
+
+    <p class="source-note">Source: warescalation.com &nbsp;·&nbsp; AIS data, sanctions lists: OFAC, FCDO, EU, UANI</p>
+</div>
+
+
+<script>
+/* ─── shared layout base (mirrors index.html) ──────────────────── */
+const layoutBase = {
+    margin: { t: 20, r: 24, b: 50, l: 55 },
+    dragmode: false,
+    hovermode: 'x unified',
+    hoverdistance: 100,
+    font: { family: 'Inter, system-ui, sans-serif', size: 13 },
+    paper_bgcolor: '#ffffff',
+    plot_bgcolor: '#ffffff',
+    xaxis: {
+        gridcolor: '#f1f5f9',
+        zeroline: false,
+        fixedrange: true,
+        tickangle: -45,
+        automargin: true
+    },
+    yaxis: { gridcolor: '#f1f5f9', fixedrange: true },
+    annotations: [{
+        text: 'WARESCALATION.COM',
+        xref: 'paper', yref: 'paper',
+        x: 0.5, y: 0.5,
+        showarrow: false,
+        font: { size: 36, color: 'rgba(150,150,150,0.08)' },
+        textangle: -30
+    }]
+};
+
+/* ─── Plotly config shared across charts ────────────────────────── */
+const plotCfg = { displaylogo: false, responsive: true, displayModeBar: false };
+
+/* ─── Export helper (high-res PNG via Plotly toImage) ───────────── */
+function exportChart(divId, filename) {
+    const el = document.getElementById(divId);
+    if (!el) return;
+    // scale:3 on a 1200px container → ~3600px wide output
+    Plotly.downloadImage(el, {
+        format: 'png',
+        width: 1400,
+        height: el.offsetHeight || 580,
+        scale: 3,
+        filename: filename || divId
+    });
+}
+
+/* ─── Strategic Escalation Score ────────────────────────────────── */
+async function loadEscalationChart() {
+    try {
+        const response = await fetch('escalation_history.json');
+        const data = await response.json();
+
+        const dates     = data.map(d => d.date);
+        const composite = data.map(d => d.composite);
+
+        // Update the "as of" label
+        if (dates.length) {
+            document.getElementById('esc-date').textContent =
+                new Date(dates[dates.length - 1]).toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        const traces = [
+            {
+                x: dates, y: composite,
+                name: 'Composite Index',
+                type: 'scattergl',
+                mode: 'lines+markers',
+                line: { color: '#1e293b', width: 2.5 },
+                marker: { size: 4, color: '#1e293b' },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(30, 41, 59, 0.06)'
+            },
+            {
+                x: [dates[0], dates[dates.length - 1]], y: [1, 1],
+                name: 'Escalation threshold (+1)',
+                mode: 'lines',
+                line: { color: '#ef4444', width: 1.5, dash: 'dot' },
+                showlegend: true
+            },
+            {
+                x: [dates[0], dates[dates.length - 1]], y: [-1, -1],
+                name: 'De-escalation threshold (−1)',
+                mode: 'lines',
+                line: { color: '#22c55e', width: 1.5, dash: 'dot' },
+                showlegend: true
+            }
+        ];
+
+        const layout = {
+            ...layoutBase,
+            height: 580,
+            margin: { t: 20, r: 24, b: 80, l: 55 },
+            showlegend: true,
+            legend: { orientation: 'h', y: -0.18, x: 0.5, xanchor: 'center', font: { size: 12 } },
+            xaxis: { ...layoutBase.xaxis },
+            yaxis: {
+                ...layoutBase.yaxis,
+                title: { text: 'Z-Score / Index', font: { size: 12 } },
+                zeroline: true,
+                zerolinecolor: '#cbd5e1',
+                zerolinewidth: 1.5
+            },
+            shapes: [{
+                type: 'rect', xref: 'paper', yref: 'y',
+                x0: 0, x1: 1, y0: -1, y1: 1,
+                fillcolor: '#f8fafc', opacity: 0.6,
+                line: { width: 0 }
+            }]
+        };
+
+        Plotly.newPlot('escalationChart', traces, layout, plotCfg);
+    } catch (err) {
+        console.error('Escalation chart error:', err);
+    }
+}
+
+/* ─── VLCC transit chart (mirrors renderSanctionTransitChart) ───── */
+function renderSanctionTransitChart(transits, containerId, vesselClasses) {
+    const filtered = (transits || []).filter(t => vesselClasses.includes(t.out_vessel_class));
+    if (!filtered.length) return;
+
+    const SANCTION_ORGS = ['ofac', 'fcdo', 'uani', 'eu', 'aso', 'mfat', 'gac', 'seco', 'un'];
+    const getSanctionOrgs = t => SANCTION_ORGS.filter(o => t[o]).join(', ');
+    const shipDetail = t => {
+        const time = (t.out_transit_time || '').split(' ')[1] || '';
+        const orgs = getSanctionOrgs(t);
+        return `${time} | ${t.out_name}${orgs ? ' | ' + orgs : ''}`;
+    };
+
+    const days = [...new Set(filtered.map(t => t.transit_day))].sort();
+    const groups = {};
+    days.forEach(d => { groups[d] = { EC: [], ES: [], WC: [], WS: [] }; });
+    filtered.forEach(t => {
+        const d = t.transit_day;
+        if (!groups[d]) return;
+        const isEast = t.out_direction === 'EASTBOUND';
+        const isSanc = t.is_sanctioned;
+        const detail = shipDetail(t);
+        if (isEast) {
+            if (isSanc) groups[d].ES.push(detail); else groups[d].EC.push(detail);
+        } else {
+            if (isSanc) groups[d].WS.push(detail); else groups[d].WC.push(detail);
+        }
+    });
+
+    const barDefs = [
+        { key: 'EC', name: 'Eastbound (Clean)',      color: '#22c55e', sign:  1 },
+        { key: 'ES', name: 'Eastbound (Sanctioned)', color: '#dc2626', sign:  1 },
+        { key: 'WC', name: 'Westbound (Clean)',      color: '#16a34a', sign: -1 },
+        { key: 'WS', name: 'Westbound (Sanctioned)', color: '#ef4444', sign: -1 },
+    ];
+
+    const traces = barDefs.map(({ key, name, color, sign }) => ({
+        x: days,
+        y: days.map(d => sign * groups[d][key].length),
+        name,
+        type: 'bar',
+        marker: { color },
+        customdata: days.map(d => groups[d][key].join('<br>') || '—'),
+        hovertemplate: `<b>%{x|%d %b}</b><br><b>${name}</b>: <b>%{y}</b><br>%{customdata}<extra></extra>`
+    }));
+
+    const layout = {
+        ...layoutBase,
+        height: 500,
+        barmode: 'relative',
+        hovermode: 'closest',
+        showlegend: true,
+        legend: { orientation: 'h', y: -0.22, x: 0.5, xanchor: 'center', font: { size: 11 } },
+        margin: { t: 20, r: 24, b: 120, l: 55 },
+        xaxis: { ...layoutBase.xaxis, type: 'date', tickformat: '%d %b' },
+        yaxis: {
+            ...layoutBase.yaxis,
+            zeroline: true,
+            zerolinecolor: '#94a3b8',
+            zerolinewidth: 2,
+            title: { text: 'Ships', font: { size: 12 } }
+        }
+    };
+
+    Plotly.newPlot(containerId, traces, layout, plotCfg);
+}
+
+/* ─── VLCC DWT chart ─────────────────────────────────────────────── */
+function renderDWTChart(transits, containerId, vesselClasses) {
+    const DWT_CUTOFF = '2026-03-19';
+    const filtered = (transits || []).filter(t =>
+        vesselClasses.includes(t.out_vessel_class) && t.transit_day >= DWT_CUTOFF
+    );
+    if (!filtered.length) return;
+
+    const days = [...new Set(filtered.map(t => t.transit_day))].sort();
+    const dwtGroups = {};
+    days.forEach(d => { dwtGroups[d] = { east: 0, west: 0 }; });
+    filtered.forEach(t => {
+        const d = t.transit_day;
+        if (!dwtGroups[d]) return;
+        if (t.out_direction === 'EASTBOUND') dwtGroups[d].east += t.out_dwt || 0;
+        else dwtGroups[d].west += t.out_dwt || 0;
+    });
+
+    const dwtTraces = [
+        {
+            x: days, y: days.map(d => dwtGroups[d].east),
+            name: 'Eastbound DWT', type: 'bar',
+            marker: { color: '#22c55e' },
+            hovertemplate: 'East DWT: %{y:,.0f}<extra></extra>'
+        },
+        {
+            x: days, y: days.map(d => dwtGroups[d].west),
+            name: 'Westbound DWT', type: 'bar',
+            marker: { color: '#ef4444' },
+            hovertemplate: 'West DWT: %{y:,.0f}<extra></extra>'
+        }
+    ];
+
+    const dwtLayout = {
+        ...layoutBase,
+        height: 300,
+        barmode: 'group',
+        showlegend: true,
+        legend: { orientation: 'h', y: -0.48, x: 0.5, xanchor: 'center', font: { size: 11 } },
+        margin: { t: 10, r: 24, b: 100, l: 70 },
+        xaxis: { ...layoutBase.xaxis, type: 'date', tickformat: '%d %b' },
+        yaxis: {
+            ...layoutBase.yaxis,
+            title: { text: 'Tonnage (DWT)', font: { size: 11 } },
+            tickformat: ',.0f'
+        }
+    };
+
+    Plotly.newPlot(containerId, dwtTraces, dwtLayout, plotCfg);
+}
+
+/* ─── Bootstrap ─────────────────────────────────────────────────── */
+async function init() {
+    try {
+        await loadEscalationChart();
+
+        const hormuzRes = await fetch('./hormuz_transits.json');
+        const hormuzTransits = descramble((await hormuzRes.json()).payload);
+
+        renderSanctionTransitChart(hormuzTransits, 'vlccDailyChart', ['VLCC']);
+        renderDWTChart(hormuzTransits, 'vlccDWTChart', ['VLCC']);
+    } catch (err) {
+        console.error('Init error:', err);
+    }
+}
+
+init();
+</script>
+</body>
+</html>
