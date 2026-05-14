@@ -545,9 +545,7 @@ async function loadEscalationChart() {
                 name: 'Composite Index',
                 type: 'scattergl',
                 mode: 'lines+markers',
-                line: { color: '#1e293b', width: 3 },
-                fill: 'tozeroy',
-                fillcolor: 'rgba(30, 41, 59, 0.05)'
+                line: { color: '#1e293b', width: 3 }
             },
             // Threshold Lines
             {
@@ -584,18 +582,7 @@ async function loadEscalationChart() {
             paper_bgcolor: 'rgba(0,0,0,0)',
             plot_bgcolor: 'rgba(0,0,0,0)',
             // Highlighting the "Neutral Zone"
-            shapes: [{
-                type: 'rect',
-                xref: 'paper',
-                yref: 'y',
-                x0: 0,
-                x1: 1,
-                y0: -1,
-                y1: 1,
-                fillcolor: '#f8fafc',
-                opacity: 0.5,
-                line: { width: 0 }
-            }]
+            shapes: []
         };
 
         Plotly.newPlot('escalationChart', traces, layout, { displayModeBar: false, responsive: false });

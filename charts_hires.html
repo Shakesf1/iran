@@ -238,9 +238,7 @@ async function loadEscalationChart() {
                 type: 'scattergl',
                 mode: 'lines+markers',
                 line: { color: '#1e293b', width: 2.5 },
-                marker: { size: 4, color: '#1e293b' },
-                fill: 'tozeroy',
-                fillcolor: 'rgba(30, 41, 59, 0.06)'
+                marker: { size: 4, color: '#1e293b' }
             },
             {
                 x: [dates[0], dates[dates.length - 1]], y: [1, 1],
@@ -272,12 +270,7 @@ async function loadEscalationChart() {
                 zerolinecolor: '#cbd5e1',
                 zerolinewidth: 1.5
             },
-            shapes: [{
-                type: 'rect', xref: 'paper', yref: 'y',
-                x0: 0, x1: 1, y0: -1, y1: 1,
-                fillcolor: '#f8fafc', opacity: 0.6,
-                line: { width: 0 }
-            }]
+            shapes: []
         };
 
         Plotly.newPlot('escalationChart', traces, layout, plotCfg);
