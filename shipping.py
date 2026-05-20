@@ -50,6 +50,8 @@ CHOKEPOINTS = [
     "https://www.marinetraffic.com/en/ais/home/centerx:29.7/centery:30.3/zoom:7"  # Suez
 ]
 
+CHOKEPOINTS = ['https://www.marinetraffic.com/en/ais/home/centerx:56.7/centery:26.6/zoom:10']
+
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
 
@@ -57,7 +59,7 @@ key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
 supabase: Client = create_client(url, key)
 #HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
 
-WEST_LIMIT = 56.15  # Deep in the Gulf
+WEST_LIMIT = 56.33  # Deep in the Gulf
 EAST_LIMIT = 56.45  # Well out into the Gulf of Oman
 
 
@@ -170,24 +172,32 @@ def get_ships_with_stealth(map_url):
         page.get(map_url)
         page.wait.ele_displayed('css:.leaflet-container', timeout=35)
 
-        time.sleep(random.uniform(4, 6))  # Wait for potential AJAX calls to populate data
+        time.sleep(random.uniform(4, 6))  # Wait for tile packets to arrive
 
-        for attempt in range(3):  # Try up to 3 times to find a 'meaty' packet
+        all_ships = {}  # keyed by SHIP_ID to deduplicate across tiles
+        while True:
             packet = page.listen.wait(timeout=10)
-            if packet and packet.response.body:
-                body_str = str(packet.response.body)
-                # Check if the packet is large enough to contain real data
-                if len(body_str) > 10000: 
-                    print(f"✅ Captured valid data packet ({len(body_str)} bytes)")
-                    return packet.response.body
-                else:
-                    print(f"⚠️ Captured small packet ({len(body_str)} bytes), skipping...")
+            if not packet:
+                break  # no more packets arriving
+            if not packet.response.body:
+                continue
+            try:
+                body = packet.response.body
+                parsed = body if isinstance(body, dict) else json.loads(body)
+                rows = parsed.get("data", {}).get("rows", [])
+                for ship in rows:
+                    all_ships[ship.get("SHIP_ID")] = ship
+                if rows:
+                    print(f"  Tile packet: {len(rows)} ships (running total: {len(all_ships)})")
+            except Exception:
+                continue
 
-
-
-        if not packet:
+        if not all_ships:
+            print("⚠️ No ship data captured.")
             return None
-        return packet.response.body
+
+        print(f"✅ Collected {len(all_ships)} unique ships across all tile packets.")
+        return {"data": {"rows": list(all_ships.values())}}
     except Exception as e:
         print(f"Scraping Error: {e}")
         return None
@@ -212,7 +222,7 @@ def process_and_save(strait_data):
 
 # --- DEBUG START ---
     # Check if the target ship ID is present in the RAW rows
-    target_id = '466738'
+    target_id = '5835738'
     found_in_raw = any(str(ship.get('SHIP_ID')) == target_id for ship in rows)
     if found_in_raw:
         print(f"🎯 DEBUG: Target ship {target_id} FOUND in raw JSON rows!")
