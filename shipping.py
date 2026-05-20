@@ -80,70 +80,54 @@ def update_vessel_locations():
     """Classifies vessel positions as water, bad, or coastal_noise using spatial data in Supabase."""
     print("--- Classifying vessel locations via GeoPandas ---")
 
-    # 1. Fetch rows that haven't been classified yet, in batches to avoid timeout
-    response = supabase.table("vessel_history") \
-        .select("id, longitude, latitude") \
-        .is_("location", "null") \
-        .limit(500) \
-        .execute()
-    
-    rows = response.data
+    # Load land geometry once — expensive, don't repeat per batch
+    land = gpd.read_file("./ne_10m_land/ne_10m_land.shp")
+    land_geom = land.to_crs(epsg=3857).union_all()
+    land_buffer = land_geom.buffer(200)
 
-    if not rows:
-        print("No new coordinates to classify.")
-        return
+    BATCH_SIZE = 2000
+    total_classified = 0
 
-    # Extract data for processing
-    row_ids = [r['id'] for r in rows]
-    lons = [r['longitude'] for r in rows]
-    lats = [r['latitude'] for r in rows]
+    while True:
+        response = supabase.table("vessel_history") \
+            .select("id, longitude, latitude") \
+            .is_("location", "null") \
+            .limit(BATCH_SIZE) \
+            .execute()
 
-    try:
-        # 2. Load land polygons (Ensure the .shp file path is correct in your environment)
-        land = gpd.read_file("./ne_10m_land/ne_10m_land.shp")
-        
-        # Create GeoSeries of points
-        points = gpd.GeoSeries(
-            [Point(x, y) for x, y in zip(lons, lats)],
-            crs="EPSG:4326"
-        )
+        rows = response.data
+        if not rows:
+            break
 
-        # Project to metric CRS for accurate buffering
-        land_m = land.to_crs(epsg=3857)
-        points_m = points.to_crs(epsg=3857)
+        row_ids = [r['id'] for r in rows]
+        lons = [r['longitude'] for r in rows]
+        lats = [r['latitude'] for r in rows]
 
-        # Merge land polygons for faster spatial testing
-        land_geom = land_m.union_all()
-        # 200m inland tolerance
-        land_buffer = land_geom.buffer(200)
+        try:
+            points_m = gpd.GeoSeries(
+                [Point(x, y) for x, y in zip(lons, lats)],
+                crs="EPSG:4326"
+            ).to_crs(epsg=3857)
 
-        # 3. Classify and build the Supabase update list
-        updates = []
-        for i, p in enumerate(points_m):
-            if land_geom.contains(p):
-                label = "bad"
-            elif land_buffer.contains(p):
-                label = "coastal_noise"
-            else:
-                label = "water"
-            
-            # Map the primary key 'id' and the new 'location' label
-            updates.append({
-                "id": row_ids[i],
-                "location": label
-            })
+            updates = []
+            for i, p in enumerate(points_m):
+                if land_geom.contains(p):
+                    label = "bad"
+                elif land_buffer.contains(p):
+                    label = "coastal_noise"
+                else:
+                    label = "water"
+                updates.append({"id": row_ids[i], "location": label})
 
-        # 4. Perform Bulk Upsert to Supabase
-        if updates:
-            try:
-                # Upsert updates existing records matching the 'id' primary key
-                supabase.table("vessel_history").upsert(updates).execute()
-                print(f"Successfully classified {len(updates)} records in Supabase.")
-            except Exception as e:
-                print(f"Supabase Update Error: {e}")
+            supabase.table("vessel_history").upsert(updates).execute()
+            total_classified += len(updates)
+            print(f"  Classified {len(updates)} records (total so far: {total_classified})")
 
-    except Exception as e:
-        print(f"Spatial Processing Error: {e}")
+        except Exception as e:
+            print(f"Batch processing error: {e}")
+            break
+
+    print(f"Done. Classified {total_classified} records total.")
 
 
 def get_ships_with_stealth(map_url):
