@@ -273,6 +273,8 @@ def rpc_with_retry(fn, retries=3, delay=10):
 
 def export_stats():
     update_vessel_locations()
+    print("Waiting for DB to settle after writes...")
+    time.sleep(30)
 
     crossings_res = rpc_with_retry(lambda: supabase.rpc('get_vessel_crossings', {
             'west_limit': WEST_LIMIT,
