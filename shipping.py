@@ -3,6 +3,7 @@ import time
 import random
 import json
 import base64
+import httpx
 from datetime import datetime
 from DrissionPage import ChromiumPage, ChromiumOptions
 import geopandas as gpd
@@ -57,7 +58,7 @@ key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
 
 
 supabase: Client = create_client(url, key)
-supabase.postgrest.timeout = 60
+supabase.postgrest.session.timeout = httpx.Timeout(120.0)
 #HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
 
 WEST_LIMIT = 56.33  # Deep in the Gulf
@@ -86,7 +87,7 @@ def update_vessel_locations():
     land_geom = land.to_crs(epsg=3857).union_all()
     land_buffer = land_geom.buffer(200)
 
-    BATCH_SIZE = 2000
+    BATCH_SIZE = 500
     total_classified = 0
 
     while True:
@@ -123,6 +124,7 @@ def update_vessel_locations():
             supabase.table("vessel_history").upsert(updates).execute()
             total_classified += len(updates)
             print(f"  Classified {len(updates)} records (total so far: {total_classified})")
+            time.sleep(2)  # let Postgres recover between batches
 
         except Exception as e:
             print(f"Batch processing error: {e}")
