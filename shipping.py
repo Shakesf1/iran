@@ -8,6 +8,7 @@ from DrissionPage import ChromiumPage, ChromiumOptions
 import geopandas as gpd
 from shapely.geometry import Point
 from supabase import create_client, Client
+from supabase.lib.client_options import ClientOptions
 from dotenv import load_dotenv
 import os
 import sys 
@@ -56,7 +57,7 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
 
 
-supabase: Client = create_client(url, key)
+supabase: Client = create_client(url, key, options=ClientOptions(postgrest_client_timeout=60))
 #HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
 
 WEST_LIMIT = 56.33  # Deep in the Gulf
@@ -256,35 +257,44 @@ def process_and_save(strait_data):
     print(f"Processed {len(rows)} ships. ")
 
 
+def rpc_with_retry(fn, retries=3, delay=10):
+    for attempt in range(retries):
+        try:
+            return fn()
+        except Exception as e:
+            if attempt < retries - 1:
+                print(f"RPC error (attempt {attempt+1}/{retries}): {e}. Retrying in {delay}s...")
+                time.sleep(delay)
+            else:
+                raise
+
+
 def export_stats():
     update_vessel_locations()
 
-    crossings_res = supabase.rpc('get_vessel_crossings', {
-            'west_limit': WEST_LIMIT, 
+    crossings_res = rpc_with_retry(lambda: supabase.rpc('get_vessel_crossings', {
+            'west_limit': WEST_LIMIT,
             'east_limit': EAST_LIMIT
-        }).execute()
-    
+        }).execute())
 
     SHIP_TYPE_MAP = {8: 'VLCC', 7: 'Cargo'}
     crossings = [
         {
-            "time": r['out_transit_time'], 
-            "mmsi": r['out_shipid'], 
-            "name": r['out_name'], 
+            "time": r['out_transit_time'],
+            "mmsi": r['out_shipid'],
+            "name": r['out_name'],
             "dir": r['out_direction'],
             "ship_type": SHIP_TYPE_MAP.get(int(r['out_ship_type'] or 0), str(r['out_ship_type']))
         } for r in crossings_res.data
     ]
 
-    # 2. NEW: Fetch Bab el-Mandeb Crossings
-        # No parameters needed as the limits are hardcoded in the SQL function
-    bab_res = supabase.rpc('get_bab_el_mandeb_transits_new').execute()
+    bab_res = rpc_with_retry(lambda: supabase.rpc('get_bab_el_mandeb_transits_new').execute())
 
     bab_crossings = [
         {
-            "time": r['transit_time'], 
-            "mmsi": r['ship_id'], 
-            "name": r['vessel_name'], 
+            "time": r['transit_time'],
+            "mmsi": r['ship_id'],
+            "name": r['vessel_name'],
             "dir": r['transit_direction'],
             "ship_type": r['vessel_class'],
             "dwt": r['dwt']
@@ -292,9 +302,9 @@ def export_stats():
     ]
 
 
-    
+
     # 2. Fetch Dormant Vessels via RPC
-    dormant_res = supabase.rpc('get_dormant_vessels').execute()
+    dormant_res = rpc_with_retry(lambda: supabase.rpc('get_dormant_vessels').execute())
 
     dormant = [
         {"time": r['out_time'], "count": r['out_count']} 
