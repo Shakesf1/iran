@@ -4,7 +4,7 @@ import random
 import json
 import base64
 import httpx
-from datetime import datetime
+from datetime import datetime, timedelta
 from DrissionPage import ChromiumPage, ChromiumOptions
 import geopandas as gpd
 from shapely.geometry import Point
@@ -36,6 +36,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 JSON_PATH = os.path.join(BASE_DIR, "dashboard_stats.json")
 HORMUZ_TRANSITS_PATH = os.path.join(BASE_DIR, "hormuz_transits.json")
+CROSSINGS_HISTORY_PATH = os.path.join(BASE_DIR, "crossings_history.json")
 
 # --- CONFIGURATION ---
 CHOKEPOINTS = [
@@ -51,7 +52,7 @@ CHOKEPOINTS = [
     "https://www.marinetraffic.com/en/ais/home/centerx:29.7/centery:30.3/zoom:7"  # Suez
 ]
 
-#CHOKEPOINTS = ['https://www.marinetraffic.com/en/ais/home/centerx:56.7/centery:26.6/zoom:10']
+CHOKEPOINTS = ['https://www.marinetraffic.com/en/ais/home/centerx:56.7/centery:26.6/zoom:10']
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
@@ -276,44 +277,83 @@ def export_stats():
     print("Waiting for DB to settle after writes...")
     time.sleep(30)
 
-    crossings_res = rpc_with_retry(lambda: supabase.rpc('get_vessel_crossings', {
-            'west_limit': WEST_LIMIT,
-            'east_limit': EAST_LIMIT
-        }).execute())
+    def normalize_time(t):
+        return t[:16].replace('T', ' ')
+
+    since_date = (datetime.now() - timedelta(days=3)).isoformat()
 
     SHIP_TYPE_MAP = {8: 'VLCC', 7: 'Cargo'}
-    crossings = [
-        {
-            "time": r['out_transit_time'],
-            "mmsi": r['out_shipid'],
-            "name": r['out_name'],
-            "dir": r['out_direction'],
-            "ship_type": SHIP_TYPE_MAP.get(int(r['out_ship_type'] or 0), str(r['out_ship_type']))
-        } for r in crossings_res.data
-    ]
+    try:
+        crossings_res = rpc_with_retry(lambda: supabase.rpc('get_vessel_crossings', {
+                'west_limit': WEST_LIMIT,
+                'east_limit': EAST_LIMIT,
+                'since_date': since_date
+            }).execute())
+        fresh_crossings = [
+            {
+                "out_transit_time": normalize_time(r['out_transit_time']),
+                "out_shipid": r['out_shipid'],
+                "out_name": r['out_name'],
+                "out_direction": r['out_direction'],
+                "out_ship_type": r['out_ship_type'],
+                "out_dwt": r['out_dwt'],
+                "out_length": r['out_length'],
+                "out_width": r['out_width'],
+                "out_gt_shiptype": r['out_gt_shiptype'],
+                "out_vessel_class": r['out_vessel_class']
+            } for r in crossings_res.data
+        ]
+        supabase.table("vessel_crossings").delete().gte("out_transit_time", since_date[:10]).execute()
+        if fresh_crossings:
+            supabase.table("vessel_crossings").insert(fresh_crossings).execute()
+        all_res = supabase.table("vessel_crossings").select("*").order("out_transit_time").execute()
+        crossings = [
+            {"time": r["out_transit_time"], "mmsi": r["out_shipid"], "name": r["out_name"],
+             "dir": r["out_direction"], "ship_type": r["out_ship_type"], "vessel_class": r["out_vessel_class"],
+             "dwt": r["out_dwt"], "length": r["out_length"], "width": r["out_width"]}
+            for r in all_res.data
+        ]
+        print(f"Crossings: {len(fresh_crossings)} fresh, {len(crossings)} total in DB.")
+    except Exception as e:
+        print(f"get_vessel_crossings failed: {e}")
+        crossings = []
 
-    bab_res = rpc_with_retry(lambda: supabase.rpc('get_bab_el_mandeb_transits_new').execute())
+    try:
+        bab_res = rpc_with_retry(lambda: supabase.rpc('get_bab_el_mandeb_transits_new', {'since_date': since_date}).execute())
+        fresh_bab = [
+            {
+                "transit_time": normalize_time(r['transit_time']),
+                "shipid": r['ship_id'],
+                "name": r['vessel_name'],
+                "direction": r['transit_direction'],
+                "ship_type_label": r['vessel_class'],
+                "dwt": r['dwt']
+            } for r in bab_res.data
+        ]
+        supabase.table("bab_crossings").delete().gte("transit_time", since_date[:10]).execute()
+        if fresh_bab:
+            supabase.table("bab_crossings").insert(fresh_bab).execute()
+        all_bab_res = supabase.table("bab_crossings").select("*").order("transit_time").execute()
+        bab_crossings = [
+            {"time": r["transit_time"], "mmsi": r["shipid"], "name": r["name"],
+             "dir": r["direction"], "ship_type": r["ship_type_label"], "dwt": r["dwt"]}
+            for r in all_bab_res.data
+        ]
+        print(f"Bab crossings: {len(fresh_bab)} fresh, {len(bab_crossings)} total in DB.")
+    except Exception as e:
+        print(f"get_bab_el_mandeb_transits_new failed: {e}")
+        bab_crossings = []
 
-    bab_crossings = [
-        {
-            "time": r['transit_time'],
-            "mmsi": r['ship_id'],
-            "name": r['vessel_name'],
-            "dir": r['transit_direction'],
-            "ship_type": r['vessel_class'],
-            "dwt": r['dwt']
-        } for r in bab_res.data
-    ]
-
-
-
-    # 2. Fetch Dormant Vessels via RPC
-    dormant_res = rpc_with_retry(lambda: supabase.rpc('get_dormant_vessels').execute())
-
-    dormant = [
-        {"time": r['out_time'], "count": r['out_count']} 
-        for r in dormant_res.data
-    ]
+    try:
+        dormant_res = rpc_with_retry(lambda: supabase.rpc('get_dormant_vessels').execute())
+        dormant = [
+            {"time": r['out_time'], "count": r['out_count']}
+            for r in dormant_res.data
+        ]
+        print(f"Fetched {len(dormant)} dormant vessel records from RPC.")
+    except Exception as e:
+        print(f"get_dormant_vessels failed, using cached data: {e}")
+        dormant = load_cached_stats().get("dormant", [])
     
     # 3. Get Latest AIS timestamp
     latest_res = supabase.table("vessel_history") \
