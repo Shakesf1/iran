@@ -412,4 +412,4 @@ if __name__ == "__main__":
             process_and_save(data)
 
     export_stats()
-    thin_vessel_history()
+
