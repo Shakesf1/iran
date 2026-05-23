@@ -322,12 +322,12 @@ def export_stats():
         bab_res = rpc_with_retry(lambda: supabase.rpc('get_bab_el_mandeb_transits_new', {'since_date': since_date}).execute())
         fresh_bab = [
             {
+                "vessel_name": r['vessel_name'],
+                "dwt": str(r['dwt']),
+                "ship_id": str(r['ship_id']),
+                "vessel_class": r['vessel_class'],
                 "transit_time": normalize_time(r['transit_time']),
-                "shipid": r['ship_id'],
-                "name": r['vessel_name'],
-                "direction": r['transit_direction'],
-                "ship_type_label": r['vessel_class'],
-                "dwt": r['dwt']
+                "transit_direction": r['transit_direction']
             } for r in bab_res.data
         ]
         supabase.table("bab_crossings").delete().gte("transit_time", since_date[:10]).execute()
@@ -335,8 +335,8 @@ def export_stats():
             supabase.table("bab_crossings").insert(fresh_bab).execute()
         all_bab_res = supabase.table("bab_crossings").select("*").order("transit_time").execute()
         bab_crossings = [
-            {"time": r["transit_time"], "mmsi": r["shipid"], "name": r["name"],
-             "dir": r["direction"], "ship_type": r["ship_type_label"], "dwt": r["dwt"]}
+            {"time": r["transit_time"], "mmsi": r["ship_id"], "name": r["vessel_name"],
+             "dir": r["transit_direction"], "ship_type": r["vessel_class"], "dwt": r["dwt"]}
             for r in all_bab_res.data
         ]
         print(f"Bab crossings: {len(fresh_bab)} fresh, {len(bab_crossings)} total in DB.")
