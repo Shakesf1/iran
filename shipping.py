@@ -401,19 +401,6 @@ def export_stats():
 
 
 
-def thin_vessel_history():
-    # Thin one day at a time, only data older than 7 days
-    day = datetime.now().date() - timedelta(days=8)
-    start = day.isoformat()
-    end = (day + timedelta(days=1)).isoformat()
-    try:
-        # Get IDs to keep for that day
-        res = supabase.rpc('thin_vessel_history_day', {'day_start': start, 'day_end': end}).execute()
-        print(f"Thinned vessel_history for {start}.")
-    except Exception as e:
-        print(f"Thinning error: {e}")
-
-
 if __name__ == "__main__":
     print(f"--- Monitoring Strait of Hormuz: {datetime.now()} ---")
     for url in CHOKEPOINTS:
