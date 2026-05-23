@@ -8,7 +8,6 @@ from DrissionPage import ChromiumPage, ChromiumOptions
 import geopandas as gpd
 from shapely.geometry import Point
 from supabase import create_client, Client
-from supabase.lib.client_options import ClientOptions
 from dotenv import load_dotenv
 import os
 import sys 
@@ -57,7 +56,8 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
 
 
-supabase: Client = create_client(url, key, options=ClientOptions(postgrest_client_timeout=60))
+supabase: Client = create_client(url, key)
+supabase.postgrest.timeout = 60
 #HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
 
 WEST_LIMIT = 56.33  # Deep in the Gulf
