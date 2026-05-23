@@ -52,7 +52,7 @@ CHOKEPOINTS = [
     "https://www.marinetraffic.com/en/ais/home/centerx:29.7/centery:30.3/zoom:7"  # Suez
 ]
 
-CHOKEPOINTS = ['https://www.marinetraffic.com/en/ais/home/centerx:56.7/centery:26.6/zoom:10']
+#CHOKEPOINTS = ['https://www.marinetraffic.com/en/ais/home/centerx:56.7/centery:26.6/zoom:10']
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
