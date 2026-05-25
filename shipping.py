@@ -303,9 +303,8 @@ def export_stats():
                 "out_vessel_class": r['out_vessel_class']
             } for r in crossings_res.data
         ]
-        supabase.table("vessel_crossings").delete().gte("out_transit_time", since_date[:10]).execute()
         if fresh_crossings:
-            supabase.table("vessel_crossings").insert(fresh_crossings).execute()
+            supabase.table("vessel_crossings").upsert(fresh_crossings, on_conflict="out_transit_time,out_shipid").execute()
         all_res = supabase.table("vessel_crossings").select("*").order("out_transit_time").execute()
         crossings = [
             {"time": r["out_transit_time"], "mmsi": r["out_shipid"], "name": r["out_name"],
@@ -330,9 +329,8 @@ def export_stats():
                 "transit_direction": r['transit_direction']
             } for r in bab_res.data
         ]
-        supabase.table("bab_crossings").delete().gte("transit_time", since_date[:10]).execute()
         if fresh_bab:
-            supabase.table("bab_crossings").insert(fresh_bab).execute()
+            supabase.table("bab_crossings").upsert(fresh_bab, on_conflict="transit_time,ship_id").execute()
         all_bab_res = supabase.table("bab_crossings").select("*").order("transit_time").execute()
         bab_crossings = [
             {"time": r["transit_time"], "mmsi": r["ship_id"], "name": r["vessel_name"],
