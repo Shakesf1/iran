@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Python Packages
         run: |
-          pip install DrissionPage DataRecorder geopandas shapely supabase python-dotenv
+          pip install DrissionPage DataRecorder DownloadKit geopandas shapely supabase python-dotenv
 
       - name: Random Delay (Jitter)
         run: |
