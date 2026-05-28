@@ -51,7 +51,7 @@
     },
     {
         "date": "2026-03-05",
-        "composite": 2.02,
+        "composite": 2.03,
         "components": {
             "Attacks": -0.16,
             "Crossings": 2.5,
@@ -871,22 +871,32 @@
     },
     {
         "date": "2026-05-26",
-        "composite": 0.12,
+        "composite": 0.26,
         "components": {
             "Attacks": -0.23,
             "Crossings": 2.5,
-            "EnergyMarket": -0.91,
+            "EnergyMarket": -0.44,
             "BDTI": -0.2
         }
     },
     {
         "date": "2026-05-27",
-        "composite": 0.11,
+        "composite": 0.21,
         "components": {
-            "Attacks": -0.37,
+            "Attacks": -0.32,
             "Crossings": 2.5,
-            "EnergyMarket": -0.86,
+            "EnergyMarket": -0.55,
             "BDTI": -0.2
+        }
+    },
+    {
+        "date": "2026-05-28",
+        "composite": 0.54,
+        "components": {
+            "Attacks": 0.16,
+            "Crossings": 2.5,
+            "EnergyMarket": -0.15,
+            "BDTI": 0.17
         }
     }
 ]
