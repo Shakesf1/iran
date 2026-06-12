@@ -85,7 +85,7 @@
         "components": {
             "Attacks": -0.87,
             "Crossings": 2.5,
-            "EnergyMarket": 2.97,
+            "EnergyMarket": 2.96,
             "BDTI": -0.12
         }
     },
@@ -1031,12 +1031,22 @@
     },
     {
         "date": "2026-06-11",
-        "composite": 0.23,
+        "composite": 0.12,
         "components": {
-            "Attacks": 0.09,
+            "Attacks": -0.02,
             "Crossings": 2.5,
-            "EnergyMarket": -0.33,
+            "EnergyMarket": -0.63,
             "BDTI": -0.64
+        }
+    },
+    {
+        "date": "2026-06-12",
+        "composite": 0.18,
+        "components": {
+            "Attacks": -1.0,
+            "Crossings": 2.5,
+            "EnergyMarket": -0.62,
+            "BDTI": 0.2
         }
     }
 ]
