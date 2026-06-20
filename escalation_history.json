@@ -1111,12 +1111,22 @@
     },
     {
         "date": "2026-06-19",
-        "composite": 0.63,
+        "composite": 0.64,
         "components": {
-            "Attacks": -0.58,
+            "Attacks": -0.52,
             "Crossings": 2.5,
             "EnergyMarket": -0.57,
             "BDTI": 1.4
+        }
+    },
+    {
+        "date": "2026-06-20",
+        "composite": 0.17,
+        "components": {
+            "Attacks": -0.94,
+            "Crossings": 2.5,
+            "EnergyMarket": -0.56,
+            "BDTI": 0.1
         }
     }
 ]
