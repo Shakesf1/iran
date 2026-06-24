@@ -280,7 +280,7 @@ def export_stats():
     def normalize_time(t):
         return t[:16].replace('T', ' ')
 
-    since_date = (datetime.now() - timedelta(days=3)).isoformat()
+    since_date = (datetime.now() - timedelta(days=8)).isoformat()
 
     SHIP_TYPE_MAP = {8: 'VLCC', 7: 'Cargo'}
     try:
