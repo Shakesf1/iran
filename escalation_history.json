@@ -135,7 +135,7 @@
         "components": {
             "Attacks": 0.25,
             "Crossings": 2.5,
-            "EnergyMarket": 1.75,
+            "EnergyMarket": 1.74,
             "BDTI": -0.47
         }
     },
@@ -1357,6 +1357,16 @@
             "Crossings": 2.5,
             "EnergyMarket": -0.4,
             "BDTI": 0.63
+        }
+    },
+    {
+        "date": "2026-07-14",
+        "composite": 0.28,
+        "components": {
+            "Attacks": -0.8,
+            "Crossings": 2.5,
+            "EnergyMarket": -0.23,
+            "BDTI": 0.03
         }
     }
 ]
