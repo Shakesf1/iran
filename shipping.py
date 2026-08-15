@@ -88,7 +88,7 @@ def update_vessel_locations():
     land_geom = land.to_crs(epsg=3857).union_all()
     land_buffer = land_geom.buffer(200)
 
-    BATCH_SIZE = 500
+    BATCH_SIZE = 200
     total_classified = 0
 
     while True:
