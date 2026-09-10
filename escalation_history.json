@@ -1931,11 +1931,21 @@
     },
     {
         "date": "2026-09-09",
-        "composite": 0.79,
+        "composite": 0.73,
         "components": {
-            "Attacks": 0.7,
+            "Attacks": 0.37,
             "Crossings": 2.5,
             "EnergyMarket": 0.63,
+            "BDTI": -0.13
+        }
+    },
+    {
+        "date": "2026-09-10",
+        "composite": 0.56,
+        "components": {
+            "Attacks": -0.45,
+            "Crossings": 2.5,
+            "EnergyMarket": 0.62,
             "BDTI": -0.13
         }
     }
