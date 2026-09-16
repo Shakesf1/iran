@@ -22,9 +22,7 @@ BEGIN
   END IF;
 
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticator') THEN
-    CREATE ROLE authenticator NOINHERIT LOGIN PASSWORD :'authpw';
-  ELSE
-    ALTER ROLE authenticator PASSWORD :'authpw';
+    CREATE ROLE authenticator NOINHERIT LOGIN;
   END IF;
 
   -- Dummy role: the dump has a few ALTER DEFAULT PRIVILEGES FOR ROLE
@@ -36,6 +34,12 @@ BEGIN
   END IF;
 END
 $$;
+
+-- psql's :'var' substitution doesn't reach inside a DO $$ ... $$ body (it's
+-- sent to the server as one opaque dollar-quoted string), so the password
+-- has to be set here, as a plain top-level statement, instead of inside
+-- the block above.
+ALTER ROLE authenticator PASSWORD :'authpw';
 
 GRANT anon TO authenticator;
 GRANT authenticated TO authenticator;
