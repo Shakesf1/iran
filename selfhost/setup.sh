@@ -27,11 +27,14 @@ until [ "$(docker inspect -f '{{.State.Health.Status}}' warescalation_db 2>/dev/
   sleep 2
 done
 
+echo "==> Enabling PostGIS"
+docker compose exec -T db psql -U postgres -d postgres -f - < db/00_extensions.sql
+
 echo "==> Creating anon/authenticated/service_role/authenticator roles"
 docker compose exec -T db psql -U postgres -d postgres -v authpw="$AUTHENTICATOR_PASSWORD" -f - < db/01_roles.sql
 
 echo "==> Restoring backup.sql (this is a ~700MB dump, will take a while)"
-docker compose exec -T db psql -U postgres -d postgres -f - < "$BACKUP_FILE"
+docker compose exec -T db psql -U postgres -d postgres -v ON_ERROR_STOP=1 -f - < "$BACKUP_FILE"
 
 echo "==> Patching out the pg_net/vault-dependent resend triggers"
 docker compose exec -T db psql -U postgres -d postgres -f - < db/02_patch_resend_triggers.sql

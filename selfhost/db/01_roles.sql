@@ -26,6 +26,14 @@ BEGIN
   ELSE
     ALTER ROLE authenticator PASSWORD :'authpw';
   END IF;
+
+  -- Dummy role: the dump has a few ALTER DEFAULT PRIVILEGES FOR ROLE
+  -- "supabase_admin" statements left over from the source project. It
+  -- never needs to log in here, it just needs to exist so those statements
+  -- don't error.
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'supabase_admin') THEN
+    CREATE ROLE supabase_admin NOLOGIN;
+  END IF;
 END
 $$;
 
