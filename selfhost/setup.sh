@@ -34,7 +34,11 @@ echo "==> Creating anon/authenticated/service_role/authenticator roles"
 docker compose exec -T db psql -U postgres -d postgres -v authpw="$AUTHENTICATOR_PASSWORD" -f - < db/01_roles.sql
 
 echo "==> Restoring backup.sql (this is a ~700MB dump, will take a while)"
-docker compose exec -T db psql -U postgres -d postgres -v ON_ERROR_STOP=1 -f - < "$BACKUP_FILE"
+# \restrict/\unrestrict are psql-18+-only guard commands that pg_dump 18.1
+# wraps its output in; the postgis image's bundled psql (17.x) doesn't
+# recognize them. Safe to strip since we trust this dump.
+grep -v -E '^\\(restrict|unrestrict) ' "$BACKUP_FILE" \
+  | docker compose exec -T db psql -U postgres -d postgres -v ON_ERROR_STOP=1 -f -
 
 echo "==> Patching out the pg_net/vault-dependent resend triggers"
 docker compose exec -T db psql -U postgres -d postgres -f - < db/02_patch_resend_triggers.sql
