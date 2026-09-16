@@ -90,7 +90,7 @@ def export_data():
     
     # 2. Get Series (calling the RPC function we just created)
     # This executes our complex UNION logic on the server
-    series_res = supabase.rpc("get_optimized_polymarket_series").execute()
+    series_res = supabase.rpc("get_optimized_polymarket_series", {}).execute()
 
     # 3. Save JSONs
     with open("poly_metadata.json", "w") as f:

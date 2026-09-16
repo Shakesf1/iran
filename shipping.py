@@ -339,7 +339,7 @@ def export_stats():
         bab_crossings = []
 
     try:
-        dormant_res = rpc_with_retry(lambda: supabase.rpc('get_dormant_vessels').execute())
+        dormant_res = rpc_with_retry(lambda: supabase.rpc('get_dormant_vessels', {}).execute())
         dormant = [
             {"time": r['out_time'], "count": r['out_count']}
             for r in dormant_res.data

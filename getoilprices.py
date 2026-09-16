@@ -453,14 +453,14 @@ def export_spreads_to_json(filename="oil_prices_spread.json"):
         if filename == "oil_prices_spread.json":
             print("Fetching historical spreads for Murban and Brent...")
             response = (
-                supabase.rpc("get_historical_spreads")
+                supabase.rpc("get_historical_spreads", {})
                 .select("*")
                 .range(0, 4999) 
                 .execute()
             )
         else:
             print("Fetching intraday spreads for Murban and Brent...")
-            response = supabase.rpc("get_oil_spreads").execute()
+            response = supabase.rpc("get_oil_spreads", {}).execute()
         
         print(filename)
 

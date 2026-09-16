@@ -97,7 +97,7 @@ def fetch_all_shipids(table_name):
 
 def main():
     # 1. Get all unique shipid from vessel_history
-    res = supabase.rpc("get_unmapped_shipids").execute()
+    res = supabase.rpc("get_unmapped_shipids", {}).execute()
     missing_shipids = set(r["shipid"] for r in res.data)
     print("Ships we are missing:")
     print(missing_shipids)
