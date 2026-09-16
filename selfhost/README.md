@@ -15,7 +15,11 @@ cp .env.example .env
 ```
 
 Fill in `.env`:
-- `POSTGRES_SUPERUSER_PASSWORD`, `AUTHENTICATOR_PASSWORD` — `openssl rand -base64 32` each
+- `POSTGRES_SUPERUSER_PASSWORD` — `openssl rand -base64 32`
+- `AUTHENTICATOR_PASSWORD` — `openssl rand -hex 32` (**must** be hex, not base64: this
+  value goes unescaped into a `postgres://user:pass@host` URI for PostgREST, and a
+  base64 password can contain `/`, `+`, or `=`, which breaks the URI and makes
+  PostgREST fail to connect with `PGRST002`)
 - `PGRST_JWT_SECRET` — `openssl rand -base64 32` (must be ≥32 chars)
 
 Put `backup.sql` at `../backup.sql` (or pass a path), then:
