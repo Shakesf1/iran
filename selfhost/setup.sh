@@ -27,7 +27,7 @@ until [ "$(docker inspect -f '{{.State.Health.Status}}' warescalation_db 2>/dev/
   sleep 2
 done
 
-echo "==> Enabling PostGIS"
+echo "==> Dropping the postgis image's bundled extensions (they'd block backup.sql's DROP SCHEMA public)"
 docker compose exec -T db psql -U postgres -d postgres -f - < db/00_extensions.sql
 
 echo "==> Creating anon/authenticated/service_role/authenticator roles"
@@ -36,8 +36,12 @@ docker compose exec -T db psql -U postgres -d postgres -v authpw="$AUTHENTICATOR
 echo "==> Restoring backup.sql (this is a ~700MB dump, will take a while)"
 # \restrict/\unrestrict are psql-18+-only guard commands that pg_dump 18.1
 # wraps its output in; the postgis image's bundled psql (17.x) doesn't
-# recognize them. Safe to strip since we trust this dump.
+# recognize them. Safe to strip since we trust this dump. Also re-install
+# postgis immediately after the dump recreates the public schema (dropped
+# above), so it's back in place before anything needs it further down
+# (e.g. the spatial_ref_sys COPY, ST_* function bodies).
 grep -v -E '^\\(restrict|unrestrict) ' "$BACKUP_FILE" \
+  | sed '/^CREATE SCHEMA "public";$/a CREATE EXTENSION IF NOT EXISTS postgis;' \
   | docker compose exec -T db psql -U postgres -d postgres -v ON_ERROR_STOP=1 -f -
 
 echo "==> Patching out the pg_net/vault-dependent resend triggers"
