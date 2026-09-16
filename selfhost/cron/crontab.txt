@@ -1,0 +1,25 @@
+# Install with: crontab selfhost/cron/crontab.txt   (run from /opt/warescalation)
+# Or merge into an existing crontab with: crontab -l | cat - selfhost/cron/crontab.txt | crontab -
+#
+# Mirrors the schedules from the old GitHub Actions workflows. Logs go to
+# /var/log/warescalation/ (not the git repo — the repo tracking cron_log.txt
+# directly is exactly what caused the stuck-merge-conflict mess earlier).
+# One-time setup: sudo mkdir -p /var/log/warescalation && sudo chown $(whoami) /var/log/warescalation
+
+REPO=/opt/warescalation
+
+# Strait of Hormuz vessel tracking — every 30 min, matching strait_hormuz.yml.
+# shipmapping only runs if shipping succeeds (same dependency GH Actions had
+# via sequential steps). 300s jitter matches the old workflow's bot evasion.
+5,35 * * * * $REPO/selfhost/cron/run_job.sh shipping 300 python3 $REPO/shipping.py >> /var/log/warescalation/shipping.log 2>&1 && $REPO/selfhost/cron/run_job.sh shipmapping 0 python3 $REPO/shipmapping.py >> /var/log/warescalation/shipmapping.log 2>&1
+
+# Oil prices + escalation signal — every 15 min, matching update_oilprices.yml.
+*/15 * * * * $REPO/selfhost/cron/run_job.sh oilprices 180 python3 $REPO/getoilprices.py >> /var/log/warescalation/oilprices.log 2>&1 && $REPO/selfhost/cron/run_job.sh escalation 0 python3 $REPO/escalation_signal.py >> /var/log/warescalation/escalation.log 2>&1
+
+# Polymarket snapshot — hourly, matching polymarket.yml.
+0 * * * * $REPO/selfhost/cron/run_job.sh polymarket 0 python3 $REPO/polymarket.py >> /var/log/warescalation/polymarket.log 2>&1
+
+# Dashboard data generation — every 15 min, matching update_charts.yml
+# (minus the GitHub Pages deploy step, which is now just Caddy serving
+# $REPO directly, so nothing further to do after this runs).
+*/15 * * * * $REPO/selfhost/cron/run_job.sh iran 0 python3 $REPO/iran.py >> /var/log/warescalation/iran.log 2>&1

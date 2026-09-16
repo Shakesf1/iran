@@ -10,16 +10,11 @@ import time
 import random
 from iran import update_persistent_json
 from datetime import datetime, timedelta
-from supabase import create_client, Client
+from pg_client import get_client
 from dotenv import load_dotenv
 
-load_dotenv()    
- # Supabase
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
-
-
-supabase: Client = create_client(url, key)
+load_dotenv()
+supabase = get_client()
 # Endpoints
 API_URL = "https://oilprice.com/freewidgets/json_get_oilprices"
 BARCHART_API = "https://www.barchart.com/proxies/core-api/v1/quotes/get"
@@ -292,7 +287,7 @@ def get_multiple_historical_data(symbols_list=["DB", "QA", "OQ"], commodity_name
             two_days_ago = (max_date - timedelta(days=2)).strftime('%Y-%m-%d')
             print(f"Cleaning {name} records from {two_days_ago} onwards...")
 
-            supabase.table("oilprices") \
+            supabase.from_("oilprices") \
                     .delete() \
                     .eq("commodity", name) \
                     .gte("date", two_days_ago) \
@@ -304,7 +299,7 @@ def get_multiple_historical_data(symbols_list=["DB", "QA", "OQ"], commodity_name
 
             # 5. Convert to dict and upload
             records = records_df.to_dict(orient='records')
-            supabase.table("oilprices").upsert(
+            supabase.from_("oilprices").upsert(
                 records, 
                 on_conflict="ticker,date", # Matches your unique constraint columns
                 ignore_duplicates=True      # Skips the row if it already exists
@@ -361,7 +356,7 @@ def get_multiple_historical_intraday_data(symbols_list=["DB", "QA", "OQ"], commo
     for symbol, name in zip(symbols_list, commodity_name):
         # Using the front month (or root symbol with nearby suffix)
         try:
-            res = supabase.table("oilprices") \
+            res = supabase.from_("oilprices") \
                 .select("ticker") \
                 .eq("commodity", name) \
                 .order("date", desc=True) \
@@ -436,7 +431,7 @@ def get_multiple_historical_intraday_data(symbols_list=["DB", "QA", "OQ"], commo
                 records = records_df.to_dict(orient='records')
                 #print(records)
 
-                supabase.table("oilprices_intraday").upsert(
+                supabase.from_("oilprices_intraday").upsert(
                     records, 
                     on_conflict="ticker,datetime", # Matches your unique constraint columns
                     ignore_duplicates=True      # Skips the row if it already exists

@@ -2,15 +2,11 @@ import requests
 import json
 import os
 from datetime import datetime
-from supabase import create_client, Client
+from pg_client import get_client
 from dotenv import load_dotenv
 
 load_dotenv()
-
-# --- SUPABASE CONFIG ---
-url = os.environ.get("SUPABASE_URL")
-key = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
+supabase = get_client()
 
 GAMMA_URL = "https://gamma-api.polymarket.com/events/slug"
 
@@ -45,7 +41,7 @@ def run_monitor():
         markets = data.get('markets', [])
 
         # --- A. SAVE EVENT METADATA ---
-        supabase.table("poly_events").upsert({
+        supabase.from_("poly_events").upsert({
             "id": event_id,
             "slug": slug,
             "title": title,
@@ -80,7 +76,7 @@ def run_monitor():
 
         # --- C. SAVE SNAPSHOTS ---
         if snapshots_to_save:
-            supabase.table("poly_market_snapshots").insert(snapshots_to_save).execute()
+            supabase.from_("poly_market_snapshots").insert(snapshots_to_save).execute()
         
         print("") # Formatting spacer
 
@@ -88,8 +84,8 @@ def export_data():
     print("--- Exporting Optimized Data ---")
     
     # 1. Get Metadata (using standard table select)
-    meta_res = supabase.table("poly_events").select("id, title, slug").execute()
-    market_res = supabase.table("poly_market_snapshots").select("market_id, label, event_id").execute()
+    meta_res = supabase.from_("poly_events").select("id, title, slug").execute()
+    market_res = supabase.from_("poly_market_snapshots").select("market_id, label, event_id").execute()
     unique_markets = {m['market_id']: m for m in market_res.data}.values()
     
     # 2. Get Series (calling the RPC function we just created)
@@ -102,42 +98,6 @@ def export_data():
     
     with open("poly_series.json", "w") as f:
         json.dump(series_res.data, f, indent=2)
-
-    # 4. Push to Git
-    if not os.environ.get("GITHUB_ACTIONS"):
-        git_push()
-
-def git_push():
-    import os
-    try:
-        # Move to the script's directory
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-        
-       
-        # 2. Stage and commit your new JSON files
-        os.system('git add poly_metadata.json poly_series.json')
-        # We use a check to see if there's actually anything to commit
-        os.system('git commit -m "data: update snapshots [skip ci]"')
-        os.system('git stash')
-        # 3. Integrated Pull: Rebase to put your new commit on top of the remote ones
-        # --autostash handles any lingering unstaged changes automatically
-        print("Pulling latest changes from remote...")
-        os.system('git pull --rebase origin main')
-        
-        # 4. Push
-        print("Pushing to GitHub...")
-        result = os.system('git push origin main')
-        
-        if result == 0:
-            print("Successfully pushed to GitHub.")
-        else:
-            print("Push failed. You might have a merge conflict in the JSONs.")
-            
-        # 5. Bring back any work-in-progress you had
-        os.system('git stash pop')
-        
-    except Exception as e:
-        print(f"Git error: {e}")
 
 if __name__ == "__main__":
     run_monitor()

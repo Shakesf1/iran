@@ -1,4 +1,4 @@
-from supabase import create_client, Client
+from pg_client import get_client
 from dotenv import load_dotenv
 from DrissionPage import ChromiumPage, ChromiumOptions
 import random
@@ -8,16 +8,14 @@ import re
 import pandas as pd
 
 load_dotenv()
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
+supabase = get_client()
 
 BATCH_SIZE = 50
 
 def flush_to_supabase(results):
     """Insert a batch of results into ship_mapping."""
     if results:
-        supabase.table("ship_mapping").insert(results).execute()
+        supabase.from_("ship_mapping").insert(results).execute()
         print(f"  -> Inserted {len(results)} records into ship_mapping.")
 
 def make_browser():
@@ -85,7 +83,7 @@ def fetch_all_shipids(table_name):
     page_size = 100  # Match the server's actual max-rows limit
     offset = 0
     while True:
-        res = supabase.table(table_name).select("shipid").range(offset, offset + page_size - 1).execute()
+        res = supabase.from_(table_name).select("shipid").range(offset, offset + page_size - 1).execute()
         if not res.data:
             break
         all_rows.extend(res.data)

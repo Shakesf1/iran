@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from DrissionPage import ChromiumPage, ChromiumOptions
 import geopandas as gpd
 from shapely.geometry import Point
-from supabase import create_client, Client
+from pg_client import get_client
 from dotenv import load_dotenv
 import os
 import sys 
@@ -54,12 +54,8 @@ CHOKEPOINTS = [
 
 #CHOKEPOINTS = ['https://www.marinetraffic.com/en/ais/home/centerx:56.7/centery:26.6/zoom:10']
 
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY") # Use Service Role for backend writes
-
-
-supabase: Client = create_client(url, key)
-supabase.postgrest.session.timeout = httpx.Timeout(120.0)
+supabase = get_client()
+supabase.session.timeout = httpx.Timeout(120.0)
 #HORMUZ_GATE_LON = 56.3  # The tripwire for the Strait chokepoint
 
 WEST_LIMIT = 56.33  # Deep in the Gulf
@@ -92,7 +88,7 @@ def update_vessel_locations():
     total_classified = 0
 
     while True:
-        response = supabase.table("vessel_history") \
+        response = supabase.from_("vessel_history") \
             .select("id, longitude, latitude") \
             .is_("location", "null") \
             .limit(BATCH_SIZE) \
@@ -122,7 +118,7 @@ def update_vessel_locations():
                     label = "water"
                 updates.append({"id": row_ids[i], "location": label})
 
-            supabase.table("vessel_history").upsert(updates).execute()
+            supabase.from_("vessel_history").upsert(updates).execute()
             total_classified += len(updates)
             print(f"  Classified {len(updates)} records (total so far: {total_classified})")
             time.sleep(2)  # let Postgres recover between batches
@@ -252,7 +248,7 @@ def process_and_save(strait_data):
     if vessels_to_insert:
         try:
             print(f"Pushing {len(vessels_to_insert)} records to Supabase...")
-            response = supabase.table("vessel_history").insert(vessels_to_insert).execute()
+            response = supabase.from_("vessel_history").insert(vessels_to_insert).execute()
             print("Successfully updated vessel history in cloud.")
         except Exception as e:
             print(f"Supabase Insert Error: {e}")
@@ -304,8 +300,8 @@ def export_stats():
             } for r in crossings_res.data
         ]
         if fresh_crossings:
-            supabase.table("vessel_crossings").upsert(fresh_crossings, on_conflict="out_transit_time,out_shipid").execute()
-        all_res = supabase.table("vessel_crossings").select("*").order("out_transit_time").execute()
+            supabase.from_("vessel_crossings").upsert(fresh_crossings, on_conflict="out_transit_time,out_shipid").execute()
+        all_res = supabase.from_("vessel_crossings").select("*").order("out_transit_time").execute()
         crossings = [
             {"time": r["out_transit_time"], "mmsi": r["out_shipid"], "name": r["out_name"],
              "dir": r["out_direction"], "ship_type": r["out_ship_type"], "vessel_class": r["out_vessel_class"],
@@ -330,8 +326,8 @@ def export_stats():
             } for r in bab_res.data
         ]
         if fresh_bab:
-            supabase.table("bab_crossings").upsert(fresh_bab, on_conflict="transit_time,ship_id").execute()
-        all_bab_res = supabase.table("bab_crossings").select("*").order("transit_time").execute()
+            supabase.from_("bab_crossings").upsert(fresh_bab, on_conflict="transit_time,ship_id").execute()
+        all_bab_res = supabase.from_("bab_crossings").select("*").order("transit_time").execute()
         bab_crossings = [
             {"time": r["transit_time"], "mmsi": r["ship_id"], "name": r["vessel_name"],
              "dir": r["transit_direction"], "ship_type": r["vessel_class"], "dwt": r["dwt"]}
@@ -354,7 +350,7 @@ def export_stats():
         dormant = load_cached_stats().get("dormant", [])
     
     # 3. Get Latest AIS timestamp
-    latest_res = supabase.table("vessel_history") \
+    latest_res = supabase.from_("vessel_history") \
         .select("created_at") \
         .order("created_at", desc=True) \
         .limit(1) \
