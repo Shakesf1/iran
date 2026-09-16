@@ -41,7 +41,7 @@ echo "==> Restoring backup.sql (this is a ~700MB dump, will take a while)"
 # above), so it's back in place before anything needs it further down
 # (e.g. the spatial_ref_sys COPY, ST_* function bodies).
 grep -v -E '^\\(restrict|unrestrict) ' "$BACKUP_FILE" \
-  | sed '/^CREATE SCHEMA "public";$/a CREATE EXTENSION IF NOT EXISTS postgis;' \
+  | sed '/^CREATE SCHEMA "public";$/a CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA "public";' \
   | docker compose exec -T db psql -U postgres -d postgres -v ON_ERROR_STOP=1 -f -
 
 echo "==> Patching out the pg_net/vault-dependent resend triggers"
