@@ -13,6 +13,7 @@ shift 2
 
 cd "$(dirname "$0")/../.."   # repo root
 set -a; source .env; set +a
+ALERT_PY=".venv/bin/python3"
 
 if [ "$MAX_JITTER" -gt 0 ]; then
   sleep "$((RANDOM % MAX_JITTER))"
@@ -22,7 +23,7 @@ LOCK_FILE="/tmp/warescalation_cron_${JOB_NAME}.lock"
 exec 200>"$LOCK_FILE"
 if ! flock -n 200; then
   echo "[$(date -u +%FT%TZ)] $JOB_NAME already running, skipping this tick" \
-    | python3 selfhost/cron/alert.py "$JOB_NAME (overlap)"
+    | "$ALERT_PY" selfhost/cron/alert.py "$JOB_NAME (overlap)"
   exit 0
 fi
 
@@ -30,7 +31,7 @@ OUTPUT=$("$@" 2>&1)
 STATUS=$?
 
 if [ $STATUS -ne 0 ]; then
-  echo "$OUTPUT" | tail -c 20000 | python3 selfhost/cron/alert.py "$JOB_NAME"
+  echo "$OUTPUT" | tail -c 20000 | "$ALERT_PY" selfhost/cron/alert.py "$JOB_NAME"
 fi
 
 echo "$OUTPUT"
