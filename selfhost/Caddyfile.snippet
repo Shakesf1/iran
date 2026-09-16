@@ -1,0 +1,11 @@
+# Append to your existing Caddyfile, then `caddy reload` (or restart the container/service).
+
+api.warescalation.com {
+    reverse_proxy 127.0.0.1:3000
+}
+
+warescalation.com {
+    root * /var/www/warescalation
+    file_server
+    encode gzip
+}

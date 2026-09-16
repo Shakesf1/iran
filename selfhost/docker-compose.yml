@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:17
+    container_name: warescalation_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD}
+      POSTGRES_DB: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    # Intentionally no "ports:" — Postgres is not reachable from the host or
+    # the internet, only from other containers on this compose network.
+    # Use `docker compose exec db psql ...` for admin access.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgrest:
+    image: postgrest/postgrest:v12.2.0
+    container_name: warescalation_postgrest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${AUTHENTICATOR_PASSWORD}@db:5432/postgres
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${PGRST_JWT_SECRET}
+      PGRST_JWT_SECRET_IS_BASE64: "false"
+      PGRST_DB_POOL: "10"
+      PGRST_SERVER_PORT: "3000"
+    ports:
+      # Bound to localhost only — Caddy/nginx on the host reverse-proxies to
+      # this for the public API, and cron scripts on the host call it directly.
+      - "127.0.0.1:3000:3000"
+
+volumes:
+  db_data:
