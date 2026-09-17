@@ -1,11 +1,29 @@
 # Append to your existing Caddyfile, then `caddy reload` (or restart the container/service).
 
 api.warescalation.com {
-    reverse_proxy 127.0.0.1:3000
+    # supabase-js always requests ${SUPABASE_URL}/rest/v1/... — strip that
+    # prefix before forwarding to PostgREST, which is mounted at root.
+    handle_path /rest/v1/* {
+        reverse_proxy 127.0.0.1:3000
+    }
+    handle {
+        reverse_proxy 127.0.0.1:3000
+    }
 }
 
 warescalation.com {
-    root * /var/www/warescalation
-    file_server
+    root * /opt/warescalation
+    # /opt/warescalation is the whole git checkout — .env, .git/, .venv/,
+    # shipping_data.db, personal files, etc. all live there too. Caddy has
+    # no dotfile-blocking default (unlike nginx/Apache), so without this
+    # allowlist a request for e.g. /.env or /.git/config would be served
+    # directly. Only the extensions the site actually references pass.
+    @static path *.html *.json *.js *.ico *.png *.jpg *.jpeg *.svg *.css
+    handle @static {
+        file_server
+    }
+    handle {
+        respond 404
+    }
     encode gzip
 }

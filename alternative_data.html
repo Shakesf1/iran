@@ -161,7 +161,6 @@
                 <nav class="flex gap-3 text-sm font-semibold">
                     <a href="index.html" class="text-slate-500 hover:text-slate-800 transition-colors">Main Monitor</a>
                     <a href="alternative_data.html" class="text-slate-900 border-b-2 border-red-500 pb-0.5">Bab el-Mendab</a>
-                    <a href="msctraderoute.html" class="text-slate-500 hover:text-slate-800 transition-colors">Land Bridge</a>
                 </nav>
             </div>
             <p class="text-slate-500 mt-2 italic mb-6">Alternative data sources: Polymarket sentiment and Bab Al-Mandeb maritime monitoring</p>
@@ -389,8 +388,8 @@ function groupTransitsByDay(crossings) {
 }
 
 
-const SUPABASE_URL = 'https://tyktxwlekvvdjftkexzd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_1MjwD_-NQUnW7M3obTljwA_b8yIfI2x';
+const SUPABASE_URL = 'https://api.warescalation.com';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6IndhcmVzY2FsYXRpb24tc2VsZmhvc3QiLCJpYXQiOjE3ODk1ODMwNjEsImV4cCI6MjEwNDk0MzA2MX0.4xcJXA9l7NZwYcm6F0iUg-Ez52rXIsx3L7jWCAV-fpA';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function handleSubscribe() {
