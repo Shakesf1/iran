@@ -11,6 +11,7 @@ from shapely.geometry import Point
 from pg_client import get_client
 from dotenv import load_dotenv
 import os
+import shutil
 import sys 
 
 # def force_print(msg):
@@ -188,6 +189,7 @@ def get_ships_with_stealth(map_url):
     finally:
         if page:
             page.quit()
+        shutil.rmtree(profile_path, ignore_errors=True)
 
 def process_and_save(strait_data):
 
@@ -268,6 +270,19 @@ def rpc_with_retry(fn, retries=3, delay=10):
                 raise
 
 
+def write_json_atomic(path, obj):
+    # Write to a temp file then rename, so a full disk can't leave a truncated file behind
+    tmp = path + ".tmp"
+    try:
+        with open(tmp, 'w') as f:
+            json.dump(obj, f)
+        os.replace(tmp, path)
+    except Exception:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+        raise
+
+
 def export_stats():
     update_vessel_locations()
     print("Waiting for DB to settle after writes...")
@@ -299,6 +314,8 @@ def export_stats():
                 "out_vessel_class": r['out_vessel_class']
             } for r in crossings_res.data
         ]
+        # normalize_time truncates to the minute, so two rows can collide on the key
+        fresh_crossings = list({(c["out_transit_time"], c["out_shipid"]): c for c in fresh_crossings}.values())
         if fresh_crossings:
             supabase.from_("vessel_crossings").upsert(fresh_crossings, on_conflict="out_transit_time,out_shipid").execute()
         all_res = supabase.from_("vessel_crossings").select("*").order("out_transit_time").execute()
@@ -374,8 +391,7 @@ def export_stats():
     json_string = json.dumps(raw_data)
     encrypted_payload = encrypt_data(json_string)
 
-    with open(JSON_PATH, 'w') as f:
-        json.dump({"payload": encrypted_payload}, f)
+    write_json_atomic(JSON_PATH, {"payload": encrypted_payload})
     
     print(f"Successfully exported stats to {JSON_PATH}")
 
@@ -387,8 +403,7 @@ def export_stats():
 
         hormuz_json = json.dumps(hormuz_transits)
         hormuz_encrypted = encrypt_data(hormuz_json)
-        with open(HORMUZ_TRANSITS_PATH, 'w') as f:
-            json.dump({"payload": hormuz_encrypted}, f)
+        write_json_atomic(HORMUZ_TRANSITS_PATH, {"payload": hormuz_encrypted})
         print(f"Successfully exported hormuz transits to {HORMUZ_TRANSITS_PATH}")
     except Exception as e:
         print(f"Error fetching vessel sanctions view: {e}")

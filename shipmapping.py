@@ -1,3 +1,4 @@
+import shutil
 from pg_client import get_client
 from dotenv import load_dotenv
 from DrissionPage import ChromiumPage, ChromiumOptions
@@ -32,7 +33,16 @@ def make_browser():
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
     ]
     co.set_user_agent(random.choice(ua_list))
-    return ChromiumPage(co)
+    page = ChromiumPage(co)
+    page._profile_path = profile_path  # so quit_browser can clean it up
+    return page
+
+def quit_browser(page):
+    try:
+        page.quit()
+    except Exception:
+        pass
+    shutil.rmtree(getattr(page, '_profile_path', ''), ignore_errors=True)
 
 def process_missing_shipids(shipids):
     RawURL = "https://www.marinetraffic.com/en/ais/details/ships/shipid:"
@@ -56,10 +66,7 @@ def process_missing_shipids(shipids):
         except Exception as e:
             print(f"  Error fetching/parsing for shipid {shipid}: {e}")
             # Browser may have crashed — recreate it and carry on
-            try:
-                page.quit()
-            except Exception:
-                pass
+            quit_browser(page)
             time.sleep(3)
             page = make_browser()
 
@@ -72,10 +79,7 @@ def process_missing_shipids(shipids):
 
     # Flush any remaining records
     flush_to_supabase(results)
-    try:
-        page.quit()
-    except Exception:
-        pass
+    quit_browser(page)
 
 def fetch_all_shipids(table_name):
     """Fetch ALL unique shipids from a table, bypassing Supabase's 100-row default limit."""

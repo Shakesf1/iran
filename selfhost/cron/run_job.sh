@@ -27,7 +27,7 @@ if [ "$NEEDS_DISPLAY" = "1" ]; then
   # only ever run sequentially (chained with && in the crontab), never
   # concurrently with each other.
   pkill -9 -f "chrome.*chrome_profile_" 2>/dev/null || true
-  rm -rf /tmp/.com.google.Chrome.* 2>/dev/null || true
+  rm -rf /tmp/.com.google.Chrome.* /tmp/chrome_profile_* 2>/dev/null || true
   if ! pgrep -f "Xvfb :99" > /dev/null; then
     Xvfb :99 -screen 0 1920x1080x24 &
     disown
