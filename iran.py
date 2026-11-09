@@ -2,6 +2,7 @@ from curl_cffi import requests
 import pandas as pd
 import json
 import os
+import sys
 from datetime import datetime, timezone
 from io import StringIO
 
@@ -30,44 +31,57 @@ def encrypt_data(data_string, key=SECRET_KEY):
     return encoded
 
 
+BDTI_JS_URL = "https://en.stockq.org/index/js/BDTI_dev.js"
+# Fallback if the dataFiles map can't be read from the JS (the &v= cache-buster is optional)
+BDTI_DATA_FALLBACK = "https://www.stockq.org/index/chart-data.php?id=BDTI&type=dev&range=5y"
+# chart-data.php returns 403 without a stockq Referer
+STOCKQ_HEADERS = {"Referer": "https://en.stockq.org/"}
+
+
 def sync_bdti_5y(session):
-    js_url = "https://en.stockq.org/index/js/BDTI_dev.js"
-    res = session.get(js_url, impersonate="chrome110")
-    
-    if res.status_code == 200:
-        content = res.text
-        print(f"✅ Downloaded {len(content)} bytes")
-        # This regex looks for: var data5Y = ... arrayToDataTable([ (CAPTURE EVERYTHING) ]);
-        # It handles the nested parenthesis and the trailing semicolon correctly.
-        data_match = re.search(r"var\s+data5Y\s*=\s*google\.visualization\.arrayToDataTable\(\s*\[(.*?)\]\s*\)\s*;", content, re.DOTALL)
-        
-        if data_match:
-            print("✅ Successfully extracted the data5Y block from the JS file.")
-            raw_data = data_match.group(1)
-            print(raw_data[-10:]) # Print the last 500 characters to verify we got the right block
-            # Now extract the date and price pairs
-            # Pattern: [new Date('Oct 18, 2021'), 727.00,
-            pattern = r"\[new Date\('([^']+)'\),\s*([\d\.]+),"
-            matches = re.findall(pattern, raw_data)
-            
-            new_rows = []
-            for date_str, price in matches:
-                try:
-                    # Convert 'Oct 18, 2021' -> '2021-10-18'
-                    dt = datetime.strptime(date_str, '%b %d, %Y')
-                    new_rows.append({
-                        "date": dt.strftime('%Y-%m-%d'),
-                        "bdti_price": float(price)
-                    })
-                except: continue
-            
-            if new_rows:
-                df_new = pd.DataFrame(new_rows)
-                # This uses your existing function from iran.py
-                update_persistent_json(df_new, 'shipping_data.json', ['date'])
-                print(f"Sync complete. BDTI Latest: {new_rows[-1]['bdti_price']} on {new_rows[-1]['date']}")
+    """Sync 5y BDTI history from stockq. Returns True on success, False on failure.
+
+    Since ~Aug 2026 BDTI_dev.js no longer inlines the data; it has a `dataFiles`
+    map of range -> chart-data.php URL, which returns
+    window.stockQChartRangeData("dev", "5y", google.visualization.arrayToDataTable([...]))
+    with rows like [new Date('Dec 5, 2024'), 944.00, ...] (column 1 = price).
+    """
+    data_url = BDTI_DATA_FALLBACK
+    try:
+        res = session.get(BDTI_JS_URL, impersonate="chrome110", headers=STOCKQ_HEADERS, timeout=30)
+        if res.status_code == 200:
+            m = re.search(r"var\s+dataFiles\s*=\s*(\{.*?\})\s*;", res.text, re.DOTALL)
+            if m:
+                data_url = json.loads(m.group(1)).get("5y", data_url)
+            else:
+                print("⚠️ dataFiles map not found in BDTI_dev.js, using fallback URL")
         else:
-            print("Regex failed to find the data5Y block. Check if the variable name changed in the JS file.")
+            print(f"⚠️ BDTI_dev.js returned {res.status_code}, using fallback URL")
+    except Exception as e:
+        print(f"⚠️ Could not read BDTI_dev.js ({e}), using fallback URL")
+
+    print(f"Fetching BDTI data: {data_url}")
+    res = session.get(data_url, impersonate="chrome110", headers=STOCKQ_HEADERS, timeout=30)
+    if res.status_code != 200:
+        print(f"❌ BDTI data request failed: HTTP {res.status_code}")
+        return False
+
+    matches = re.findall(r"\[new Date\('([^']+)'\),\s*([\d\.]+)", res.text)
+    new_rows = []
+    for date_str, price in matches:
+        try:
+            dt = datetime.strptime(date_str, '%b %d, %Y')
+        except ValueError:
+            continue
+        new_rows.append({"date": dt.strftime('%Y-%m-%d'), "bdti_price": float(price)})
+
+    if not new_rows:
+        print(f"❌ No BDTI rows parsed from {len(res.text)} bytes. Start: {res.text[:200]!r}")
+        return False
+
+    update_persistent_json(pd.DataFrame(new_rows), 'shipping_data.json', ['date'])
+    print(f"✅ BDTI sync complete ({len(new_rows)} rows). Latest: {new_rows[-1]['bdti_price']} on {new_rows[-1]['date']}")
+    return True
 
 def read_encrypted_df(filename):
     SECRET_KEY = "pay_homage_to_stan_4ever"
@@ -153,10 +167,15 @@ if __name__ == "__main__":
     events_res = session.get(EVENTS_URL, impersonate="firefox144")
     summary_res = session.get(SUMMARY_URL, impersonate="firefox144")
 
+    # BDTI sync is independent of iranstrike; run it regardless
+    print("Syncing BDTI 5-year historical data...")
+    try:
+        bdti_ok = sync_bdti_5y(session)
+    except Exception as e:
+        print(f"❌ BDTI sync crashed: {e}")
+        bdti_ok = False
+
     if events_res.status_code == 200 and summary_res.status_code == 200:
-        #Sync shipping data
-        print("Syncing BDTI 5-year historical data...")
-        sync_bdti_5y(session)
 
         # --- PART A: PROCESS EVENTS (HOURLY/DAILY CHARTS) ---
         # 1. Load data
@@ -333,3 +352,7 @@ if __name__ == "__main__":
 
     else:
         print(f"Error: Events ({events_res.status_code}) Summary ({summary_res.status_code})")
+
+    if not bdti_ok:
+        # Non-zero exit so run_job.sh sends a failure alert
+        sys.exit(1)
