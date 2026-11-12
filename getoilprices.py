@@ -116,7 +116,7 @@ def main():
             print(f"Fetching history for: {name} (Ticker: {ticker})...")
             
             records = fetch_barchart_history_via_browser(page, ticker, name)
-
+            print(records)
             if records:
                 max_date = max(r['date'] for r in records)
                 two_days_ago = (datetime.strptime(max_date, '%Y-%m-%d') - timedelta(days=2)).strftime('%Y-%m-%d')
