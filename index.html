@@ -403,22 +403,6 @@
     <strong>Source:</strong> Casualty data is aggregated daily from official and semi-official reports, including MoH (Lebanon/Gaza), HRANA/Hengaw (Iran), IDF/Magen David Adom (Israel), and US Pentagon updates. Figures represent a combination of confirmed combatant losses and reported non-combatant fatalities; due to the speed of kinetic events, reporting lags of 24-48 hours are common for remote strike zones. Data can be revised as new information emerges, and may not capture all casualties, especially in contested areas. The charts above show daily reported casualties, which can fluctuate based on reporting cadence and access to affected regions.
 </p>
 
-        <section id="oil-spread" class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Hormuz: Oil Spread</h2>
-                    <p class="text-slate-500 text-sm italic">The Murban-Brent spread reflects the geopolitical risk of the Gulf. Sharp changes can signal rising tanker risk and geopolitical stress as markets price in potential disruption around the Strait of Hormuz.</p>
-                </div>
-                <div class="flex bg-slate-100 p-1 rounded-lg self-start">
-                    <button onclick="filterOil('1M')" id="btn-oil-1M" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1M</button>
-                    <button onclick="filterOil('3M')" id="btn-oil-3M" class="px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all">3M</button>
-                    <button onclick="filterOil('1Y')" id="btn-oil-1Y" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">1Y</button>
-                    <button onclick="filterOil('ALL')" id="btn-oil-ALL" class="px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all">ALL</button>
-                </div>
-            </div>
-            <div id="oilSpreadChart" class="w-full h-[450px]" style="min-height:450px"></div>
-        </section>
-
         <section id="bdti" class="mb-16 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
@@ -512,7 +496,6 @@ const layoutBase = {
 };
 
 let fullBDTI = []; // Global store for filtering
-let fullOilData = []; // Global store for oil prices
 let casualtyData = [];
 
 async function loadEscalationChart() {
@@ -606,110 +589,6 @@ function groupTransitsByDay(crossings) {
     });
 
     return { days: Object.keys(dailyGroups).sort(), data: dailyGroups };
-}
-
-async function renderOilSpread() {
-    try {
-        const res = await fetch('./oil_prices_spread.json');
-        if (!res.ok) throw new Error("Oil spread file not found");
-        
-        const encrypted = await res.json();
-        // Use the same descramble logic as BDTI
-        fullOilData = descramble(encrypted.payload); 
-
-        fullOilData.sort((a, b) => new Date(a.date) - new Date(b.date));
-        
-        // Default to 3M view to match BDTI default
-        filterOil('3M');
-    } catch (err) {
-        console.error("Oil Spread Load Error:", err);
-    }
-}
-
-function filterOil(range) {
-    const now = new Date();
-    let filtered = [];
-
-    if (range === '1M') {
-        const monthAgo = new Date();
-        monthAgo.setMonth(now.getMonth() - 1);
-        filtered = fullOilData.filter(d => new Date(d.date).getTime() >= monthAgo.getTime());
-    } else if (range === '3M') {
-        const threeMonthsAgo = new Date();
-        threeMonthsAgo.setMonth(now.getMonth() - 3);
-        filtered = fullOilData.filter(d => new Date(d.date).getTime() >= threeMonthsAgo.getTime());
-    } else if (range === '1Y') {
-        const yearAgo = new Date();
-        yearAgo.setFullYear(now.getFullYear() - 1);
-        filtered = fullOilData.filter(d => new Date(d.date).getTime() >= yearAgo.getTime());
-    } else {
-        filtered = fullOilData;
-    }
-    console.log(`DEBUG: Filtering for [${range}]. Found [${filtered.length}] records.`);
-    // Update Button UI
-    ['1M', '3M', '1Y', 'ALL'].forEach(r => {
-        const btn = document.getElementById(`btn-oil-${r}`);
-        if (btn) btn.className = (r === range) 
-            ? "px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all" 
-            : "px-3 py-1 text-xs font-bold text-slate-500 rounded-md hover:text-slate-800 transition-all";
-    });
-
-    const traces = [
-        {
-            x: filtered.map(d => d.date),
-            y: filtered.map(d => d.Murban), // Matches your JSON key 'Murban'
-            name: 'Murban Price ($)',
-            type: 'scattergl', 
-            mode: 'lines',
-            line: { color: '#0f172a', width: 2 },
-            yaxis: 'y' // Change 'y1' to 'y' (standard primary axis)
-        },
-        {
-            x: filtered.map(d => d.date),
-            y: filtered.map(d => d.spread_murban_brent),
-            name: 'Murban-Brent Spread',
-            type: 'scattergl', 
-            mode: 'lines',
-            fill: 'tozeroy',
-            fillcolor: 'rgba(239, 68, 68, 0.1)',
-            line: { color: '#ef4444', width: 3, shape: 'spline' },
-            yaxis: 'y2' // Secondary axis
-        }
-    ];
-
-    const layout = {
-        ...layoutBase,
-        height: 450,
-        showlegend: true,
-        legend: { orientation: "h", y: -0.2, x: 0.5, xanchor: 'center' },
-        margin: { t: 40, r: 80, b: 80, l: 60 },
-        xaxis: {
-            type: 'date',
-            tickformat: (range === '1Y' || range === 'ALL') ? "%b '%y" : '%b %d',
-            nticks: 10,
-            gridcolor: '#f1f5f9'
-        },
-        // FIX: Explicitly define 'yaxis' (the primary axis for Oman Price)
-        yaxis: { 
-            title: 'Murban Price ($)', 
-            tickprefix: '$',
-            tickformat: '.2f',
-            gridcolor: '#f1f5f9',
-            fixedrange: true,
-            side: 'left' // Explicitly set to left
-        },
-        yaxis2: { 
-            title: 'Spread ($)', 
-            tickprefix: '$',
-            tickformat: '.2f',
-            overlaying: 'y', 
-            side: 'right', 
-            showgrid: false,
-            fixedrange: true
-        }
-    };
-
-    Plotly.newPlot('oilSpreadChart', traces, layout, { displaylogo: false, responsive: false, displayModeBar: false });
 }
 
 async function renderBDTI() {
@@ -1210,7 +1089,6 @@ const layout = {
 async function loadCharts() {
     try {
         await Promise.all([
-            renderOilSpread(),
             renderBDTI(),
             renderEscalationCharts(),
             renderCasualties(),
@@ -1382,7 +1260,7 @@ setTimeout(function(){
 // Manual resize handler — charts use responsive:false so they render once and never blank out.
 // This restores auto-width on window resize instead.
 const _chartIds = [
-    'escalationChart', 'oilSpreadChart', 'bdtiChart', 'spreadChart',
+    'escalationChart', 'bdtiChart', 'spreadChart',
     'dailyChart', 'vlccDailyChart', 'vlccDWTChart', 'cargoDailyChart', 'cargoDWTChart',
     'chart-iran-cas', 'chart-us-cas', 'chart-iran-inj', 'chart-us-inj',
     'poly-bab-chart', 'poly-conflict-chart'
